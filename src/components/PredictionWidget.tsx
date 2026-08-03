@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useEffect } from 'react'
+import { useState, useTransition, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { ThumbsUp, ThumbsDown, Loader2 } from 'lucide-react'
 import { useToast } from '@/components/ui/toast'
@@ -15,6 +15,10 @@ interface PredictionWidgetProps {
   initialCounts: PredictionCounts
 }
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+
 function getStorageKey(issueId: string) {
   return `stickee:prediction:${issueId}`
 }
@@ -24,12 +28,89 @@ export function PredictionWidget({ issueId, initialCounts }: PredictionWidgetPro
   const [userPrediction, setUserPrediction] = useState<'yes' | 'no' | null>(null)
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
+  const identityRef = useRef<{ userId: string | null; sessionId: string | null }>({ userId: null, sessionId: null })
+  const skipOwnRealtimeRef = useRef(false)
 
-  // Restore prediction from localStorage on mount
+  useEffect(() => {
+    setCounts(initialCounts)
+  }, [initialCounts, issueId])
+
   useEffect(() => {
     const stored = localStorage.getItem(getStorageKey(issueId))
     if (stored === 'yes' || stored === 'no') {
       setUserPrediction(stored)
+    }
+  }, [issueId])
+
+  useEffect(() => {
+    if (!configured) return
+
+    let cancelled = false
+    let channelCleanup: (() => void) | undefined
+
+    async function subscribe() {
+      const { createClient } = await import('@/lib/supabase')
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      const key = 'stickee:session_id'
+      let sessionId = localStorage.getItem(key)
+      if (!sessionId) {
+        sessionId = crypto.randomUUID()
+        localStorage.setItem(key, sessionId)
+      }
+
+      if (cancelled) return
+
+      identityRef.current = {
+        userId: user?.id ?? null,
+        sessionId,
+      }
+
+      const channel = supabase
+        .channel(`predictions:${issueId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'predictions',
+            filter: `issue_id=eq.${issueId}`,
+          },
+          payload => {
+            const row = payload.new as {
+              prediction?: 'yes' | 'no'
+              user_id?: string | null
+              session_id?: string | null
+            }
+
+            const isOwnPrediction =
+              (row.user_id && row.user_id === identityRef.current.userId) ||
+              (row.session_id && row.session_id === identityRef.current.sessionId)
+
+            if (skipOwnRealtimeRef.current && isOwnPrediction) {
+              skipOwnRealtimeRef.current = false
+              return
+            }
+
+            if (row.prediction === 'yes' || row.prediction === 'no') {
+              const prediction = row.prediction
+              setCounts(prev => ({ ...prev, [prediction]: prev[prediction] + 1 }))
+            }
+          }
+        )
+        .subscribe()
+
+      channelCleanup = () => {
+        supabase.removeChannel(channel)
+      }
+    }
+
+    subscribe()
+
+    return () => {
+      cancelled = true
+      channelCleanup?.()
     }
   }, [issueId])
 
@@ -45,17 +126,11 @@ export function PredictionWidget({ issueId, initialCounts }: PredictionWidgetPro
       setCounts(prev => ({ ...prev, [prediction]: prev[prediction] + 1 }))
       setUserPrediction(prediction)
       toast(`Prediction locked in: ${prediction.toUpperCase()}`, 'success')
-
-      // Persist to localStorage so the prediction survives page reloads
       localStorage.setItem(getStorageKey(issueId), prediction)
 
-      // Write to Supabase
       try {
         const { createClient } = await import('@/lib/supabase')
         const supabase = createClient()
-
-        // Use authenticated user_id if available, otherwise fall back to a
-        // stable anonymous session_id stored in localStorage
         const { data: { user } } = await supabase.auth.getUser()
 
         let sessionId: string | undefined
@@ -69,6 +144,12 @@ export function PredictionWidget({ issueId, initialCounts }: PredictionWidgetPro
           sessionId = sid
         }
 
+        identityRef.current = {
+          userId: user?.id ?? null,
+          sessionId: sessionId ?? identityRef.current.sessionId,
+        }
+        skipOwnRealtimeRef.current = true
+
         await supabase.from('predictions').insert({
           issue_id: issueId,
           prediction,
@@ -76,7 +157,7 @@ export function PredictionWidget({ issueId, initialCounts }: PredictionWidgetPro
           session_id: sessionId ?? null,
         })
       } catch {
-        // Supabase unavailable — prediction already saved to localStorage
+        skipOwnRealtimeRef.current = false
       }
     })
   }

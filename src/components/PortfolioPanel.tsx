@@ -113,7 +113,7 @@ interface PortfolioPanelProps {
   closedPositions: Position[]
   totalStaked: number
   totalPotential: number
-  onReset: () => void
+  onReset?: () => void
 }
 
 export function PortfolioPanel({
@@ -145,15 +145,17 @@ export function PortfolioPanel({
               Your Wallet
             </span>
           </div>
-          <button
-            onClick={onReset}
-            className="flex items-center gap-1 font-mono text-[9px] tracking-widest uppercase px-2 py-1 rounded transition-colors"
-            style={{ color: '#3a3a3e', background: '#1e1e20' }}
-            title="Reset wallet"
-          >
-            <RefreshCw size={9} />
-            Reset
-          </button>
+          {onReset && (
+            <button
+              onClick={onReset}
+              className="flex items-center gap-1 font-mono text-[9px] tracking-widest uppercase px-2 py-1 rounded transition-colors"
+              style={{ color: '#3a3a3e', background: '#1e1e20' }}
+              title="Reset wallet"
+            >
+              <RefreshCw size={9} />
+              Reset
+            </button>
+          )}
         </div>
 
         {/* Balance strip */}

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
-import { issueMarkets, type MarketOutcome } from '@/lib/mock-market-data'
+import { useState, useEffect } from 'react'
+import { issueMarkets, type IssueMarket, type MarketOutcome } from '@/lib/mock-market-data'
+import { mapIssueMarketRecord, type IssueMarketRecord } from '@/lib/issues-data'
 import { TrendingUp, TrendingDown, Zap } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
@@ -91,48 +92,75 @@ interface LiveOutcome extends MarketOutcome {
   history: number[]
 }
 
-export function PredictionMarketGrid({ issueId }: { issueId: string }) {
-  const market = issueMarkets[issueId]
-  const [liveOutcomes, setLiveOutcomes] = useState<LiveOutcome[]>(
-    market ? [...market.outcomes] : []
-  )
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+
+export function PredictionMarketGrid({
+  issueId,
+  initialMarket,
+}: {
+  issueId: string
+  initialMarket?: IssueMarket | null
+}) {
+  const fallbackMarket = initialMarket ?? issueMarkets[issueId] ?? null
+  const [market, setMarket] = useState<IssueMarket | null>(fallbackMarket)
   const [lastUpdate, setLastUpdate] = useState<string | null>(null)
-  const [isLive] = useState(true)
-
-  // Simulate real-time probability updates
-  const tick = useCallback(() => {
-    setLiveOutcomes(prev => {
-      if (prev.length < 2) return prev
-      // Small random walk on Yes price (bounded 5–95)
-      const yesDelta = (Math.random() - 0.5) * 1.4
-      const newYesPrice = Math.max(5, Math.min(95, prev[0].price + yesDelta))
-      const newNoPrice = 100 - newYesPrice
-
-      return [
-        {
-          ...prev[0],
-          price: Math.round(newYesPrice * 10) / 10,
-          volume: prev[0].volume + Math.floor(Math.random() * 3),
-          history: [...prev[0].history.slice(1), Math.round(newYesPrice)],
-        },
-        {
-          ...prev[1],
-          price: Math.round(newNoPrice * 10) / 10,
-          volume: prev[1].volume + Math.floor(Math.random() * 3),
-          history: [...prev[1].history.slice(1), Math.round(newNoPrice)],
-        },
-      ]
-    })
-    setLastUpdate(new Date().toLocaleTimeString())
-  }, [])
+  const [isLive, setIsLive] = useState(false)
 
   useEffect(() => {
-    const id = setInterval(tick, 3000)
-    return () => clearInterval(id)
-  }, [tick])
+    setMarket(fallbackMarket)
+  }, [fallbackMarket, issueId])
 
-  if (!market || liveOutcomes.length === 0) return null
+  useEffect(() => {
+    if (!configured) return
 
+    let cancelled = false
+    let channelCleanup: (() => void) | undefined
+
+    async function subscribe() {
+      const { createClient } = await import('@/lib/supabase')
+      const supabase = createClient()
+
+      const channel = supabase
+        .channel(`issue-market:${issueId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'issue_markets',
+            filter: `issue_id=eq.${issueId}`,
+          },
+          payload => {
+            const record = payload.new as IssueMarketRecord | undefined
+            if (!record?.issue_id) return
+            setMarket(mapIssueMarketRecord(record))
+            setLastUpdate(new Date().toLocaleTimeString())
+          }
+        )
+        .subscribe(status => {
+          if (!cancelled) {
+            setIsLive(status === 'SUBSCRIBED')
+          }
+        })
+
+      channelCleanup = () => {
+        supabase.removeChannel(channel)
+      }
+    }
+
+    subscribe()
+
+    return () => {
+      cancelled = true
+      channelCleanup?.()
+    }
+  }, [issueId])
+
+  if (!market) return null
+
+  const liveOutcomes = market.outcomes as LiveOutcome[]
   const yesOutcome = liveOutcomes[0]
   const noOutcome = liveOutcomes[1]
   const totalVolume = yesOutcome.volume + noOutcome.volume
