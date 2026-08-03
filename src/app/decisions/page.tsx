@@ -73,7 +73,7 @@ export default function DecisionsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10 space-y-8">
+    <div className="mx-auto max-w-5xl px-6 py-10 space-y-8">
 
       {/* Page header */}
       <div>

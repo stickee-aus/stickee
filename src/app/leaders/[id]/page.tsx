@@ -15,7 +15,7 @@ export default async function LeaderProfilePage({
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
+    <div className="mx-auto max-w-5xl px-6 py-10">
       <LeaderProfileDetail leader={leader} />
     </div>
   )

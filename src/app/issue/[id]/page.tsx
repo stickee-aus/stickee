@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { issueIndex, getVoteSummary } from '@/lib/mock-data'
-import { issueMarkets } from '@/lib/mock-market-data'
+import { getIssueDetailData } from '@/lib/issues-db'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { PredictionWidget } from '@/components/PredictionWidget'
 import { EmailMPButton } from '@/components/EmailMPButton'
@@ -9,6 +8,8 @@ import { MPVoteGrid } from '@/components/MPVoteGrid'
 import { PredictionMarketGrid } from '@/components/PredictionMarketGrid'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react'
+import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
+import { RecentRehearsalsStrip } from '@/components/simulator/RecentRehearsalsStrip'
 
 const statusConfig = {
   active:   { label: 'Active',   className: 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/25' },
@@ -16,35 +17,27 @@ const statusConfig = {
   rejected: { label: 'Rejected', className: 'bg-red-500/15 text-red-400 ring-1 ring-red-500/25' },
 }
 
-const SEED_PREDICTIONS: Record<string, { yes: number; no: number }> = {
-  'housing-affordability': { yes: 312, no: 198 },
-  'climate-safeguard':     { yes: 445, no: 221 },
-  'ndis-reform':           { yes: 187, no: 290 },
-  'tax-cuts':              { yes: 380, no: 145 },
-  'misinformation-bill':   { yes: 201, no: 388 },
-}
-
 async function getPredictionCounts(issueId: string): Promise<{ yes: number; no: number }> {
-  const seed = SEED_PREDICTIONS[issueId] ?? { yes: 50, no: 50 }
   try {
     const supabase = await createServerSupabaseClient()
-    const [{ count: yesCount }, { count: noCount }] = await Promise.all([
+    const [{ count: yesCount, error: yesError }, { count: noCount, error: noError }] = await Promise.all([
       supabase.from('predictions').select('*', { count: 'exact', head: true }).eq('issue_id', issueId).eq('prediction', 'yes'),
       supabase.from('predictions').select('*', { count: 'exact', head: true }).eq('issue_id', issueId).eq('prediction', 'no'),
     ])
-    return { yes: seed.yes + (yesCount ?? 0), no: seed.no + (noCount ?? 0) }
+    if (yesError || noError) throw yesError ?? noError
+    return { yes: yesCount ?? 0, no: noCount ?? 0 }
   } catch {
-    return seed
+    return { yes: 0, no: 0 }
   }
 }
 
 export default async function IssuePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const issue = issueIndex[id]
-  if (!issue) notFound()
+  const data = await getIssueDetailData(id)
+  if (!data) notFound()
 
-  const summary = getVoteSummary(id)
-  const market = issueMarkets[id]
+  const { issue, market } = data
+  const summary = issue.voteSummary
   const predictions = await getPredictionCounts(id)
   const status = statusConfig[issue.status]
   const total = summary.yes + summary.no + summary.abstain
@@ -72,6 +65,20 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">{issue.title}</h1>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{issue.summary}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <SimulateThisButton
+            entity={{
+              type: 'issue',
+              id: issue.id,
+              title: issue.title,
+              summary: issue.summary,
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mb-10">
+        <RecentRehearsalsStrip variant="compact" limit={3} />
       </div>
 
       {/* Summary stats */}
@@ -125,7 +132,7 @@ export default async function IssuePage({ params }: { params: Promise<{ id: stri
 
         {/* Right: interactive grids */}
         <div className="lg:col-span-2 space-y-10">
-          <PredictionMarketGrid issueId={id} />
+          <PredictionMarketGrid issueId={id} initialMarket={market} />
           <MPVoteGrid issueId={id} />
         </div>
       </div>

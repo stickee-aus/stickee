@@ -3,13 +3,17 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { getVotesForIssue, MPs, PARTY_COLORS } from '@/lib/mock-data'
-import { mpExtendedIndex } from '@/lib/mock-market-data'
 import { ChevronUp, ChevronDown, Search, CheckCircle2, XCircle, MinusCircle } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+//
+// This grid used to show a per-MP "accuracy" column derived from
+// calculateStickeeScore() — removed along with the same fabricated score on
+// /mp/[id] (see docs/MP_SCORE_METHODOLOGY_REQUIREMENTS.md). Sorting now
+// covers name/party/electorate/vote only.
 
-type SortKey = 'name' | 'party' | 'electorate' | 'vote' | 'stickeeScore'
+type SortKey = 'name' | 'party' | 'electorate' | 'vote'
 type SortDir = 'asc' | 'desc'
 
 interface MPRow {
@@ -18,7 +22,6 @@ interface MPRow {
   party: string
   electorate: string
   vote: 'yes' | 'no' | 'abstain'
-  stickeeScore: number
   userPick: 'yes' | 'no' | null
 }
 
@@ -53,17 +56,6 @@ function VoteBadge({ vote }: { vote: 'yes' | 'no' | 'abstain' }) {
   )
 }
 
-function AccuracyBar({ score }: { score: number }) {
-  const color = score >= 70 ? 'bg-green-500' : score >= 50 ? 'bg-yellow-400' : 'bg-red-500'
-  return (
-    <div className="flex items-center gap-2">
-      <div className="w-14 h-1.5 rounded-full bg-muted">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${score}%` }} />
-      </div>
-      <span className="text-xs tabular-nums text-muted-foreground">{score}%</span>
-    </div>
-  )
-}
 
 function PickButtons({
   userPick,
@@ -143,7 +135,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
       party: mp.party,
       electorate: mp.electorate,
       vote: (voteMap[mp.id] ?? 'abstain') as 'yes' | 'no' | 'abstain',
-      stickeeScore: mpExtendedIndex[mp.id]?.stickeeScore ?? 50,
       userPick: userPicks[mp.id] ?? null,
     }))
 
@@ -159,7 +150,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
     result.sort((a, b) => {
       let cmp = 0
       if (sortKey === 'vote') cmp = voteOrder[a.vote] - voteOrder[b.vote]
-      else if (sortKey === 'stickeeScore') cmp = a.stickeeScore - b.stickeeScore
       else cmp = (a[sortKey] as string).localeCompare(b[sortKey] as string)
       return sortDir === 'asc' ? cmp : -cmp
     })
@@ -240,7 +230,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
                 <SortTh col="party" label="Party" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="hidden sm:table-cell" />
                 <SortTh col="electorate" label="Electorate" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="hidden md:table-cell" />
                 <SortTh col="vote" label="MP Vote" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
-                <SortTh col="stickeeScore" label="Accuracy" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="hidden sm:table-cell" />
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground whitespace-nowrap">
                   Predict
                 </th>
@@ -268,10 +257,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
                         <div className="space-y-1">
                           <p className="font-semibold">{row.name}</p>
                           <p className="text-xs opacity-80">{row.party} · {row.electorate}</p>
-                          <p className="text-xs opacity-80">Accuracy: {row.stickeeScore}%</p>
-                          <p className="text-xs opacity-80">
-                            Votes with majority {row.stickeeScore}% of the time
-                          </p>
                         </div>
                       </TooltipContent>
                     </Tooltip>
@@ -287,9 +272,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
                   </td>
                   <td className="px-4 py-3">
                     <VoteBadge vote={row.vote} />
-                  </td>
-                  <td className="px-4 py-3 hidden sm:table-cell">
-                    <AccuracyBar score={row.stickeeScore} />
                   </td>
                   <td className="px-4 py-3">
                     <PickButtons userPick={row.userPick} onPick={v => setPick(row.mpId, v)} />

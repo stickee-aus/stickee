@@ -1,16 +1,19 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ThumbsUp, ThumbsDown, ChevronDown } from 'lucide-react'
 import { POLITICIAN_SCORECARDS } from '@/lib/mock-civic-data'
 import { MPs, PARTY_COLORS } from '@/lib/mock-data'
-import { mpExtended } from '@/lib/mock-market-data'
 import { LEADERS, computeCredibility } from '@/lib/mock-leaders-data'
 import { scoreToGrade } from '@/lib/civic-utils'
+import { useLiveParliamentMembers } from '@/hooks/useLiveParliamentMembers'
 import { useApproval, communityApprovalPct, communityVoteCount } from '@/hooks/useApproval'
 import { NominationModal } from '@/components/NominationModal'
+import { useLiveElection } from '@/hooks/useLiveElection'
+import { LiveResultsExplainer } from '@/components/LiveResultsExplainer'
+import type { MP } from '@/types'
 
 const HouseChamber = dynamic(
   () => import('@/components/HouseChamber').then(m => m.HouseChamber),
@@ -27,7 +30,7 @@ const SenateView = dynamic(
 const SCORED_MP_INFO: Record<string, { name: string; party: string; role: string; electorate: string }> = {
   'mp-albanese': { name: 'Anthony Albanese', party: 'Labor',     role: 'Prime Minister',     electorate: 'Grayndler' },
   'mp-chalmers': { name: 'Jim Chalmers',     party: 'Labor',     role: 'Treasurer',           electorate: 'Rankin' },
-  'mp-dutton':   { name: 'Peter Dutton',     party: 'Coalition', role: 'Opposition Leader',   electorate: 'Dickson' },
+  'mp-dutton':   { name: 'Angus Taylor',     party: 'Coalition', role: 'Opposition Leader',   electorate: 'Hume' },
   'mp-butler':   { name: 'Mark Butler',      party: 'Labor',     role: 'Minister for Health', electorate: 'Hindmarsh' },
   'mp-bandt':    { name: 'Adam Bandt',        party: 'Greens',    role: 'Greens Leader',       electorate: 'Melbourne' },
 }
@@ -56,6 +59,9 @@ const PARTY_SHORT: Record<string, string> = {
   'Centre Alliance':              'CA',
   "Katter's Australian Party":   'KAP',
   'One Nation':                   'ONP',
+  'Jacqui Lambie Network':        'JLN',
+  'United Australia Party':       'UAP',
+  "Australia's Voice":           'AV',
 }
 
 function gradeStyle(g: string) {
@@ -64,12 +70,20 @@ function gradeStyle(g: string) {
   return                             { color: '#f04747', borderColor: '#3a1414', background: '#1e0a0a' }
 }
 
-const mpExtendedIndex = Object.fromEntries(mpExtended.map(m => [m.id, m]))
-
-type SortKey    = 'approval' | 'voting' | 'party' | 'name'
+type SortKey    = 'approval' | 'party' | 'name'
 type PartyFilter = 'all' | string
 
 const PAGE_SIZE = 25
+
+function formatElectionTime(value: string | null) {
+  if (!value) return 'Awaiting AEC update'
+  return new Date(value).toLocaleString('en-AU', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
 
 // ─── Approve / Disapprove buttons ─────────────────────────────────────────────
 
@@ -223,26 +237,24 @@ function MPRow({
   onRate,
   onClick,
 }: {
-  mp: typeof MPs[number]
+  mp: MP
   rank: number
   isSelected: boolean
   ratings: Record<string, 'approve' | 'disapprove'>
   onRate: (id: string, dir: 'approve' | 'disapprove') => void
   onClick: () => void
 }) {
-  const ext        = mpExtendedIndex[mp.id]
   const commPct    = communityApprovalPct(mp.id)
   const partyShort = PARTY_SHORT[mp.party] ?? mp.party.slice(0, 3).toUpperCase()
   const partyColor = PARTY_COLORS[mp.party] ?? '#5a5a5e'
   const initials   = mp.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('')
-  const consistency = ext?.stickeeScore ?? 0
 
   return (
     <div
       onClick={onClick}
       className="grid gap-4 items-center py-3 border-b transition-colors cursor-pointer"
       style={{
-        gridTemplateColumns: '1.5rem 1fr auto auto auto',
+        gridTemplateColumns: '1.5rem 1fr auto auto',
         borderColor: isSelected ? '#2a2a2e' : '#0e0e10',
         background: isSelected ? '#111113' : 'transparent',
       }}
@@ -266,14 +278,6 @@ function MPRow({
             {partyShort} · {mp.electorate}
           </p>
         </div>
-      </div>
-
-      {/* Voting consistency */}
-      <div className="hidden sm:flex items-center gap-2">
-        <div className="w-12 h-px relative" style={{ background: '#1e1e20' }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${consistency}%`, background: '#3a3a5e' }} />
-        </div>
-        <span className="font-mono text-[10px] tabular-nums" style={{ color: '#5a5a5e' }}>{consistency}%</span>
       </div>
 
       {/* Community approval % */}
@@ -363,33 +367,52 @@ function RisingLeadersSection() {
 // ─── Leaders page ─────────────────────────────────────────────────────────────
 
 export default function LeadersPage() {
+  const { data: liveParliament, loading: liveParliamentLoading } = useLiveParliamentMembers()
+  const { data: liveElection, loading: liveElectionLoading } = useLiveElection()
+  const houseMembers = liveParliament?.house.members.length ? liveParliament.house.members : MPs
+  const senateMembers = liveParliament?.senate.members ?? []
   const [chamberTab,   setChamberTab]   = useState<'house' | 'senate'>('house')
+  const [chamberMode,  setChamberMode]  = useState<'current' | 'live'>('current')
   const [selectedMPId, setSelectedMPId] = useState<string | null>(null)
   const [sortBy,       setSortBy]       = useState<SortKey>('approval')
   const [partyFilter,  setPartyFilter]  = useState<PartyFilter>('all')
   const [page,         setPage]         = useState(1)
+  const [showParliamentExplainer, setShowParliamentExplainer] = useState(false)
   const chamberRef = useRef<HTMLDivElement>(null)
 
   const { ratings, rate, approveCount } = useApproval()
+  const activeMembers = chamberTab === 'senate' ? senateMembers : houseMembers
+
+  useEffect(() => {
+    setSelectedMPId(null)
+    setPartyFilter('all')
+    setPage(1)
+  }, [chamberTab])
+
+  useEffect(() => {
+    if (!liveElection.active && chamberMode === 'live') {
+      setChamberMode('current')
+    }
+  }, [chamberMode, liveElection.active])
 
   // Build sorted + filtered MP list
   const allMPs = useMemo(() => {
-    let list = [...MPs]
+    let list = [...activeMembers]
     if (partyFilter !== 'all') list = list.filter(m => m.party === partyFilter)
 
     list.sort((a, b) => {
       if (sortBy === 'approval')  return communityApprovalPct(b.id) - communityApprovalPct(a.id)
-      if (sortBy === 'voting')    return (mpExtendedIndex[b.id]?.stickeeScore ?? 0) - (mpExtendedIndex[a.id]?.stickeeScore ?? 0)
       if (sortBy === 'party')     return a.party.localeCompare(b.party)
       return a.name.localeCompare(b.name)
     })
     return list
-  }, [sortBy, partyFilter])
+  }, [activeMembers, sortBy, partyFilter])
 
   const displayedMPs = allMPs.slice(0, page * PAGE_SIZE)
   const hasMore      = displayedMPs.length < allMPs.length
 
   function handleSelectMP(mpId: string) {
+    if (chamberTab !== 'house') return
     setSelectedMPId(prev => {
       const next = prev === mpId ? null : mpId
       if (next) {
@@ -400,12 +423,16 @@ export default function LeadersPage() {
   }
 
   const uniqueParties = useMemo(() => {
-    const parties = [...new Set(MPs.map(m => m.party))].sort()
+    const parties = [...new Set(activeMembers.map(m => m.party))].sort()
     return ['all', ...parties] as PartyFilter[]
-  }, [])
+  }, [activeMembers])
 
-  const totalMPs     = MPs.length
+  const totalMPs     = activeMembers.length
   const totalLeaders = LEADERS.filter(l => l.nomination.moderationStatus === 'approved').length
+  const chamberLabel = chamberTab === 'house' ? 'House of Reps' : 'Senate'
+  const memberLabel = chamberTab === 'house' ? 'members' : 'senators'
+  const liveModeAvailable = liveElection.active
+  const showLiveResults = chamberMode === 'live' && liveModeAvailable
 
   return (
     <div className="mx-auto max-w-5xl px-6">
@@ -420,11 +447,21 @@ export default function LeadersPage() {
             <span className="font-mono font-normal leading-none text-foreground" style={{ fontSize: 'clamp(40px, 8vw, 56px)', letterSpacing: '-0.02em' }}>
               {totalMPs}
             </span>
-            <span className="font-mono text-xl text-muted-foreground/40">MPs tracked</span>
+            <span
+              className="font-mono text-xl text-muted-foreground/40"
+              title="Each dot is an MP. Together they decide who runs the country."
+            >
+              {chamberLabel} tracked
+            </span>
           </div>
           <p className="font-mono text-xs text-muted-foreground mt-2" style={{ letterSpacing: '0.03em' }}>
-            Approve or disapprove · See who sits where · Analyse decisions
+            Approve or disapprove · See who sits where · Current chamber roster by party
           </p>
+          {liveParliament?.syncedAt && (
+            <p className="font-mono text-[10px] mt-2" style={{ color: '#3a3a3e' }}>
+              Source: {liveParliament.source === 'tvfy' ? 'TheyVoteForYou live feed' : 'Synced members table'} · {new Date(liveParliament.syncedAt).toLocaleDateString('en-AU')}
+            </p>
+          )}
         </div>
         <div className="hidden sm:flex items-end gap-6 pb-1">
           <div className="text-right">
@@ -441,36 +478,118 @@ export default function LeadersPage() {
 
       {/* ── Chamber ──────────────────────────────────────────────────────── */}
       <div ref={chamberRef} className="mt-8 mb-10">
+        <div className="mb-4 rounded-2xl border border-white/[0.07] bg-card px-5 py-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">How Parliament works</p>
+              <p className="mt-2 text-sm font-semibold text-foreground">
+                Voters choose local MPs, the majority runs the country, and a second house keeps them in check.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowParliamentExplainer(value => !value)}
+              className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground"
+            >
+              {showParliamentExplainer ? 'Hide' : 'Learn more'}
+            </button>
+          </div>
+          {showParliamentExplainer && (
+            <div className="mt-3 space-y-1.5 font-mono text-[10px] leading-snug text-muted-foreground/80">
+              <p>Voters choose local MPs.</p>
+              <p>The majority in the House runs the country.</p>
+              <p>The Senate keeps them in check.</p>
+              <p>Laws must pass both houses.</p>
+              <p>Results are counted locally and reported live.</p>
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center justify-between mb-4">
           <span className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
             Chamber View
-            {selectedMPId && (
+            {selectedMPId && chamberTab === 'house' && (
               <span style={{ color: '#f5a623' }}>
-                {' · '}{MPs.find(m => m.id === selectedMPId)?.name ?? ''}
+                {' · '}{houseMembers.find(m => m.id === selectedMPId)?.name ?? ''}
               </span>
             )}
           </span>
-          <div className="flex items-center gap-0">
-            {(['house', 'senate'] as const).map(tab => (
-              <button
-                key={tab}
-                onClick={() => setChamberTab(tab)}
-                className="font-mono text-[10px] tracking-widest uppercase px-4 py-1.5 border-b-2 transition-colors"
-                style={{
-                  color:       chamberTab === tab ? '#e8e8e6' : '#5a5a5e',
-                  borderColor: chamberTab === tab ? '#e8e8e6' : 'transparent',
-                }}
-              >
-                {tab === 'house' ? 'House of Reps' : 'Senate'}
-              </button>
-            ))}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-0">
+              {(['house', 'senate'] as const).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setChamberTab(tab)}
+                  title={tab === 'house' ? 'This decides who forms government.' : 'Reviews laws and can approve, change, or block them.'}
+                  className="font-mono text-[10px] tracking-widest uppercase px-4 py-1.5 border-b-2 transition-colors"
+                  style={{
+                    color:       chamberTab === tab ? '#e8e8e6' : '#5a5a5e',
+                    borderColor: chamberTab === tab ? '#e8e8e6' : 'transparent',
+                  }}
+                >
+                  {tab === 'house' ? 'House of Reps' : 'Senate'}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-0 rounded-lg border border-border/50 bg-muted/40 p-0.5">
+              {([
+                { key: 'current', label: 'Current Chamber', disabled: false },
+                { key: 'live', label: 'Live Election Results', disabled: !liveModeAvailable },
+              ] as const).map(option => (
+                <button
+                  key={option.key}
+                  onClick={() => !option.disabled && setChamberMode(option.key)}
+                  disabled={option.disabled}
+                  className="rounded-md px-3 py-1 text-[11px] font-medium transition-all"
+                  style={{
+                    color: chamberMode === option.key ? '#e8e8e6' : option.disabled ? '#3a3a3e' : '#5a5a5e',
+                    background: chamberMode === option.key ? '#111113' : 'transparent',
+                    opacity: option.disabled ? 0.6 : 1,
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <p className="text-[11px] text-muted-foreground/60 leading-snug">
+            {showLiveResults
+              ? chamberTab === 'house'
+                ? 'You’re looking at the House of Representatives — where government is formed.'
+                : 'The Senate reviews laws passed by the House.'
+              : chamberTab === 'house'
+              ? 'You’re looking at the House of Representatives — where government is formed.'
+              : 'The Senate reviews laws passed by the House.'}
+          </p>
+          {!liveModeAvailable && !liveElectionLoading && (
+            <p className="font-mono text-[10px] text-muted-foreground/50">No live federal count right now</p>
+          )}
+          {liveModeAvailable && showLiveResults && (
+            <p className="font-mono text-[10px] text-muted-foreground/50">
+              Official source: AEC · Updated {formatElectionTime(liveElection.event.updatedAt)}
+            </p>
+          )}
+        </div>
+
         {chamberTab === 'house' ? (
-          <HouseChamber selectedBillId={null} highlightedMPId={selectedMPId} />
+          <HouseChamber
+            selectedBillId={null}
+            highlightedMPId={selectedMPId}
+            showLiveResults={showLiveResults}
+            liveElection={liveElection}
+          />
         ) : (
-          <SenateView selectedBillId={null} />
+          <SenateView
+            selectedBillId={null}
+            showLiveResults={showLiveResults}
+            liveElection={liveElection}
+          />
+        )}
+
+        {showLiveResults && (
+          <LiveResultsExplainer />
         )}
       </div>
 
@@ -496,10 +615,10 @@ export default function LeadersPage() {
         {/* Section header */}
         <div className="flex items-center justify-between py-5 border-b border-border">
           <span className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-            Parliament · All {totalMPs} Members
+            {chamberLabel} · All {totalMPs} {memberLabel}
           </span>
           <p className="font-mono text-[9px]" style={{ color: '#3a3a3e' }}>
-            Click to highlight in chamber ↑
+            {chamberTab === 'house' ? 'Click to highlight in chamber ↑' : 'Current senators and parties'}
           </p>
         </div>
 
@@ -510,7 +629,6 @@ export default function LeadersPage() {
             <span className="font-mono text-[9px] tracking-widest uppercase mr-3" style={{ color: '#3a3a3e' }}>Sort:</span>
             {([
               { key: 'approval', label: 'Approval' },
-              { key: 'voting',   label: 'Consistency' },
               { key: 'party',    label: 'Party' },
               { key: 'name',     label: 'Name' },
             ] as { key: SortKey; label: string }[]).map(({ key, label }) => (
@@ -558,12 +676,18 @@ export default function LeadersPage() {
             key={mp.id}
             mp={mp}
             rank={i + 1}
-            isSelected={selectedMPId === mp.id}
+            isSelected={chamberTab === 'house' && selectedMPId === mp.id}
             ratings={ratings}
             onRate={rate}
             onClick={() => handleSelectMP(mp.id)}
           />
         ))}
+
+        {displayedMPs.length === 0 && chamberTab === 'senate' && liveParliamentLoading && (
+          <p className="py-6 text-center font-mono text-xs text-muted-foreground">
+            Loading current senators…
+          </p>
+        )}
 
         {/* Load more */}
         {hasMore && (
@@ -578,7 +702,7 @@ export default function LeadersPage() {
         )}
 
         <p className="font-mono text-[10px] mt-4" style={{ color: '#2a2a2e' }}>
-          {displayedMPs.length} of {allMPs.length} members · Consistency = voting with majority · Approval = community rating
+          {displayedMPs.length} of {allMPs.length} {memberLabel} · Consistency = voting with majority · Approval = community rating
         </p>
       </div>
 

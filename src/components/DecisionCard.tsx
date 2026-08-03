@@ -6,6 +6,7 @@ import type { Decision, DecisionMaker, DecisionStatus, ImpactLevel } from '@/typ
 import type { IssueMarket } from '@/lib/mock-market-data'
 import { useToast } from '@/components/ui/toast'
 import { EmailMPButton } from '@/components/EmailMPButton'
+import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
 import type { Issue } from '@/types'
 
 // ─── Impact badge ─────────────────────────────────────────────────────────────
@@ -435,6 +436,20 @@ export function DecisionCard({ decision, decisionMaker, market, defaultExpanded 
               />
             </div>
           )}
+
+          {/* Simulate-this action */}
+          <div className="flex items-center justify-between gap-3 pt-1 border-t border-border/30">
+            <p className="text-xs text-muted-foreground">Rehearse the alternatives before they're decided</p>
+            <SimulateThisButton
+              entity={{
+                type: decision.type === 'Bill' ? 'bill' : 'decision',
+                id: decision.id,
+                title: decision.title,
+                summary: decision.summary,
+              }}
+              size="sm"
+            />
+          </div>
 
           <button
             onClick={() => setExpanded(false)}

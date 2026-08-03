@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { MPIndex, getVotesForMP, issueIndex, PARTY_COLORS, calculateStickeeScore } from '@/lib/mock-data'
+import { MPIndex, getVotesForMP, issueIndex, PARTY_COLORS } from '@/lib/mock-data'
 import { Badge } from '@/components/ui/badge'
 import { MPAvatar } from '@/components/MPAvatar'
-import { ArrowLeft, CheckCircle2, XCircle, MinusCircle, Star } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, XCircle, MinusCircle, ShieldQuestion } from 'lucide-react'
+import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
 
 const voteIcon = {
   yes: <CheckCircle2 className="h-4 w-4 text-green-500" />,
@@ -11,20 +12,14 @@ const voteIcon = {
   abstain: <MinusCircle className="h-4 w-4 text-yellow-500" />,
 }
 
-
-function ScoreBadge({ score }: { score: number }) {
-  const color =
-    score >= 80 ? 'text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/30' :
-    score >= 60 ? 'text-yellow-700 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900/30' :
-    'text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900/30'
-
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-semibold ${color}`}>
-      <Star className="h-3.5 w-3.5" />
-      {score}
-    </span>
-  )
-}
+// A per-MP "Stickee Score" used to be shown here, described as reflecting
+// how consistently the MP votes with the majority. It has been removed: the
+// underlying calculation used a fixed per-party assumption applied to a
+// small set of illustrative issues, not this MP's actual recorded votes,
+// even though real vote data is already synced from TheyVoteForYou into
+// member_votes. See docs/MP_SCORE_METHODOLOGY_REQUIREMENTS.md for what a
+// legitimate replacement needs before this is reintroduced (behind
+// NEXT_PUBLIC_MP_SCORE_ENABLED).
 
 export default async function MPPage({
   params,
@@ -37,10 +32,9 @@ export default async function MPPage({
 
   const mpVotes = getVotesForMP(id)
   const partyColor = PARTY_COLORS[mp.party] ?? '#999'
-  const stickeeScore = calculateStickeeScore(id)
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
       <Link
         href="/parliament"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -59,7 +53,6 @@ export default async function MPPage({
               <h1 className="text-2xl font-bold tracking-tight text-foreground">{mp.name}</h1>
               <p className="text-muted-foreground">{mp.electorate}</p>
             </div>
-            <ScoreBadge score={stickeeScore} />
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             <Badge
@@ -72,14 +65,28 @@ export default async function MPPage({
         </div>
       </div>
 
-      {/* Stickee Score explanation */}
+      {/* Simulate this MP's stance */}
+      <div className="mb-6">
+        <SimulateThisButton
+          size="lg"
+          entity={{
+            type: 'leader',
+            id: mp.id,
+            title: `${mp.name} · ${mp.electorate}`,
+            summary: `${mp.party} MP. Rehearse ${mp.name}'s stance against the opposition and a compromise.`,
+          }}
+          label={`Rehearse ${mp.name}'s voting stance`}
+        />
+      </div>
+
+      {/* Individual-voting-record score: not shown until it's real */}
       <section className="mb-6 rounded-xl border border-border bg-card p-5">
-        <h2 className="mb-1 font-semibold text-foreground">Stickee Score</h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          The Stickee Score reflects how consistently this MP votes with the majority position on recorded issues.
-          A score of <strong className="text-foreground">{stickeeScore}/100</strong> means they align with
-          the majority {stickeeScore}% of the time. Higher isn&apos;t always better — it depends on
-          whether you agree with the majority!
+        <div className="flex items-center gap-2">
+          <ShieldQuestion className="h-4 w-4 text-muted-foreground" />
+          <h2 className="font-semibold text-foreground">Individual voting analysis</h2>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+          Individual voting analysis is being verified.
         </p>
       </section>
 

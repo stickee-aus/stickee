@@ -19,6 +19,7 @@ import { ReadinessProgressTracker } from '@/components/ReadinessProgressTracker'
 import { PathwayToRealPolitics } from '@/components/PathwayToRealPolitics'
 import { DECISIONS } from '@/lib/mock-government-data'
 import { READINESS_THRESHOLDS, PATHWAY_CONTENT } from '@/lib/mock-leaders-data'
+import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
 import type { FutureLeader } from '@/types/leaders'
 
 function SectionHeader({ title }: { title: string }) {
@@ -117,6 +118,18 @@ export function LeaderProfileDetail({ leader }: LeaderProfileDetailProps) {
       </div>
 
       <SupportModal open={supportOpen} onOpenChange={setSupportOpen} leader={leader} />
+
+      {/* ── Simulate this leader's stance ───────────────────────────── */}
+      <SimulateThisButton
+        size="lg"
+        entity={{
+          type: 'leader',
+          id: leader.id,
+          title: `${leader.name} · ${leader.field}`,
+          summary: leader.fullBio?.slice(0, 240),
+        }}
+        label={`Rehearse ${leader.name}'s stance vs alternatives`}
+      />
 
       {/* ── Bio ─────────────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm p-5">
