@@ -1,12 +1,29 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  if (
+    pathname === '/api/auth/sign-in-otp' ||
+    pathname === '/auth/sign-in' ||
+    pathname === '/auth/callback'
+  ) {
+    return NextResponse.next({ request })
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -25,8 +42,12 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh the session — required for Supabase Auth to stay valid
-  await supabase.auth.getUser()
+  try {
+    await supabase.auth.getUser()
+  } catch (error) {
+    console.error('proxy supabase getUser failed:', error)
+    return NextResponse.next({ request })
+  }
 
   return supabaseResponse
 }

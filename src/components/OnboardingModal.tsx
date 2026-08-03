@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CheckCircle2, X, MapPin, Layers, Mail, ChevronRight } from 'lucide-react'
+import { CheckCircle2, X, MapPin, Layers, Mail, ChevronRight, TrendingUp, ShieldCheck } from 'lucide-react'
 import { CIVIC_PILLARS } from '@/lib/mock-civic-data'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -15,6 +15,7 @@ const PREFS_KEY   = 'stickee:user-prefs'
 export interface UserPrefs {
   electorate: string
   topIssues: string[]
+  firstAction?: string
 }
 
 // ─── Known electorates (sample) ──────────────────────────────────────────────
@@ -72,12 +73,22 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     )
   }
 
-  function handleComplete() {
-    const prefs: UserPrefs = { electorate, topIssues }
+  function handleComplete(action = 'issues') {
+    const prefs: UserPrefs = { electorate, topIssues, firstAction: action }
     try {
       localStorage.setItem(PREFS_KEY, JSON.stringify(prefs))
       localStorage.setItem(STORAGE_KEY, '1')
     } catch { /* ignore */ }
+    fetch('/api/onboarding', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        electorate,
+        topIssues,
+        firstAction: action,
+        source: 'modal',
+      }),
+    }).catch(() => {})
     onComplete(prefs)
   }
 
@@ -104,11 +115,9 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
             <StepIndicator current={step} total={3} />
           </div>
           <button
-            onClick={() => {
-              try { localStorage.setItem(STORAGE_KEY, '1') } catch { /* ignore */ }
-              onComplete({ electorate: '', topIssues: [] })
-            }}
+            onClick={() => handleComplete('skip')}
             className="text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Close onboarding"
           >
             <X className="h-4 w-4" />
           </button>
@@ -242,14 +251,14 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
           <div className="px-6 py-6 space-y-5">
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 flex items-center justify-center shrink-0" style={{ background: '#1e1e20' }}>
-                <Mail className="h-4 w-4" style={{ color: '#2ec266' }} />
+                <ShieldCheck className="h-4 w-4" style={{ color: '#2ec266' }} />
               </div>
               <div>
-                <h2 className="font-mono text-sm font-medium text-foreground">Take your first action</h2>
+                <h2 className="font-mono text-sm font-medium text-foreground">Choose your first loop</h2>
                 <p className="font-mono text-xs text-muted-foreground mt-1">
                   {electorate
-                    ? `You're in ${electorate}. Email your MP directly — it takes 30 seconds.`
-                    : 'Email your MP directly — it takes 30 seconds and builds your civic score.'}
+                    ? `You're in ${electorate}. Start with one workflow, then Stickee will keep the rest close.`
+                    : 'Start with one workflow, then Stickee will keep the rest close.'}
                 </p>
               </div>
             </div>
@@ -280,21 +289,28 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
             <div className="space-y-2">
               <Link
                 href="/issues"
-                onClick={handleComplete}
+                onClick={() => handleComplete('issues')}
                 className="flex items-center justify-center gap-2 w-full py-2.5 font-mono text-[10px] tracking-widest uppercase transition-all"
                 style={{ background: '#e8e8e6', color: '#0a0a0b' }}
               >
-                <Mail className="h-3 w-3" /> Email my MP (+150 pts)
+                <Mail className="h-3 w-3" /> Find an issue to act on
               </Link>
               <Link
                 href="/predictions"
-                onClick={handleComplete}
+                onClick={() => handleComplete('predictions')}
                 className="flex items-center justify-center gap-2 w-full py-2.5 font-mono text-[10px] tracking-widest uppercase border border-border transition-colors hover:bg-card/50"
               >
-                Make a prediction (+50 pts)
+                <TrendingUp className="h-3 w-3" /> Make a prediction
+              </Link>
+              <Link
+                href="/onboarding"
+                onClick={() => handleComplete('guide')}
+                className="flex items-center justify-center gap-2 w-full py-2.5 font-mono text-[10px] tracking-widest uppercase border border-border transition-colors hover:bg-card/50"
+              >
+                Open the quick guide
               </Link>
               <button
-                onClick={handleComplete}
+                onClick={() => handleComplete('explore')}
                 className="w-full py-2.5 font-mono text-[10px] tracking-widest uppercase transition-colors"
                 style={{ color: '#3a3a3e' }}
               >
