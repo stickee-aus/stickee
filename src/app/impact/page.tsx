@@ -17,7 +17,7 @@ export default function ImpactPage() {
   const { label, color } = statusLabel(score)
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10 space-y-10">
+    <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
 
       {/* Page header */}
       <div className="flex items-start justify-between flex-wrap gap-4">
