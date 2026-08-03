@@ -33,6 +33,13 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# local setup notes that contain real secret values — never commit this file
+MVP_LAUNCH.md
+*.dump
+*.sql.dump
+credentials*.json
+*-credentials.json
+
 # vercel
 .vercel
 
