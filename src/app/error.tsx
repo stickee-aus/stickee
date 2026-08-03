@@ -14,7 +14,7 @@ export default function RootError({
   }, [error])
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-24">
+    <div className="mx-auto max-w-5xl px-6 py-24">
       <div className="border border-border p-8">
         <p className="font-mono text-[10px] tracking-widest uppercase mb-4" style={{ color: '#f04747' }}>
           Error · Something went wrong

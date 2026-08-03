@@ -5,36 +5,12 @@ import { usePathname } from 'next/navigation'
 import { AuthButton } from '@/components/AuthButton'
 import { useNotifications } from '@/hooks/useNotifications'
 
-function KeyIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 28 50"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect x="0" y="0" width="28" height="22" rx="0" />
-      <circle cx="14" cy="11" r="5" className="fill-background" />
-      <rect x="11" y="22" width="6" height="16" />
-      <rect x="17" y="26" width="5" height="3.5" rx="0" />
-      <rect x="17" y="31.5" width="3.5" height="3" rx="0" />
-      <path d="M11 38 Q11 46 14 49 Q17 46 17 38 Z" />
-    </svg>
-  )
-}
-
-const NAV_ITEMS = [
-  { href: '/',             label: 'Overview' },
-  { href: '/predictions',  label: 'Markets' },
-  { href: '/issues',       label: 'Issues' },
-  { href: '/leaders',      label: 'Leaders' },
-  { href: '/campaigns',    label: 'Campaigns' },
-  { href: '/feed',         label: 'Feed' },
+const PRIMARY_NAV = [
+  { href: '/issues', label: 'Issues' },
+  { href: '/decisions', label: 'Decisions' },
+  { href: '/leaders', label: 'People' },
+  { href: '/simulator', label: 'Simulator' },
 ]
-
-const now = new Date()
-const MONTH_LABEL = now.toLocaleDateString('en-AU', { month: 'short', year: 'numeric' }).toUpperCase()
 
 export function Navbar() {
   const pathname = usePathname()
@@ -46,51 +22,50 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
+    <header className="simple-nav sticky top-0 z-50">
+      <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between px-5 md:px-8">
 
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 shrink-0 hover:opacity-70 transition-opacity"
+          className="simple-brand"
         >
-          <KeyIcon className="h-5 w-auto text-foreground" />
-          <span
-            className="font-mono text-sm font-medium tracking-widest uppercase text-foreground"
-          >
-            Stickee
-          </span>
+          <span className="simple-brand-mark" aria-hidden="true">S</span>
+          <span>stickee</span>
         </Link>
 
         {/* Primary nav */}
-        <nav className="hidden md:flex items-center gap-7" aria-label="Primary navigation">
-          {NAV_ITEMS.map(({ href, label }) => {
+        <nav className="hidden md:flex items-center gap-8" aria-label="Primary navigation">
+          {PRIMARY_NAV.map(({ href, label }) => {
             const active = isActive(href)
             return (
               <Link
                 key={href}
                 href={href}
                 className={[
-                  'font-mono text-xs font-medium tracking-widest uppercase transition-colors',
+                  'simple-nav-link',
                   active
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground',
+                    ? 'is-active' : '',
                 ].join(' ')}
               >
                 {label}
               </Link>
             )
           })}
+
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center gap-4 font-mono text-xs text-muted-foreground tracking-wider">
-          <span className="hidden sm:inline">{MONTH_LABEL} &nbsp;|&nbsp; AU</span>
-
-          {/* Notifications bell */}
+        <div className="flex items-center gap-4 text-muted-foreground">
+          <Link
+            href="/donate"
+            className="simple-support-link hidden md:inline-flex"
+          >
+            Support
+          </Link>
           <Link
             href="/notifications"
-            className="relative hover:text-foreground transition-colors"
+            className="relative transition-colors hover:text-[#17231c]"
             aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
           >
             <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">

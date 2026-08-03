@@ -10,6 +10,7 @@ import { CommandPalette } from '@/components/CommandPalette'
 import { OnboardingController } from '@/components/OnboardingModal'
 import { DailyBonusBanner } from '@/components/DailyBonusBanner'
 import { PushPermissionBanner } from '@/components/PushPermissionBanner'
+import { CookieBanner } from '@/components/CookieBanner'
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: '--font-sans',
@@ -49,6 +50,7 @@ export default function RootLayout({
               <PushPermissionBanner />
               <main className="flex-1 pb-20 md:pb-0">{children}</main>
               <BottomNav />
+              <CookieBanner />
               <OnboardingController />
             </TooltipProvider>
           </ToastProvider>

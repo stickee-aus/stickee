@@ -59,7 +59,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ handle
   const userPosts = FEED_POSTS.filter(p => p.authorHandle === userHandle && p.type === 'user_post')
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-6 space-y-6">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-6 space-y-6">
 
       {/* Back nav */}
       <Link
