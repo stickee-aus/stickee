@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { X, Send, MessageCircle, CornerDownRight } from 'lucide-react'
 import { useComments, type Comment } from '@/hooks/useComments'
 import { scoreToGrade } from '@/lib/civic-utils'
@@ -100,11 +101,13 @@ function ComposeBox({
   onClearReply,
   onSubmit,
   submitting,
+  authenticated,
 }: {
   replyTo: { parentId: string; handle: string } | null
   onClearReply: () => void
   onSubmit: (body: string, parentId?: string) => Promise<boolean>
   submitting: boolean
+  authenticated: boolean
 }) {
   const [body, setBody] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -126,6 +129,19 @@ function ComposeBox({
 
   const charCount = body.length
   const overLimit = charCount > 500
+
+  if (!authenticated) {
+    return (
+      <div className="border-t border-border p-4" style={{ background: '#0a0a0b' }}>
+        <Link
+          href="/auth/sign-in"
+          className="flex items-center justify-center border border-border px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-foreground transition-colors hover:bg-card/50"
+        >
+          Sign in to comment
+        </Link>
+      </div>
+    )
+  }
 
   return (
     <div className="border-t border-border p-4 space-y-2" style={{ background: '#0a0a0b' }}>
@@ -185,7 +201,7 @@ interface CommentDrawerProps {
 }
 
 export function CommentDrawer({ postId, postTitle, open, onClose }: CommentDrawerProps) {
-  const { comments, totalCount, addComment, submitting } = useComments(postId)
+  const { comments, totalCount, addComment, submitting, authenticated } = useComments(postId)
   const [replyTo, setReplyTo] = useState<{ parentId: string; handle: string } | null>(null)
 
   function handleReply(parentId: string, handle: string) {
@@ -244,6 +260,7 @@ export function CommentDrawer({ postId, postTitle, open, onClose }: CommentDrawe
           onClearReply={() => setReplyTo(null)}
           onSubmit={addComment}
           submitting={submitting}
+          authenticated={authenticated}
         />
       </div>
     </>

@@ -161,7 +161,7 @@ export default function NotificationsPage() {
   const unread = displayList.filter(n => !n.read).length
 
   return (
-    <div className="mx-auto max-w-2xl px-6">
+    <div className="mx-auto max-w-5xl px-6">
 
       {/* ── Header ── */}
       <div className="flex items-end justify-between gap-6 py-10 border-b border-border">

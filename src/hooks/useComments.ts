@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { createClient } from '@/lib/supabase'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -16,6 +17,27 @@ export interface Comment {
   createdAt: string
   replies?: Comment[]
 }
+
+interface CommentRow {
+  id: string
+  post_id: string
+  user_id: string | null
+  author_name: string
+  author_handle: string | null
+  body: string
+  parent_id: string | null
+  created_at: string
+}
+
+interface ProfileRow {
+  handle: string | null
+  display_name: string | null
+  civic_score: number | null
+}
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
 
 // ─── Storage key ──────────────────────────────────────────────────────────────
 
@@ -61,25 +83,85 @@ function makeId(): string {
   return `comment-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
 }
 
+function mapComment(row: CommentRow): Comment {
+  return {
+    id: row.id,
+    postId: row.post_id,
+    userId: row.user_id ?? undefined,
+    authorName: row.author_name,
+    authorHandle: row.author_handle ? `@${row.author_handle.replace(/^@/, '')}` : '@stickee',
+    body: row.body,
+    parentId: row.parent_id ?? undefined,
+    createdAt: row.created_at,
+  }
+}
+
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useComments(postId: string) {
   const [comments, setComments] = useState<Comment[]>([])
   const [submitting, setSubmitting] = useState(false)
+  const [authenticated, setAuthenticated] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
 
-  // Load from localStorage (with seed fallback)
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(storageKey(postId))
-      if (raw) {
-        setComments(JSON.parse(raw) as Comment[])
-      } else {
-        // Use seed comments for demo posts
-        const seeds = SEED_COMMENTS[postId] ?? []
-        setComments(seeds)
+    let cancelled = false
+
+    if (!configured) {
+      try {
+        const raw = localStorage.getItem(storageKey(postId))
+        setComments(raw ? JSON.parse(raw) as Comment[] : SEED_COMMENTS[postId] ?? [])
+      } catch {
+        setComments(SEED_COMMENTS[postId] ?? [])
       }
-    } catch {
-      setComments(SEED_COMMENTS[postId] ?? [])
+      setHydrated(true)
+      return
+    }
+
+    const supabase = createClient()
+
+    async function loadComments() {
+      const [{ data: { user } }, commentsResult] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase
+          .from('comments')
+          .select('id, post_id, user_id, author_name, author_handle, body, parent_id, created_at')
+          .eq('post_id', postId)
+          .order('created_at', { ascending: false })
+          .returns<CommentRow[]>(),
+      ])
+
+      if (cancelled) return
+
+      setAuthenticated(!!user)
+      setComments(commentsResult.data?.map(mapComment) ?? SEED_COMMENTS[postId] ?? [])
+      setHydrated(true)
+    }
+
+    void loadComments()
+
+    const authSubscription = supabase.auth.onAuthStateChange((_, session) => {
+      setAuthenticated(!!session?.user)
+    })
+
+    const channel = supabase
+      .channel(`comments:${postId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'comments',
+          filter: `post_id=eq.${postId}`,
+        },
+        () => { void loadComments() }
+      )
+      .subscribe()
+
+    return () => {
+      cancelled = true
+      authSubscription.data.subscription.unsubscribe()
+      supabase.removeChannel(channel)
     }
   }, [postId])
 
@@ -92,11 +174,34 @@ export function useComments(postId: string) {
     if (!body.trim()) return false
     setSubmitting(true)
 
-    // In production: POST to Supabase
-    // const supabase = createClient()
-    // await supabase.from('comments').insert({ post_id: postId, body, parent_id: parentId, ... })
+    if (configured) {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
 
-    await new Promise(r => setTimeout(r, 300)) // simulate network
+      if (!user) {
+        setSubmitting(false)
+        return false
+      }
+
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('handle, display_name, civic_score')
+        .eq('user_id', user.id)
+        .maybeSingle<ProfileRow>()
+
+      const authorHandle = profile?.handle ?? user.email?.split('@')[0] ?? 'user'
+      const { error } = await supabase.from('comments').insert({
+        post_id: postId,
+        user_id: user.id,
+        author_name: profile?.display_name ?? authorHandle,
+        author_handle: authorHandle,
+        body: body.trim().slice(0, 500),
+        parent_id: parentId ?? null,
+      })
+
+      setSubmitting(false)
+      return !error
+    }
 
     const newComment: Comment = {
       id: makeId(),
@@ -128,5 +233,5 @@ export function useComments(postId: string) {
     replies: replies.filter(r => r.parentId === c.id),
   }))
 
-  return { comments: threaded, totalCount: comments.length, addComment, submitting }
+  return { comments: threaded, totalCount: comments.length, addComment, submitting, authenticated, hydrated }
 }

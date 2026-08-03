@@ -1,6 +1,6 @@
 export default function FeedLoading() {
   return (
-    <div className="mx-auto max-w-2xl px-6">
+    <div className="mx-auto max-w-5xl px-6">
       {/* Header skeleton */}
       <div className="flex items-end justify-between gap-6 py-10 border-b border-border">
         <div className="space-y-3">
