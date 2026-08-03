@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X, TrendingUp, TrendingDown, Coins } from 'lucide-react'
 import type { PredictionMarket } from '@/lib/mock-market-data'
+import { getMarketEligibility, nonTradeableLabel } from '@/lib/market-eligibility'
 
 // ─── Quick-amount presets ─────────────────────────────────────────────────────
 
@@ -39,7 +40,13 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
   const profitPct = amount > 0 ? Math.round((profit / amount) * 100) : 0
   const isYes    = direction === 'yes'
   const accent   = isYes ? '#2ec266' : '#f04747'
-  const canStake = amount > 0 && amount <= balance
+  const hasSufficientAmount = amount > 0 && amount <= balance
+  // Defense in depth only — the boards that open this modal already filter
+  // to eligible markets (see market-eligibility.ts), and is_market_open()
+  // server-side is the real authority. This just stops a future regression
+  // from letting the modal submit for a market it shouldn't have opened for.
+  const marketEligibility = getMarketEligibility(market)
+  const canStake = hasSufficientAmount && marketEligibility.canStake
 
   // Close on Escape
   useEffect(() => {
@@ -211,7 +218,12 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
             {confirming ? 'Placing...' : `Stake ${amount.toLocaleString()} pts on ${isYes ? 'YES' : 'NO'}`}
           </button>
 
-          {!canStake && amount > balance && (
+          {!marketEligibility.canStake && (
+            <p className="font-mono text-[10px] text-center" style={{ color: '#f04747' }}>
+              {nonTradeableLabel(market.status)} — this market cannot be staked
+            </p>
+          )}
+          {marketEligibility.canStake && !hasSufficientAmount && amount > balance && (
             <p className="font-mono text-[10px] text-center" style={{ color: '#f04747' }}>
               Insufficient balance
             </p>

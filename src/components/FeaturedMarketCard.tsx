@@ -14,6 +14,7 @@ import {
   probColor,
 } from '@/components/MarketCard'
 import type { PredictionMarket } from '@/lib/mock-market-data'
+import { getMarketEligibility, nonTradeableLabel } from '@/lib/market-eligibility'
 
 export function FeaturedMarketCard({
   market,
@@ -30,6 +31,9 @@ export function FeaturedMarketCard({
   const noProbability = 100 - market.probability
   const catColor = CATEGORY_COLORS[market.category] ?? '#5a5a5e'
   const catLabel = CATEGORY_LABELS[market.category] ?? market.category
+  const { canStake, isDemo, isVoided, isResolvedYes } = getMarketEligibility(market)
+  const statusLabel = nonTradeableLabel(market.status)
+  const statusColor = isDemo ? '#f5a623' : isVoided ? '#5a5a5e' : isResolvedYes ? '#2ec266' : '#f04747'
 
   return (
     <section className="grid overflow-hidden rounded-lg border border-border bg-card shadow-[0_24px_90px_rgba(0,0,0,0.32)] lg:grid-cols-[1.16fr_0.84fr]">
@@ -50,6 +54,15 @@ export function FeaturedMarketCard({
             {hasPosition && (
               <span className="rounded-full border border-[#f5a62330] bg-black/55 px-3 py-1.5 font-mono text-[10px] tracking-widest uppercase text-[#f5a623] backdrop-blur">
                 Staked
+              </span>
+            )}
+            {!canStake && (
+              <span
+                className="rounded-full border bg-black/55 px-3 py-1.5 font-mono text-[10px] tracking-widest uppercase backdrop-blur"
+                style={{ color: statusColor, borderColor: `${statusColor}45` }}
+                title="Not backed by a verified, currently-open market — staking is disabled until it is."
+              >
+                {statusLabel}
               </span>
             )}
           </div>
@@ -132,20 +145,26 @@ export function FeaturedMarketCard({
               summary: `Resolves ${market.resolvesBy}. Current market: ${market.probability}% YES.`,
             }}
           />
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => onStake(market, 'yes')}
-              className="rounded-md border border-[#2ec26640] bg-[#2ec26612] px-4 py-3 font-mono text-[11px] tracking-widest text-[#2ec266] uppercase transition-colors hover:bg-[#2ec26622]"
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => onStake(market, 'no')}
-              className="rounded-md border border-[#f0474740] bg-[#f0474712] px-4 py-3 font-mono text-[11px] tracking-widest text-[#f04747] uppercase transition-colors hover:bg-[#f0474722]"
-            >
-              No
-            </button>
-          </div>
+          {canStake ? (
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => onStake(market, 'yes')}
+                className="rounded-md border border-[#2ec26640] bg-[#2ec26612] px-4 py-3 font-mono text-[11px] tracking-widest text-[#2ec266] uppercase transition-colors hover:bg-[#2ec26622]"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => onStake(market, 'no')}
+                className="rounded-md border border-[#f0474740] bg-[#f0474712] px-4 py-3 font-mono text-[11px] tracking-widest text-[#f04747] uppercase transition-colors hover:bg-[#f0474722]"
+              >
+                No
+              </button>
+            </div>
+          ) : (
+            <div className="rounded-md border border-border bg-secondary/50 py-3 text-center font-mono text-[11px] tracking-widest uppercase text-muted-foreground">
+              {statusLabel}
+            </div>
+          )}
         </div>
       </div>
     </section>

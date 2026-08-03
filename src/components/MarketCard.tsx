@@ -6,6 +6,7 @@ import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
 import { useCountdown } from '@/hooks/useCountdown'
 import type { LiveElectionSnapshot } from '@/lib/aec-election-types'
 import type { MarketCategory, MarketTimelineImpact, PredictionMarket } from '@/lib/mock-market-data'
+import { getMarketEligibility } from '@/lib/market-eligibility'
 
 export const CATEGORY_LABELS: Record<MarketCategory, string> = {
   bill: 'BILL',
@@ -262,10 +263,7 @@ export function MarketCard({
   onStake: (market: PredictionMarket, direction: 'yes' | 'no') => void
   liveElection: LiveElectionSnapshot
 }) {
-  const resolved = market.status !== 'active'
-  const resolvedY = market.status === 'resolved-yes'
-  const isDemo = market.status === 'demo'
-  const isVoided = market.status === 'voided'
+  const { isResolved: resolved, isResolvedYes: resolvedY, isDemo, isVoided } = getMarketEligibility(market)
   const color = probColor(market.probability)
   const cColor = changeColor(market.priceChange)
   const sign = market.priceChange > 0 ? '+' : ''

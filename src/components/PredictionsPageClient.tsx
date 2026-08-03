@@ -19,6 +19,7 @@ import { LiveElectionPulse } from '@/components/LiveElectionPulse'
 import { RecentRehearsalsStrip } from '@/components/simulator/RecentRehearsalsStrip'
 import { FeaturedMarketCard } from '@/components/FeaturedMarketCard'
 import { CATEGORY_COLORS, CATEGORY_LABELS, MarketCard } from '@/components/MarketCard'
+import { getMarketEligibility, selectFeaturedMarket } from '@/lib/market-eligibility'
 
 type CategoryFilter = 'all' | MarketCategory | 'custom'
 type StatusFilter = 'active' | 'resolved' | 'all'
@@ -175,6 +176,15 @@ export function PredictionsPageClient({ initialBillMarkets }: { initialBillMarke
   )
 
   function handleStake(market: PredictionMarket, direction: 'yes' | 'no') {
+    // Defense in depth: the market boards already hide stake controls for
+    // ineligible markets (see market-eligibility.ts), but this is the single
+    // choke point both MarketCard and FeaturedMarketCard call through, so it
+    // guards against a future regression reintroducing an ungated button.
+    // The server-side is_market_open() check remains the real authority.
+    if (!getMarketEligibility(market).canStake) {
+      toast('This market is not open for staking.', 'error')
+      return
+    }
     if (!wallet.authenticated) {
       toast('Sign in to place a stake and track real wallet positions.', 'error')
       return
@@ -224,10 +234,7 @@ export function PredictionsPageClient({ initialBillMarkets }: { initialBillMarke
   }, [categoryFilter, statusFilter, markets, proposals])
 
   const activeCount = markets.filter(market => market.status === 'active').length
-  const featuredMarket = useMemo(
-    () => markets.find(market => market.id === 'urgent-rba-rate') ?? markets.find(market => market.status === 'active') ?? markets[0],
-    [markets]
-  )
+  const featuredMarket = useMemo(() => selectFeaturedMarket(markets), [markets])
   const visibleMarkets = useMemo(
     () => categoryFilter === 'custom'
       ? []
