@@ -6,6 +6,10 @@ export type Party =
   | 'Centre Alliance'
   | "Katter's Australian Party"
   | 'One Nation'
+  | 'Jacqui Lambie Network'
+  | 'United Australia Party'
+  | "Australia's Voice"
+  | (string & {})
 
 export interface MP {
   id: string

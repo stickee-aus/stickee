@@ -17,7 +17,7 @@ export default async function ParliamentPage() {
   const dbData = await getParliamentDBData().catch(() => null)
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
       {/* ── Header ── */}
       <div className="border-b border-border pb-8 mb-8">
         <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground mb-2">

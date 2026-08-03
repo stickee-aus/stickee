@@ -8,8 +8,12 @@ import {
   SENATE_MAJORITY,
   senateBillVoteRows,
 } from '@/lib/mock-senate-data'
+import { useLiveParliamentMembers } from '@/hooks/useLiveParliamentMembers'
+import { LIVE_PARTY_SHORT } from '@/lib/live-parliament'
 import type { BillVoteRow, VoteDirection } from '@/lib/mock-parliament-data'
 import { cn } from '@/lib/utils'
+import { getElectionPartyColor } from '@/lib/aec-election'
+import type { LiveElectionSnapshot } from '@/lib/aec-election-types'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -37,18 +41,24 @@ const DIR_STATUS: Partial<Record<VoteDirection, 'green' | 'red' | 'yellow' | 'gr
 
 const GROUPS = [
   { key: 'Government',  parties: ['Labor'],                             label: 'Government' },
-  { key: 'Crossbench',  parties: ['Greens', 'Independent', 'Jacqui Lambie', 'UAP'], label: 'Crossbench' },
+  { key: 'Crossbench',  parties: ['Greens', 'Independent', "Australia's Voice", 'Jacqui Lambie Network', 'United Australia Party'], label: 'Crossbench' },
   { key: 'Opposition',  parties: ['Coalition', 'One Nation'],           label: 'Opposition' },
 ] as const
 
-const SHORT: Record<string, string> = {
-  'Jacqui Lambie': 'JLN',
-  'Independent':   'Ind.',
-  'One Nation':    'One Nation',
+function shortName(party: string) {
+  if (party === 'Independent') return 'Ind.'
+  if (party === 'One Nation') return 'One Nation'
+  return LIVE_PARTY_SHORT[party] ?? party
 }
 
-function shortName(party: string) {
-  return SHORT[party] ?? party
+function formatUpdatedAt(value: string | null) {
+  if (!value) return 'Awaiting AEC update'
+  return new Date(value).toLocaleString('en-AU', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
 }
 
 // ─── Seat Composition Bar ─────────────────────────────────────────────────────
@@ -57,9 +67,19 @@ function SeatCompositionBar({ billRow, showPartyColors }: {
   billRow: BillVoteRow | null
   showPartyColors: boolean
 }) {
+  const { data } = useLiveParliamentMembers()
+  const countsByParty = data?.senate.countsByParty ?? SENATE_SEAT_COUNTS
+  const partiesInOrder = useMemo(() => {
+    const base = SENATE_PARTY_ORDER.filter(party => (countsByParty[party] ?? 0) > 0)
+    const extras = Object.keys(countsByParty)
+      .filter(party => !SENATE_PARTY_ORDER.includes(party as typeof SENATE_PARTY_ORDER[number]) && countsByParty[party] > 0)
+      .sort((a, b) => a.localeCompare(b))
+    return [...base, ...extras]
+  }, [countsByParty])
+
   // Build segments: each party in order, colored by vote (if bill selected) or party color
-  const segments = SENATE_PARTY_ORDER.map(party => {
-    const seats = SENATE_SEAT_COUNTS[party] ?? 0
+  const segments = partiesInOrder.map(party => {
+    const seats = countsByParty[party] ?? 0
     const partyColor = SENATE_PARTY_COLORS[party] ?? '#999'
 
     if (showPartyColors || !billRow) {
@@ -72,7 +92,7 @@ function SeatCompositionBar({ billRow, showPartyColors }: {
       : VOTE_COLORS.absent
 
     return { party, seats, color }
-  })
+  }).filter(segment => segment.seats > 0)
 
   const majPct = (SENATE_MAJORITY / TOTAL_SEATS) * 100
 
@@ -103,9 +123,9 @@ function SeatCompositionBar({ billRow, showPartyColors }: {
       </div>
       {/* Labels */}
       <div className="flex items-center justify-between text-[9.5px] text-muted-foreground/45 tracking-wide">
-        <span>Labor 25</span>
+        <span>Labor {countsByParty.Labor ?? 0}</span>
         <span>← {SENATE_MAJORITY} for majority →</span>
-        <span>Coalition 28</span>
+        <span>Coalition {countsByParty.Coalition ?? 0}</span>
       </div>
     </div>
   )
@@ -118,12 +138,20 @@ function PartyRow({ party, billRow, showPartyColors }: {
   billRow: BillVoteRow | null
   showPartyColors: boolean
 }) {
-  const seats = SENATE_SEAT_COUNTS[party] ?? 0
+  const { data } = useLiveParliamentMembers()
+  const seats = data?.senate.countsByParty[party] ?? SENATE_SEAT_COUNTS[party] ?? 0
   const color = SENATE_PARTY_COLORS[party] ?? '#999'
+  const names = useMemo(
+    () => (data?.senate.members ?? [])
+      .filter(member => member.party === party)
+      .map(member => member.name),
+    [data, party]
+  )
 
   const vote = !showPartyColors && billRow ? billRow.parties[party] : null
   const dir = vote?.direction
   const status = dir ? (DIR_STATUS[dir] ?? 'gray') : null
+  const rosterPreview = names.slice(0, 2).join(', ')
 
   return (
     <div className="flex items-center gap-2.5 py-1.5 border-b border-white/[0.05] last:border-0">
@@ -133,6 +161,11 @@ function PartyRow({ party, billRow, showPartyColors }: {
       {/* Name */}
       <div className="flex-1 min-w-0">
         <span className="text-xs font-medium text-foreground/80">{shortName(party)}</span>
+        {names.length > 0 && (
+          <p className="text-[10px] text-muted-foreground/55 truncate mt-0.5" title={names.join(', ')}>
+            {rosterPreview}{names.length > 2 ? ` +${names.length - 2}` : ''}
+          </p>
+        )}
       </div>
       <span className="text-xs tabular-nums text-muted-foreground/60 font-medium">{seats}</span>
 
@@ -159,11 +192,14 @@ function GroupColumn({ group, billRow, showPartyColors }: {
   billRow: BillVoteRow | null
   showPartyColors: boolean
 }) {
-  const totalSeats = group.parties.reduce((s, p) => s + (SENATE_SEAT_COUNTS[p] ?? 0), 0)
+  const { data } = useLiveParliamentMembers()
+  const countsByParty = data?.senate.countsByParty ?? SENATE_SEAT_COUNTS
+  const visibleParties = group.parties.filter(party => (countsByParty[party] ?? 0) > 0)
+  const totalSeats = visibleParties.reduce((s, p) => s + (countsByParty[p] ?? 0), 0)
 
   // Determine group-level vote status from bill
-  const forSeats    = !showPartyColors && billRow ? group.parties.reduce((s, p) => s + (billRow.parties[p]?.forCount ?? 0), 0) : 0
-  const againstSeats = !showPartyColors && billRow ? group.parties.reduce((s, p) => s + (billRow.parties[p]?.againstCount ?? 0), 0) : 0
+  const forSeats    = !showPartyColors && billRow ? visibleParties.reduce((s, p) => s + (billRow.parties[p]?.forCount ?? 0), 0) : 0
+  const againstSeats = !showPartyColors && billRow ? visibleParties.reduce((s, p) => s + (billRow.parties[p]?.againstCount ?? 0), 0) : 0
 
   const groupLabel =
     !showPartyColors && billRow && forSeats > 0 && againstSeats === 0 ? 'For' :
@@ -195,7 +231,7 @@ function GroupColumn({ group, billRow, showPartyColors }: {
 
       {/* Party rows */}
       <div>
-        {group.parties.map(party => (
+        {visibleParties.map(party => (
           <PartyRow
             key={party}
             party={party}
@@ -267,10 +303,14 @@ function MajorityResult({ billRow }: { billRow: BillVoteRow }) {
 
 interface SenateViewProps {
   selectedBillId: string | null
+  showLiveResults?: boolean
+  liveElection?: LiveElectionSnapshot | null
 }
 
-export function SenateView({ selectedBillId }: SenateViewProps) {
+export function SenateView({ selectedBillId, showLiveResults = false, liveElection = null }: SenateViewProps) {
   const [showPartyColors, setShowPartyColors] = useState(false)
+  const { data } = useLiveParliamentMembers()
+  const totalSeats = data?.senate.total ?? TOTAL_SEATS
 
   const billRow = useMemo(
     () => selectedBillId ? senateBillVoteRows.find(b => b.id === selectedBillId) ?? null : null,
@@ -279,13 +319,87 @@ export function SenateView({ selectedBillId }: SenateViewProps) {
 
   const activeBillRow = showPartyColors ? null : billRow
 
+  if (showLiveResults && liveElection?.active) {
+    const senateStates = liveElection.chambers.senate.states
+
+    return (
+      <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-card shadow-xl select-none">
+        <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3.5">
+          <div>
+            <p className="text-sm font-semibold text-foreground tracking-tight">Senate</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground/60">
+              Live Senate count by state · official AEC updates
+            </p>
+          </div>
+          <p className="font-mono text-[10px] text-muted-foreground/60">
+            Updated {formatUpdatedAt(liveElection.event.updatedAt)}
+          </p>
+        </div>
+
+        <div className="space-y-5 p-5">
+          <p className="text-[11px] leading-snug text-muted-foreground/70">
+            The Senate reviews laws passed by the House.
+          </p>
+
+          {senateStates.length === 0 ? (
+            <p className="py-4 text-center text-xs text-muted-foreground/50">
+              No live Senate state totals are available yet.
+            </p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {senateStates.map(state => (
+                <div key={state.state} className="rounded-xl border border-white/[0.06] bg-background/30 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">{state.state}</p>
+                      <p className="mt-1 text-sm text-foreground">
+                        {state.leadingParty ? `${state.leadingParty} leading` : 'No clear leader'}
+                      </p>
+                    </div>
+                    <span className="font-mono text-[10px] text-muted-foreground/60">
+                      {state.reportingProgressPct !== null ? `${state.reportingProgressPct}% counted` : 'Count ongoing'}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 space-y-2">
+                    {state.topGroups.map(group => (
+                      <div key={`${state.state}-${group.party}`} className="flex items-center justify-between gap-3 text-[11px]">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span
+                            className="inline-block h-2 w-2 rounded-full shrink-0"
+                            style={{ backgroundColor: getElectionPartyColor(group.party) }}
+                          />
+                          <span className="truncate text-foreground">{shortName(group.party)}</span>
+                        </div>
+                        <span className="font-mono text-muted-foreground">
+                          {group.pct !== null ? `${group.pct}%` : group.votes.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <p className="text-[11px] leading-snug text-muted-foreground/80">
+            These numbers come from official AEC counting updates.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="rounded-2xl border border-white/[0.07] bg-card overflow-hidden select-none shadow-xl">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06]">
         <div>
           <p className="text-sm font-semibold text-foreground tracking-tight">Senate</p>
-          <p className="text-[11px] text-muted-foreground/60 mt-0.5">{TOTAL_SEATS} senators · {SENATE_MAJORITY} for majority</p>
+          <p className="text-[11px] text-muted-foreground/60 mt-0.5">
+            {totalSeats} senators · {SENATE_MAJORITY} for majority
+            {data?.syncedAt ? ` · updated ${new Date(data.syncedAt).toLocaleDateString('en-AU')}` : ''}
+          </p>
         </div>
         {/* Tab toggle */}
         <div className="flex items-center gap-0.5 rounded-lg border border-white/[0.08] bg-white/[0.04] p-0.5">

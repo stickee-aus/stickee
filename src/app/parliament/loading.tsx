@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function ParliamentLoading() {
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
       {/* Header */}
       <div className="mb-10 space-y-3">
         <Skeleton className="h-9 w-48" />

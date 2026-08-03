@@ -4,8 +4,11 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { X, ThumbsUp, ThumbsDown, TrendingUp, Mail } from 'lucide-react'
 import { MPs, PARTY_COLORS } from '@/lib/mock-data'
 import { getMPVoteForBill, billVoteRows, SWING_MPS_DATA } from '@/lib/mock-parliament-data'
+import { useLiveParliamentMembers } from '@/hooks/useLiveParliamentMembers'
 import { EmailMPModal } from '@/components/EmailMPModal'
 import type { MP, Issue } from '@/types'
+import { getElectionKeyForElectorate, getElectionPartyColor, getElectionStatusColor } from '@/lib/aec-election'
+import type { ElectionHouseSeat, LiveElectionSnapshot } from '@/lib/aec-election-types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,9 +38,15 @@ function generateScores(mpId: string): MPScores {
   }
 }
 
-const MP_SCORES: Record<string, MPScores> = Object.fromEntries(
-  MPs.map(mp => [mp.id, generateScores(mp.id)])
-)
+function formatElectionUpdatedAt(value: string | null) {
+  if (!value) return 'Awaiting AEC update'
+  return new Date(value).toLocaleString('en-AU', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
 
 // ─── Chamber seat layout ──────────────────────────────────────────────────────
 // 150 seats ordered as: Labor (0–93) | Greens (94) | Ind (95–104) | CA (105)
@@ -150,20 +159,21 @@ interface MPSeatProps {
   pos: SeatPos
   mp: MP | undefined
   fill: string
+  opacity?: number
   isActive: boolean
   onMouseEnter: (pos: SeatPos) => void
   onMouseLeave: () => void
   onClick: (mp: MP) => void
 }
 
-function MPSeatCircle({ pos, mp, fill, isActive, onMouseEnter, onMouseLeave, onClick }: MPSeatProps) {
+function MPSeatCircle({ pos, mp, fill, opacity, isActive, onMouseEnter, onMouseLeave, onClick }: MPSeatProps) {
   return (
     <circle
       cx={pos.x}
       cy={pos.y}
       r={isActive ? 9 : 7.5}
       fill={fill}
-      opacity={isActive ? 1 : 0.92}
+      opacity={isActive ? 1 : opacity ?? 0.92}
       stroke={isActive ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.28)'}
       strokeWidth={isActive ? 1.5 : 0.8}
       style={{
@@ -171,7 +181,7 @@ function MPSeatCircle({ pos, mp, fill, isActive, onMouseEnter, onMouseLeave, onC
         transition: 'r 0.1s ease, opacity 0.1s ease',
       }}
       role={mp ? 'button' : undefined}
-      aria-label={mp ? `${mp.name}, ${mp.party}, ${mp.electorate}` : undefined}
+      aria-label={mp ? `${mp.name}, ${mp.party}, ${mp.electorate}. This is a local MP elected by voters in their area.` : undefined}
       tabIndex={mp ? 0 : -1}
       onMouseEnter={() => onMouseEnter(pos)}
       onMouseLeave={onMouseLeave}
@@ -298,6 +308,9 @@ function MPInfoPanel({ mp, scores, selectedBillId, userPressure, onPressure, onC
 
       {/* Recent votes summary */}
       <div className="mx-4 mb-4">
+        <p className="mb-2 text-[11px] text-muted-foreground/80 leading-snug">
+          These are real votes on laws — this shows how this MP acts in Parliament.
+        </p>
         <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Recent Votes</p>
         <div className="space-y-1.5">
           {billVoteRows.slice(0, 4).map(b => {
@@ -328,6 +341,66 @@ function MPInfoPanel({ mp, scores, selectedBillId, userPressure, onPressure, onC
           onOpenChange={setEmailOpen}
         />
       )}
+    </div>
+  )
+}
+
+function LiveSeatInfoPanel({ seat, onClose }: { seat: ElectionHouseSeat; onClose: () => void }) {
+  const partyColor = getElectionPartyColor(seat.leadingCandidate?.party ?? null)
+
+  return (
+    <div className="absolute inset-y-0 right-0 z-20 flex w-72 flex-col overflow-hidden rounded-r-xl border-l border-border/60 bg-card/95 shadow-2xl backdrop-blur-sm">
+      <div className="flex items-start justify-between border-b border-border/40 p-4" style={{ borderLeftColor: partyColor, borderLeftWidth: 3 }}>
+        <div>
+          <p className="font-semibold text-sm text-foreground leading-tight">{seat.electorate}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{seat.state} electorate</p>
+          <span
+            className="mt-1 inline-block rounded px-1.5 py-0.5 text-[10px] font-medium"
+            style={{ backgroundColor: `${partyColor}25`, color: partyColor }}
+          >
+            {seat.status === 'called' ? 'Called' : seat.status === 'leading' ? 'Leading' : seat.status === 'too-close' ? 'Too close' : 'Not enough data'}
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          className="shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-muted/60"
+          aria-label="Close panel"
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      <div className="space-y-3 p-4">
+        <div className="rounded-lg border border-border/40 bg-muted/30 p-3">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Live result</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            {seat.leadingCandidate ? `${seat.leadingCandidate.candidate} · ${seat.leadingCandidate.party}` : 'No leader yet'}
+          </p>
+          <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+            {seat.tcpPct !== null
+              ? `TCP ${seat.tcpPct}%`
+              : seat.leadingCandidate?.pct !== null && seat.leadingCandidate?.pct !== undefined
+              ? `First preference ${seat.leadingCandidate.pct}%`
+              : 'Vote share not available yet'}
+            {seat.marginPct !== null ? ` · margin ${seat.marginPct.toFixed(2)}pp` : ''}
+          </p>
+          {seat.leadingCandidate?.swing !== null && seat.leadingCandidate?.swing !== undefined && (
+            <p className="mt-1 text-[11px] text-muted-foreground">Swing {seat.leadingCandidate.swing > 0 ? '+' : ''}{seat.leadingCandidate.swing.toFixed(2)}pp</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5 text-[11px] text-muted-foreground">
+          <p>Electorate: <span className="text-foreground">{seat.electorate}</span></p>
+          <p>Leading candidate/party: <span className="text-foreground">{seat.leadingCandidate ? `${seat.leadingCandidate.candidate} · ${seat.leadingCandidate.party}` : 'No data'}</span></p>
+          <p>Vote share: <span className="text-foreground">{seat.tcpPct !== null ? `${seat.tcpPct}% TCP` : seat.leadingCandidate?.pct !== null && seat.leadingCandidate?.pct !== undefined ? `${seat.leadingCandidate.pct}% first preference` : 'No data'}</span></p>
+          <p>Reporting progress: <span className="text-foreground">{seat.reportingProgressPct !== null ? `${seat.reportingProgressPct}% counted` : 'No data'}</span></p>
+          <p>AEC timestamp: <span className="text-foreground">{formatElectionUpdatedAt(seat.updatedAt)}</span></p>
+        </div>
+
+        <p className="text-[11px] leading-snug text-muted-foreground/80">
+          These numbers come from official AEC counting updates.
+        </p>
+      </div>
     </div>
   )
 }
@@ -379,23 +452,42 @@ interface HouseChamberProps {
   selectedBillId: string | null
   /** Externally highlighted MP — seat is activated and info panel opens */
   highlightedMPId?: string | null
+  showLiveResults?: boolean
+  liveElection?: LiveElectionSnapshot | null
 }
 
-export function HouseChamber({ selectedBillId, highlightedMPId }: HouseChamberProps) {
+export function HouseChamber({ selectedBillId, highlightedMPId, showLiveResults = false, liveElection = null }: HouseChamberProps) {
+  const { data } = useLiveParliamentMembers()
+  const houseMembers = data?.house.members.length ? data.house.members : MPs
+  const liveSeats = liveElection?.chambers.house.seats ?? []
   const [tooltip, setTooltip] = useState<TooltipState | null>(null)
   const [selectedMP, setSelectedMP] = useState<MP | null>(null)
+  const [selectedLiveSeatKey, setSelectedLiveSeatKey] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('real')
   const [userPressure, setUserPressure] = useState<Record<string, 1 | -1 | 0>>({})
+  const liveSeatMap = useMemo(
+    () => new Map(liveSeats.map(seat => [getElectionKeyForElectorate(seat.electorate), seat])),
+    [liveSeats]
+  )
 
   // Sync external highlighted MP → internal selected MP
   useEffect(() => {
+    if (showLiveResults) return
     if (highlightedMPId) {
-      const mp = MPs.find(m => m.id === highlightedMPId) ?? null
+      const mp = houseMembers.find(m => m.id === highlightedMPId) ?? null
       setSelectedMP(mp)
     } else if (highlightedMPId === null) {
       setSelectedMP(null)
     }
-  }, [highlightedMPId])
+  }, [highlightedMPId, houseMembers, showLiveResults])
+
+  useEffect(() => {
+    if (showLiveResults) {
+      setSelectedMP(null)
+    } else {
+      setSelectedLiveSeatKey(null)
+    }
+  }, [showLiveResults])
 
   const SVG_W = 900
   const SVG_H = 520
@@ -424,17 +516,31 @@ export function HouseChamber({ selectedBillId, highlightedMPId }: HouseChamberPr
   const seatColors = useMemo(() => {
     const out: Record<number, string> = {}
     CHAMBER_POSITIONS.forEach(pos => {
-      const mp = MPs[pos.seatIndex]
+      const mp = houseMembers[pos.seatIndex]
       if (!mp) return
+      if (showLiveResults) {
+        const seat = liveSeatMap.get(getElectionKeyForElectorate(mp.electorate))
+        out[pos.seatIndex] = getElectionStatusColor(seat?.leadingCandidate?.party ?? null, seat?.status ?? 'no-data')
+        return
+      }
       out[pos.seatIndex] = getSeatFill(mp.id, mp.party, selectedBillId, viewMode, userPressure, swingMPSet)
     })
     return out
-  }, [selectedBillId, viewMode, userPressure, swingMPSet])
+  }, [houseMembers, liveSeatMap, selectedBillId, showLiveResults, viewMode, userPressure, swingMPSet])
 
-  const tooltipMP = tooltip != null ? MPs[tooltip.seatIndex] : null
+  const tooltipMP = tooltip != null ? houseMembers[tooltip.seatIndex] : null
+  const tooltipSeat = tooltipMP ? liveSeatMap.get(getElectionKeyForElectorate(tooltipMP.electorate)) ?? null : null
+  const selectedLiveSeat = selectedLiveSeatKey ? liveSeatMap.get(selectedLiveSeatKey) ?? null : null
 
   // Legend for current view
-  const legendItems = selectedBillId
+  const legendItems = showLiveResults
+    ? [
+        { color: '#e8e8e6', label: 'Called' },
+        { color: '#5a5a5e', label: 'Leading' },
+        { color: '#f5a623', label: 'Too close' },
+        { color: '#3a3a3e', label: 'Not enough data' },
+      ]
+    : selectedBillId
     ? viewMode === 'swing'
       ? [
           { color: '#f59e0b', label: 'Swing / Undecided' },
@@ -445,36 +551,49 @@ export function HouseChamber({ selectedBillId, highlightedMPId }: HouseChamberPr
           { color: VOTE_COLORS.against, label: 'Against' },
           { color: VOTE_COLORS.absent,  label: 'Absent / Abstain' },
         ]
-    : Object.entries(PARTY_COLORS).map(([p, c]) => ({ color: c, label: p }))
+    : [...new Set(houseMembers.map(member => member.party))]
+        .map(party => ({ color: PARTY_COLORS[party] ?? '#999', label: party }))
 
   return (
     <div className="relative w-full select-none">
       {/* Controls row */}
       <div className="flex items-start justify-between mb-3 px-1 gap-4">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-0.5 rounded-lg border border-border/50 bg-muted/40 p-0.5 flex-wrap">
-            {([
-              { key: 'real',      label: 'How They Voted' },
-              { key: 'sentiment', label: 'My Campaign' },
-              ...(selectedBillId && swingMPSet.size > 0 ? [{ key: 'swing', label: `Swing Votes (${swingMPSet.size})` }] : []),
-            ] as { key: ViewMode; label: string }[]).map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setViewMode(key)}
-                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-all whitespace-nowrap ${
-                  viewMode === key
-                    ? key === 'swing'
-                      ? 'bg-amber-400/15 text-amber-400 shadow-sm'
-                      : 'bg-card shadow-sm text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          {showLiveResults ? (
+            <div className="rounded-lg border border-border/50 bg-muted/40 px-3 py-2">
+              <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">Live election results</p>
+              <p className="mt-1 text-[11px] leading-snug text-muted-foreground/70">
+                Seat colours show called, leading, too close, or not enough data from official AEC updates.
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-0.5 rounded-lg border border-border/50 bg-muted/40 p-0.5 flex-wrap">
+              {([
+                { key: 'real',      label: 'How They Voted' },
+                { key: 'sentiment', label: 'My Campaign' },
+                ...(selectedBillId && swingMPSet.size > 0 ? [{ key: 'swing', label: `Swing Votes (${swingMPSet.size})` }] : []),
+              ] as { key: ViewMode; label: string }[]).map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setViewMode(key)}
+                  title={label === 'How They Voted' ? 'Shows how MPs voted on real laws.' : undefined}
+                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-all whitespace-nowrap ${
+                    viewMode === key
+                      ? key === 'swing'
+                        ? 'bg-amber-400/15 text-amber-400 shadow-sm'
+                        : 'bg-card shadow-sm text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
           <p className="text-[11px] text-muted-foreground/50 leading-snug">
-            {viewMode === 'real'
+            {showLiveResults
+              ? 'You’re looking at the House of Representatives — where government is formed.'
+              : viewMode === 'real'
               ? 'Seats coloured by each MP\'s actual parliamentary vote on the selected bill'
               : viewMode === 'swing'
               ? 'Amber seats are undecided — click to contact them and focus your pressure'
@@ -482,7 +601,7 @@ export function HouseChamber({ selectedBillId, highlightedMPId }: HouseChamberPr
           </p>
         </div>
         <span className="text-[11px] text-muted-foreground/50 hidden sm:inline shrink-0 mt-1">
-          Click a seat for MP details
+          {showLiveResults ? 'Hover or click a seat for live electorate details' : 'Click a seat for MP details'}
         </span>
       </div>
 
@@ -528,9 +647,10 @@ export function HouseChamber({ selectedBillId, highlightedMPId }: HouseChamberPr
 
           {/* Seats */}
           {CHAMBER_POSITIONS.map(pos => {
-            const mp = MPs[pos.seatIndex]
+            const mp = houseMembers[pos.seatIndex]
             if (!mp) return null
-            const isActive = tooltip?.seatIndex === pos.seatIndex || selectedMP?.id === mp.id
+            const seat = liveSeatMap.get(getElectionKeyForElectorate(mp.electorate))
+            const isActive = tooltip?.seatIndex === pos.seatIndex || selectedMP?.id === mp.id || selectedLiveSeat?.divisionId === seat?.divisionId
             const fill = seatColors[pos.seatIndex] ?? (PARTY_COLORS[mp.party] ?? '#999')
 
             return (
@@ -539,63 +659,98 @@ export function HouseChamber({ selectedBillId, highlightedMPId }: HouseChamberPr
                 pos={pos}
                 mp={mp}
                 fill={fill}
+                opacity={showLiveResults ? seat?.status === 'called' ? 1 : seat?.status === 'leading' ? 0.62 : 0.92 : undefined}
                 isActive={isActive}
                 onMouseEnter={p => setTooltip({ x: p.x, y: p.y, seatIndex: p.seatIndex })}
                 onMouseLeave={() => setTooltip(null)}
-                onClick={m => setSelectedMP(prev => prev?.id === m.id ? null : m)}
+                onClick={m => {
+                  if (showLiveResults) {
+                    const nextSeat = liveSeatMap.get(getElectionKeyForElectorate(m.electorate))
+                    setSelectedLiveSeatKey(prev => prev === getElectionKeyForElectorate(m.electorate) ? null : getElectionKeyForElectorate(m.electorate))
+                    if (!nextSeat) setSelectedLiveSeatKey(null)
+                    return
+                  }
+                  setSelectedMP(prev => prev?.id === m.id ? null : m)
+                }}
               />
             )
           })}
 
           {/* Tooltip (SVG foreignObject) */}
-          {tooltip && tooltipMP && !selectedMP && (
+          {tooltip && tooltipMP && !selectedMP && !selectedLiveSeat && (
             <foreignObject
               x={Math.min(Math.max(tooltip.x - 94, 4), SVG_W - 196)}
               y={Math.max(tooltip.y - 110, 4)}
               width={188}
-              height={90}
+              height={showLiveResults ? 132 : 96}
               style={{ pointerEvents: 'none' }}
             >
               <div className="rounded-xl border border-white/10 bg-black/70 backdrop-blur-md px-3 py-2.5 shadow-2xl">
-                <div className="flex items-center gap-2.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://i.pravatar.cc/60?u=${tooltipMP.id}`}
-                    alt={tooltipMP.name}
-                    width={30}
-                    height={30}
-                    className="rounded-full shrink-0"
-                    style={{ border: `2px solid ${PARTY_COLORS[tooltipMP.party] ?? '#999'}` }}
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-white/90 truncate leading-tight">{tooltipMP.name}</p>
-                    <p className="text-[10px] text-white/45 mt-0.5">{tooltipMP.electorate}</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <span
-                        className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ backgroundColor: PARTY_COLORS[tooltipMP.party] ?? '#999' }}
-                      />
-                      <span className="text-[10px] text-white/50">{tooltipMP.party}</span>
+                {showLiveResults && tooltipSeat ? (
+                  <div>
+                    <p className="text-xs font-semibold text-white/90 truncate leading-tight">{tooltipSeat.electorate}</p>
+                    <p className="mt-1 text-[10px] text-white/55">
+                      {tooltipSeat.leadingCandidate ? `${tooltipSeat.leadingCandidate.candidate} · ${tooltipSeat.leadingCandidate.party}` : 'No leader yet'}
+                    </p>
+                    <p className="mt-1 text-[10px] text-white/45">
+                      {tooltipSeat.tcpPct !== null
+                        ? `TCP ${tooltipSeat.tcpPct}%`
+                        : tooltipSeat.leadingCandidate?.pct !== null && tooltipSeat.leadingCandidate?.pct !== undefined
+                        ? `First preference ${tooltipSeat.leadingCandidate.pct}%`
+                        : 'Vote share unavailable'}
+                    </p>
+                    <p className="mt-1 text-[10px] text-white/45">
+                      {tooltipSeat.reportingProgressPct !== null ? `${tooltipSeat.reportingProgressPct}% counted` : 'Reporting progress unavailable'}
+                    </p>
+                    <p className="mt-2 text-[9.5px] text-white/35 font-medium tracking-wide">Official AEC update · click for more</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://i.pravatar.cc/60?u=${tooltipMP.id}`}
+                      alt={tooltipMP.name}
+                      width={30}
+                      height={30}
+                      className="rounded-full shrink-0"
+                      style={{ border: `2px solid ${PARTY_COLORS[tooltipMP.party] ?? '#999'}` }}
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-white/90 truncate leading-tight">{tooltipMP.name}</p>
+                      <p className="text-[10px] text-white/45 mt-0.5">{tooltipMP.electorate}</p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span
+                          className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{ backgroundColor: PARTY_COLORS[tooltipMP.party] ?? '#999' }}
+                        />
+                        <span className="text-[10px] text-white/50">{tooltipMP.party}</span>
+                      </div>
+                      <p className="mt-2 text-[9.5px] text-white/35 font-medium tracking-wide">This is a local MP elected by voters in their area.</p>
                     </div>
                   </div>
-                </div>
-                <p className="mt-2 text-[9.5px] text-white/35 font-medium tracking-wide">Click for full profile →</p>
+                )}
               </div>
             </foreignObject>
           )}
         </svg>
 
         {/* MP Info Panel (absolute overlay on right) */}
-        {selectedMP && (
+        {selectedMP && !showLiveResults && (
           <MPInfoPanel
             mp={selectedMP}
-            scores={MP_SCORES[selectedMP.id] ?? { approvalRating: 50, publicPressureScore: 0, trustScore: 50 }}
+            scores={generateScores(selectedMP.id)}
             selectedBillId={selectedBillId}
             userPressure={userPressure}
             onPressure={handlePressure}
             onClose={() => setSelectedMP(null)}
             isSwingMP={swingMPSet.has(selectedMP.id)}
             swingReason={swingMPMap[selectedMP.id]?.reason}
+          />
+        )}
+        {selectedLiveSeat && showLiveResults && (
+          <LiveSeatInfoPanel
+            seat={selectedLiveSeat}
+            onClose={() => setSelectedLiveSeatKey(null)}
           />
         )}
       </div>

@@ -15,21 +15,14 @@ interface TVFYPerson {
   } | null
 }
 
-/**
- * POST /api/sync/members
- * Fetches current members from TheyVoteForYou and upserts to Supabase.
- * Header: x-sync-secret: <SYNC_SECRET>
- */
-export async function POST(request: NextRequest) {
-  if (request.headers.get('x-sync-secret') !== process.env.SYNC_SECRET) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+function isAuthorized(request: NextRequest): boolean {
+  if (request.headers.get('x-sync-secret') === process.env.SYNC_SECRET) return true
+  const bearer = request.headers.get('authorization') ?? ''
+  if (process.env.CRON_SECRET && bearer === `Bearer ${process.env.CRON_SECRET}`) return true
+  return false
+}
 
-  const apiKey = process.env.THEYVOTEFORYOU_API_KEY
-  if (!apiKey) {
-    return Response.json({ error: 'THEYVOTEFORYOU_API_KEY not configured' }, { status: 500 })
-  }
-
+async function syncMembers(apiKey: string) {
   const res = await fetch(
     `${TVFY_BASE}/people.json?key=${encodeURIComponent(apiKey)}`,
     { next: { revalidate: 0 } }
@@ -66,4 +59,34 @@ export async function POST(request: NextRequest) {
   }
 
   return Response.json({ synced: memberRows.length })
+}
+
+/**
+ * POST /api/sync/members
+ * Manual trigger. Auth: x-sync-secret header.
+ */
+export async function POST(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const apiKey = process.env.THEYVOTEFORYOU_API_KEY
+  if (!apiKey) {
+    return Response.json({ error: 'THEYVOTEFORYOU_API_KEY not configured' }, { status: 500 })
+  }
+  return syncMembers(apiKey)
+}
+
+/**
+ * GET /api/sync/members
+ * Called by Vercel cron (Authorization: Bearer CRON_SECRET).
+ */
+export async function GET(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const apiKey = process.env.THEYVOTEFORYOU_API_KEY
+  if (!apiKey) {
+    return Response.json({ error: 'THEYVOTEFORYOU_API_KEY not configured' }, { status: 500 })
+  }
+  return syncMembers(apiKey)
 }

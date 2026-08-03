@@ -25,18 +25,25 @@ const PARTY_MAP: Record<string, Party> = {
   'Australian Labor Party': 'Labor',
   'Liberal Party of Australia': 'Coalition',
   'The Nationals': 'Coalition',
+  'National Party of Australia': 'Coalition',
   'Liberal National Party of Queensland': 'Coalition',
   'Country Liberal Party': 'Coalition',
   'Australian Greens': 'Greens',
   'Centre Alliance': 'Centre Alliance',
   "Katter's Australian Party": "Katter's Australian Party",
   "Katter's Australian Party (KAP)": "Katter's Australian Party",
+  "Pauline Hanson's One Nation": 'One Nation',
+  "Pauline Hanson's One Nation Party": 'One Nation',
+  'One Nation': 'One Nation',
+  'Jacqui Lambie Network': 'Jacqui Lambie Network',
+  'United Australia Party': 'United Australia Party',
+  "Australia's Voice": "Australia's Voice",
   'Independent': 'Independent',
 }
 
 function normaliseParty(raw: string | null): Party {
   if (!raw) return 'Independent'
-  return PARTY_MAP[raw] ?? 'Independent'
+  return PARTY_MAP[raw] ?? raw
 }
 
 // ─── DB row types ─────────────────────────────────────────────────────────────

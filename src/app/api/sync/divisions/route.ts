@@ -30,29 +30,14 @@ interface TVFYDivisionDetail extends TVFYDivisionSummary {
   }>
 }
 
-/**
- * POST /api/sync/divisions
- * Fetches recent divisions from TheyVoteForYou and upserts to Supabase.
- * Fetches the top `limit` most recent divisions individually to get per-member votes.
- *
- * Query params:
- *   from=YYYY-MM-DD  (default: 1 year ago)
- *   house=representatives|senate  (default: representatives)
- *   limit=N  (default: 50 — number of divisions to fetch in detail)
- *
- * Header: x-sync-secret: <SYNC_SECRET>
- */
-export async function POST(request: NextRequest) {
-  if (request.headers.get('x-sync-secret') !== process.env.SYNC_SECRET) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+function isAuthorized(request: NextRequest): boolean {
+  if (request.headers.get('x-sync-secret') === process.env.SYNC_SECRET) return true
+  const bearer = request.headers.get('authorization') ?? ''
+  if (process.env.CRON_SECRET && bearer === `Bearer ${process.env.CRON_SECRET}`) return true
+  return false
+}
 
-  const apiKey = process.env.THEYVOTEFORYOU_API_KEY
-  if (!apiKey) {
-    return Response.json({ error: 'THEYVOTEFORYOU_API_KEY not configured' }, { status: 500 })
-  }
-
-  const { searchParams } = request.nextUrl
+async function syncDivisions(apiKey: string, searchParams: URLSearchParams) {
   const house = searchParams.get('house') ?? 'representatives'
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '50', 10), 200)
 
@@ -144,4 +129,34 @@ export async function POST(request: NextRequest) {
     votes: totalVotes,
     skipped: summaries.length - toFetch.length,
   })
+}
+
+/**
+ * POST /api/sync/divisions
+ * Manual trigger. Auth: x-sync-secret header.
+ */
+export async function POST(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const apiKey = process.env.THEYVOTEFORYOU_API_KEY
+  if (!apiKey) {
+    return Response.json({ error: 'THEYVOTEFORYOU_API_KEY not configured' }, { status: 500 })
+  }
+  return syncDivisions(apiKey, request.nextUrl.searchParams)
+}
+
+/**
+ * GET /api/sync/divisions
+ * Called by Vercel cron (Authorization: Bearer CRON_SECRET).
+ */
+export async function GET(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const apiKey = process.env.THEYVOTEFORYOU_API_KEY
+  if (!apiKey) {
+    return Response.json({ error: 'THEYVOTEFORYOU_API_KEY not configured' }, { status: 500 })
+  }
+  return syncDivisions(apiKey, request.nextUrl.searchParams)
 }

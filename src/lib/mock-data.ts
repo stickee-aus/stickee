@@ -8,6 +8,9 @@ export const PARTY_COLORS: Record<string, string> = {
   'Centre Alliance':              '#F9A825',
   "Katter's Australian Party":   '#4E342E',
   'One Nation':                   '#FF6F00',
+  'Jacqui Lambie Network':        '#7C3AED',
+  'United Australia Party':       '#F59E0B',
+  "Australia's Voice":           '#14B8A6',
 }
 
 // ─── 150-seat layout ──────────────────────────────────────────────────────────
