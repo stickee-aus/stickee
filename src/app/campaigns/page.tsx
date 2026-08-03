@@ -4,6 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Megaphone, Users, CheckCircle, Mail, TrendingUp, Lock } from 'lucide-react'
 import { useToast } from '@/components/ui/toast'
+import { useAuthStatus } from '@/hooks/useAuthStatus'
+import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
+import { RecentRehearsalsStrip } from '@/components/simulator/RecentRehearsalsStrip'
 
 // ─── Campaign data ────────────────────────────────────────────────────────────
 
@@ -233,6 +236,15 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
         >
           <Mail className="h-3 w-3" /> Email MP
         </Link>
+        <SimulateThisButton
+          entity={{
+            type: 'campaign',
+            id: campaign.id,
+            title: campaign.title,
+            summary: campaign.description,
+            pillarId: campaign.pillar.toLowerCase(),
+          }}
+        />
         <button
           onClick={() => {
             const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/campaigns?c=${campaign.id}`
@@ -255,12 +267,14 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 // ─── Campaigns page ───────────────────────────────────────────────────────────
 
 export default function CampaignsPage() {
+  const auth = useAuthStatus()
+  const { toast } = useToast()
   const totalParticipants = CAMPAIGNS.reduce((s, c) => s + c.current, 0)
   const trending = CAMPAIGNS.filter(c => c.trending)
   const rest     = CAMPAIGNS.filter(c => !c.trending)
 
   return (
-    <div className="mx-auto max-w-3xl px-6">
+    <div className="mx-auto max-w-5xl px-6">
 
       {/* ── Header ── */}
       <div className="flex items-end justify-between gap-6 py-10 border-b border-border">
@@ -293,6 +307,11 @@ export default function CampaignsPage() {
             <p className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>Trending</p>
           </div>
         </div>
+      </div>
+
+      {/* ── Recent rehearsals ── */}
+      <div className="py-6 border-b border-border">
+        <RecentRehearsalsStrip variant="compact" limit={3} />
       </div>
 
       {/* ── How it works ── */}
@@ -346,13 +365,24 @@ export default function CampaignsPage() {
         <p className="font-mono text-[10px] text-muted-foreground">
           Propose a campaign and if it gets 100 upvotes from the community, we&apos;ll launch it officially.
         </p>
-        <Link
-          href="/auth/sign-in?redirect=/campaigns"
-          className="inline-flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 mt-2 transition-colors"
-          style={{ background: '#e8e8e6', color: '#0a0a0b' }}
-        >
-          <Lock className="h-3 w-3" /> Sign in to propose
-        </Link>
+        {auth.authenticated ? (
+          <button
+            type="button"
+            onClick={() => toast('Campaign proposals are ready for the review flow.', 'info')}
+            className="inline-flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 mt-2 transition-colors"
+            style={{ background: '#e8e8e6', color: '#0a0a0b' }}
+          >
+            <Megaphone className="h-3 w-3" /> Propose campaign
+          </button>
+        ) : (
+          <Link
+            href="/auth/sign-in?next=/campaigns"
+            className="inline-flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 mt-2 transition-colors"
+            style={{ background: '#e8e8e6', color: '#0a0a0b' }}
+          >
+            <Lock className="h-3 w-3" /> Sign in to propose
+          </Link>
+        )}
       </div>
     </div>
   )
