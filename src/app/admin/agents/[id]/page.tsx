@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
@@ -44,6 +45,8 @@ function statusColor(s: string | null | undefined) {
 export default async function AgentDetailPage({
   params,
 }: { params: Promise<{ id: string }> }) {
+  await connection()
+
   const { id } = await params
   if (!AGENT_IDS.includes(id as AgentSlug)) notFound()
 

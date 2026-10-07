@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import {
@@ -148,6 +149,8 @@ async function updateReportAction(formData: FormData) {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function AdminOverviewPage() {
+  await connection()
+
   const since = new Date()
   since.setUTCHours(0, 0, 0, 0)
   since.setUTCDate(since.getUTCDate() - (WINDOW_DAYS - 1))

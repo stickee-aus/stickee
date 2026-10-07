@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import { headers } from 'next/headers'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
 import { resolveMarketAction } from './actions'
@@ -35,6 +36,8 @@ function fmt(iso: string | null) {
 }
 
 export default async function MarketsAdminPage() {
+  await connection()
+
   await headers() // avoid build-time caching, matches the agents page's convention
   const admin = createAdminSupabaseClient()
 

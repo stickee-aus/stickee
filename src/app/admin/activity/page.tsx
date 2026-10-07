@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import {
   Activity,
   UserPlus,
@@ -110,6 +111,8 @@ function formatAud(cents: number) {
 }
 
 export default async function AdminActivityPage({ searchParams }: { searchParams: SearchParams }) {
+  await connection()
+
   const params = await searchParams
   const requestedType = (params.type ?? 'all').toLowerCase()
   const filter: 'all' | EventKind = (FILTERS.find(f => f.value === requestedType)?.value as 'all' | EventKind) ?? 'all'

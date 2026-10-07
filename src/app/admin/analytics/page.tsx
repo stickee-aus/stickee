@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import { BarChart3, TrendingUp, Users, DollarSign, MessageSquare } from 'lucide-react'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
 
@@ -127,6 +128,8 @@ function formatAud(cents: number) {
 }
 
 export default async function AdminAnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
+  await connection()
+
   const params = await searchParams
   const days = Math.min(180, Math.max(7, parseInt(params.days ?? String(DAYS_WINDOW), 10) || DAYS_WINDOW))
   const since = new Date()

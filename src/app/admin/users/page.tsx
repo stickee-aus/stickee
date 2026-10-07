@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import Link from 'next/link'
 import {
   Ban,
@@ -81,6 +82,8 @@ function isCurrentlyBanned(banned_until: string | null | undefined) {
 }
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: SearchParams }) {
+  await connection()
+
   const params = await searchParams
   const q = (params.q ?? '').trim()
   const page = Math.max(1, parseInt(params.page ?? '1', 10) || 1)

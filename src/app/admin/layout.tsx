@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
+import { connection } from 'next/server'
 import { ShieldAlert, LayoutDashboard, Users, Activity, BarChart3, Bot, LineChart } from 'lucide-react'
 import { getAdminUser } from './_lib/guard'
 
@@ -13,6 +14,10 @@ const NAV = [
 ]
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
+  // Admin data and credentials exist only at request time. Explicitly opt the
+  // entire protected subtree out of build-time prerendering so CI does not
+  // require production Supabase secrets.
+  await connection()
   const { user, isAdmin } = await getAdminUser()
 
   if (!user) {

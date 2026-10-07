@@ -25,17 +25,8 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
-      # continue-on-error is temporary: this repo had zero ESLint coverage
-      # before Implementation Batch 1. The real, unmodified Next.js config
-      # surfaces ~65 pre-existing errors across files this batch didn't
-      # touch (see TEST_AND_VERIFICATION_REPORT.md for the exact count and
-      # confirmation none are in this batch's diff). Blocking merges on
-      # pre-existing debt on day one isn't useful; the output below still
-      # shows up in every CI run so it isn't hidden. Remove
-      # continue-on-error once a dedicated lint-cleanup batch lands.
       - name: Lint
         run: npm run lint
-        continue-on-error: true
 
       - name: Unit tests
         run: npm test

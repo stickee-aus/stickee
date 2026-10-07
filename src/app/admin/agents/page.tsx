@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import Link from 'next/link'
@@ -80,6 +81,8 @@ function statusColor(s: string | null | undefined): string {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function AgentsPage() {
+  await connection()
+
   // headers() ensures this isn't cached at build time
   await headers()
   const admin = createAdminSupabaseClient()
