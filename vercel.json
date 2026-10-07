@@ -1,0 +1,40 @@
+{
+  "crons": [
+    {
+      "path": "/api/sync/members",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/sync/divisions",
+      "schedule": "30 16 * * *"
+    },
+    {
+      "path": "/api/agents/parliament-watcher",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/agents/prediction-resolver",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/agents/moderation-triage",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/agents/bill-stage-tracker",
+      "schedule": "0 */2 * * *"
+    },
+    {
+      "path": "/api/agents/mp-scorecard",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/agents/electorate-pulse",
+      "schedule": "0 23 * * 0"
+    },
+    {
+      "path": "/api/agents/daily-bonus",
+      "schedule": "0 14 * * *"
+    }
+  ]
+}
