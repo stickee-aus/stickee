@@ -4,22 +4,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AuthButton } from '@/components/AuthButton'
 import { useNotifications } from '@/hooks/useNotifications'
-
-const PRIMARY_NAV = [
-  { href: '/issues', label: 'Issues' },
-  { href: '/decisions', label: 'Decisions' },
-  { href: '/leaders', label: 'People' },
-  { href: '/simulator', label: 'Simulator' },
-]
+import { PRIMARY_NAV, SECONDARY_NAV, isPrimaryNavItemActive } from '@/lib/navigation'
 
 export function Navbar() {
   const pathname = usePathname()
   const { unreadCount } = useNotifications()
-
-  function isActive(href: string) {
-    if (href === '/') return pathname === '/'
-    return pathname === href || pathname.startsWith(href + '/')
-  }
 
   return (
     <header className="simple-nav sticky top-0 z-50">
@@ -36,19 +25,20 @@ export function Navbar() {
 
         {/* Primary nav */}
         <nav className="hidden md:flex items-center gap-8" aria-label="Primary navigation">
-          {PRIMARY_NAV.map(({ href, label }) => {
-            const active = isActive(href)
+          {PRIMARY_NAV.map(item => {
+            const active = isPrimaryNavItemActive(item, pathname)
             return (
               <Link
-                key={href}
-                href={href}
+                key={item.id}
+                href={item.href}
+                aria-current={active ? 'page' : undefined}
                 className={[
                   'simple-nav-link',
                   active
                     ? 'is-active' : '',
                 ].join(' ')}
               >
-                {label}
+                {item.label}
               </Link>
             )
           })}
@@ -57,12 +47,15 @@ export function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-4 text-muted-foreground">
-          <Link
-            href="/donate"
-            className="simple-support-link hidden md:inline-flex"
-          >
-            Support
-          </Link>
+          {SECONDARY_NAV.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="simple-support-link hidden md:inline-flex"
+            >
+              {item.label}
+            </Link>
+          ))}
           <Link
             href="/notifications"
             className="relative transition-colors hover:text-[#17231c]"

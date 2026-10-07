@@ -56,11 +56,8 @@ export interface DecisionMaker {
   level: GovernmentLevel
   state?: AustralianState
   council?: string
-  approvalRating: number // 0–100
   keyResponsibilities: string[]
   decisions: string[] // decision IDs
-  trustScore: number // 0–100, community-voted
-  totalRatings: number
 }
 
 export interface Decision {

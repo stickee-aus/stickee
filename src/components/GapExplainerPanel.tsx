@@ -48,7 +48,7 @@ interface GapExplainerPanelProps {
 export function GapExplainerPanel({ bill, parliamentSupport, className = '' }: GapExplainerPanelProps) {
   const [expanded, setExpanded] = useState(false)
 
-  const gap = bill.publicSupport - parliamentSupport
+  const gap = (bill.publicSupport ?? 0) - parliamentSupport
   const absGap = Math.abs(gap)
   const isSignificant = absGap > 10
 

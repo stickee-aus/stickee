@@ -163,8 +163,8 @@ export function PartyVotingGrid({ selectedBillId, onSelectBill, bills, parties }
     }
     const vals: Record<SortKey, (r: BillVoteRow) => number> = {
       controversy:      r => r.controversy,
-      closeness:        r => -Math.abs(r.publicPrediction - 50),
-      publicPrediction: r => r.publicPrediction,
+      closeness:        r => -Math.abs((r.publicPrediction ?? 50) - 50),
+      publicPrediction: r => r.publicPrediction ?? 50,
       change:           r => r.change,
       name:             () => 0,
     }
@@ -271,8 +271,8 @@ export function PartyVotingGrid({ selectedBillId, onSelectBill, bills, parties }
                       <span className="font-bold tabular-nums text-foreground">{bill.publicPrediction}%</span>
                       <div className="w-14 h-1.5 rounded-full bg-white/10 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 ${bill.publicPrediction >= 50 ? 'bg-emerald-500' : 'bg-red-500'}`}
-                          style={{ width: `${bill.publicPrediction}%` }}
+                          className={`h-full rounded-full transition-all duration-500 ${(bill.publicPrediction ?? 50) >= 50 ? 'bg-emerald-500' : 'bg-red-500'}`}
+                          style={{ width: `${bill.publicPrediction ?? 50}%` }}
                         />
                       </div>
                     </div>

@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { issueMarkets, type IssueMarket, type MarketOutcome } from '@/lib/mock-market-data'
 import { mapIssueMarketRecord, type IssueMarketRecord } from '@/lib/issues-data'
-import { TrendingUp, TrendingDown, Zap } from 'lucide-react'
+import { TrendingUp, TrendingDown, Zap, ArrowRight } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 // ─── Sparkline ────────────────────────────────────────────────────────────────
@@ -170,7 +171,7 @@ export function PredictionMarketGrid({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-semibold text-foreground">Prediction Market</h2>
+          <h2 className="font-semibold text-foreground">Forecast</h2>
           <p className="text-xs text-muted-foreground mt-0.5">
             {market.totalParticipants.toLocaleString()} participants · {totalVolume.toLocaleString()} predictions placed
           </p>
@@ -195,7 +196,6 @@ export function PredictionMarketGrid({
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground hidden sm:table-cell">24h Change</th>
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground hidden md:table-cell">Volume</th>
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground hidden sm:table-cell">14-Day Chart</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Trade</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -234,17 +234,6 @@ export function PredictionMarketGrid({
                   <td className="px-4 py-4 hidden sm:table-cell">
                     <Sparkline data={outcome.history} color={sparkColor} />
                   </td>
-                  <td className="px-4 py-4">
-                    <button
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-all active:scale-95 shadow-sm ${
-                        isYes
-                          ? 'bg-green-500 hover:bg-green-600'
-                          : 'bg-red-500 hover:bg-red-600'
-                      }`}
-                    >
-                      Buy {outcome.outcome}
-                    </button>
-                  </td>
                 </tr>
               )
             })}
@@ -270,6 +259,13 @@ export function PredictionMarketGrid({
           <span className="text-xs font-semibold text-red-500 dark:text-red-400">{noOutcome.price.toFixed(1)}% No</span>
         </div>
       </div>
+
+      <p className="text-xs text-muted-foreground">
+        This table shows current sentiment only.{' '}
+        <Link href="/predictions" className="inline-flex items-center gap-1 font-medium text-foreground hover:underline">
+          Place a real stake on Forecasts <ArrowRight className="h-3 w-3" />
+        </Link>
+      </p>
     </div>
   )
 }

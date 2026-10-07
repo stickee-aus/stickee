@@ -153,20 +153,23 @@ function transformDivision(
   votesForDivision: DBMemberVote[],
   membersByTvfyId: Map<number, DBMember>
 ): BillVoteRow {
-  // Use passed flag as proxy for publicPrediction if no market data
-  const publicPrediction = d.passed === true ? 75 : d.passed === false ? 25 : 50
   const total = d.aye_count + d.no_count
   const controversy = total > 0
     ? Math.round(100 - Math.abs((d.aye_count / total) * 100 - 50) * 2)
     : 50
 
-  const parties = buildPartyVotes(membersByTvfyId, votesForDivision, publicPrediction)
+  // No real public-opinion data source exists for bills (no polling table,
+  // no linked prediction market) — buildPartyVotes only needs a for/against
+  // lean to pick which party members to list as "key MPs", so pass the real
+  // division result instead of a fabricated public-support number.
+  const parliamentLeanFor = d.aye_count >= d.no_count
+  const parties = buildPartyVotes(membersByTvfyId, votesForDivision, parliamentLeanFor ? 100 : 0)
 
   return {
     id: `tvfy-${d.tvfy_id}`,
     name: d.name,
     status: d.passed === true ? 'passed' : d.passed === false ? 'failed' : 'ongoing',
-    publicPrediction,
+    publicPrediction: null,
     change: 0,
     volume: d.aye_count + d.no_count + d.abstain_count,
     sparkline: [],
@@ -177,7 +180,7 @@ function transformDivision(
     controversy,
     eli15: d.name,
     tags: [],
-    publicSupport: publicPrediction,
+    publicSupport: null,
     affectedGroups: [],
     campaignCount: 0,
     campaignDailyGrowth: 0,

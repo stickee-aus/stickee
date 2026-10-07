@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { Megaphone, Users, CheckCircle, Mail, TrendingUp, Lock } from 'lucide-react'
+import { Megaphone, Users, Mail, Info, CheckCircle } from 'lucide-react'
 import { useToast } from '@/components/ui/toast'
-import { useAuthStatus } from '@/hooks/useAuthStatus'
 import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
 import { RecentRehearsalsStrip } from '@/components/simulator/RecentRehearsalsStrip'
 
@@ -22,7 +20,6 @@ interface Campaign {
   milestones: { threshold: number; reward: string }[]
   daysLeft: number
   trending: boolean
-  userJoined?: boolean
 }
 
 const CAMPAIGNS: Campaign[] = [
@@ -107,21 +104,13 @@ function fmtNum(n: number): string {
 
 function CampaignCard({ campaign }: { campaign: Campaign }) {
   const { toast } = useToast()
-  const [joined, setJoined] = useState(campaign.userJoined ?? false)
-  const [current, setCurrent] = useState(campaign.current)
+  const current = campaign.current
 
   const pct = Math.min(100, Math.round((current / campaign.goal) * 100))
 
   // Find next milestone
   const nextMilestone = campaign.milestones.find(m => m.threshold > current)
   const milestoneGap  = nextMilestone ? nextMilestone.threshold - current : 0
-
-  function handleJoin() {
-    if (joined) return
-    setJoined(true)
-    setCurrent(c => c + 1)
-    toast(`You've joined the "${campaign.title}" campaign! +50 pts`, 'success')
-  }
 
   return (
     <article
@@ -148,11 +137,11 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
           <h3 className="text-sm font-medium text-foreground">{campaign.title}</h3>
         </div>
 
-        {/* Participant count */}
+        {/* Illustrative participant count */}
         <div className="text-right shrink-0">
           <p className="font-mono text-base" style={{ color: campaign.pillarColor }}>{fmtNum(current)}</p>
           <p className="font-mono text-[9px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>
-            of {fmtNum(campaign.goal)}
+            of {fmtNum(campaign.goal)} (example)
           </p>
         </div>
       </div>
@@ -215,23 +204,17 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
         })}
       </div>
 
-      {/* Actions */}
+      {/* Actions — the real, counted action lives on Parliament, not here */}
       <div className="flex flex-wrap gap-2 pt-1">
-        {joined ? (
-          <div className="flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2" style={{ color: '#2ec266', border: '1px solid #2ec26630', background: '#041008' }}>
-            <CheckCircle className="h-3 w-3" /> Joined
-          </div>
-        ) : (
-          <button
-            onClick={handleJoin}
-            className="flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 transition-all"
-            style={{ background: '#e8e8e6', color: '#0a0a0b' }}
-          >
-            <Users className="h-3 w-3" /> Join campaign
-          </button>
-        )}
         <Link
-          href={`/issues`}
+          href="/parliament"
+          className="flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 transition-all"
+          style={{ background: '#e8e8e6', color: '#0a0a0b' }}
+        >
+          <Users className="h-3 w-3" /> Take real action on Parliament
+        </Link>
+        <Link
+          href="/issues"
           className="flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 border border-border transition-colors hover:bg-card/50"
         >
           <Mail className="h-3 w-3" /> Email MP
@@ -252,12 +235,12 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
               navigator.share({ title: campaign.title, text: campaign.description, url })
             } else {
               navigator.clipboard.writeText(url)
-              toast('Campaign link copied — share to boost the count!', 'success')
+              toast('Campaign link copied', 'success')
             }
           }}
           className="flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 border border-border transition-colors hover:bg-card/50"
         >
-          <TrendingUp className="h-3 w-3" /> Share +50pts
+          Share
         </button>
       </div>
     </article>
@@ -267,9 +250,6 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 // ─── Campaigns page ───────────────────────────────────────────────────────────
 
 export default function CampaignsPage() {
-  const auth = useAuthStatus()
-  const { toast } = useToast()
-  const totalParticipants = CAMPAIGNS.reduce((s, c) => s + c.current, 0)
   const trending = CAMPAIGNS.filter(c => c.trending)
   const rest     = CAMPAIGNS.filter(c => !c.trending)
 
@@ -277,36 +257,30 @@ export default function CampaignsPage() {
     <div className="mx-auto max-w-5xl px-6">
 
       {/* ── Header ── */}
-      <div className="flex items-end justify-between gap-6 py-10 border-b border-border">
-        <div>
-          <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground mb-2">
-            Australia · Collective Action
-          </p>
-          <div className="flex items-baseline gap-3">
-            <span
-              className="font-mono font-normal leading-none text-foreground"
-              style={{ fontSize: 'clamp(40px, 8vw, 56px)', letterSpacing: '-0.02em' }}
-            >
-              {fmtNum(totalParticipants)}
-            </span>
-            <span className="font-mono text-xl text-muted-foreground/40">Australians</span>
-          </div>
-          <p className="font-mono text-xs text-muted-foreground mt-2">
-            {CAMPAIGNS.length} active campaigns · Goals unlock real outcomes
-          </p>
-        </div>
+      <div className="py-10 border-b border-border">
+        <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground mb-2">
+          Australia · Collective Action
+        </p>
+        <h1 className="font-mono font-normal leading-tight text-foreground text-2xl">
+          Example campaigns
+        </h1>
+        <p className="font-mono text-xs text-muted-foreground mt-2">
+          {CAMPAIGNS.length} illustrative campaigns · Participant counts below are example content, not a
+          live tally
+        </p>
+      </div>
 
-        <div className="hidden sm:flex items-end gap-6 pb-1">
-          <div className="text-right">
-            <p className="font-mono text-xl font-normal mb-1" style={{ color: '#f5a623' }}>{CAMPAIGNS.length}</p>
-            <p className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>Campaigns</p>
-          </div>
-          <div className="w-px h-8 bg-border mb-1" />
-          <div className="text-right">
-            <p className="font-mono text-xl font-normal mb-1" style={{ color: '#2ec266' }}>{trending.length}</p>
-            <p className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>Trending</p>
-          </div>
-        </div>
+      {/* ── Demo content notice ── */}
+      <div className="flex items-start gap-3 py-4 border-b border-border">
+        <Info className="h-4 w-4 shrink-0 mt-0.5" style={{ color: '#3a3a3e' }} />
+        <p className="font-mono text-[10px] text-muted-foreground leading-relaxed">
+          These campaigns are example content, not connected to a real join or vote-counting system.
+          The real, counted civic action on Stickee — emailing your MP and applying pressure on a live
+          bill — lives on the{' '}
+          <Link href="/parliament" className="underline hover:text-foreground transition-colors">
+            Parliament page
+          </Link>.
+        </p>
       </div>
 
       {/* ── Recent rehearsals ── */}
@@ -363,26 +337,9 @@ export default function CampaignsPage() {
         <Megaphone className="h-5 w-5 mx-auto" style={{ color: '#3a3a3e' }} />
         <p className="font-mono text-xs text-foreground">Have a civic issue that needs a campaign?</p>
         <p className="font-mono text-[10px] text-muted-foreground">
-          Propose a campaign and if it gets 100 upvotes from the community, we&apos;ll launch it officially.
+          Campaign proposals aren&apos;t connected to a review pipeline yet — there&apos;s no way to submit one
+          on this page today.
         </p>
-        {auth.authenticated ? (
-          <button
-            type="button"
-            onClick={() => toast('Campaign proposals are ready for the review flow.', 'info')}
-            className="inline-flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 mt-2 transition-colors"
-            style={{ background: '#e8e8e6', color: '#0a0a0b' }}
-          >
-            <Megaphone className="h-3 w-3" /> Propose campaign
-          </button>
-        ) : (
-          <Link
-            href="/auth/sign-in?next=/campaigns"
-            className="inline-flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 mt-2 transition-colors"
-            style={{ background: '#e8e8e6', color: '#0a0a0b' }}
-          >
-            <Lock className="h-3 w-3" /> Sign in to propose
-          </Link>
-        )}
       </div>
     </div>
   )

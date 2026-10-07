@@ -31,7 +31,7 @@ export interface BillVoteRow {
   id: string
   name: string
   status: 'passed' | 'failed' | 'ongoing'
-  publicPrediction: number   // % Yes from prediction markets
+  publicPrediction: number | null  // % Yes from prediction markets — null where no real public-opinion source exists
   change: number             // daily price change in pp
   volume: number             // total participants
   sparkline: number[]        // 14-day price history
@@ -43,7 +43,7 @@ export interface BillVoteRow {
   // ── New civic action fields ────────────────────────────────────────────────
   eli15: string              // Plain-English explanation for general public
   tags: string[]             // Topic tags e.g. ['Housing', 'Cost of Living']
-  publicSupport: number      // 0–100: % of public who support the bill
+  publicSupport: number | null  // 0–100: % of public who support the bill — null where no real public-opinion source exists
   affectedGroups: string[]   // Who is most affected
   campaignCount: number      // Total pressure campaign participants
   campaignDailyGrowth: number // New participants in the last 24h
@@ -381,8 +381,10 @@ export function parliamentSupportPct(bill: BillVoteRow): number {
   return total > 0 ? Math.round((bill.totalFor / total) * 100) : 0
 }
 
-/** Positive = public leads parliament (misaligned/pressure case), negative = parliament ahead */
-export function computeGap(bill: BillVoteRow): number {
+/** Positive = public leads parliament (misaligned/pressure case), negative = parliament ahead.
+ *  Returns null when no real public-opinion data exists for the bill — never fabricate a proxy. */
+export function computeGap(bill: BillVoteRow): number | null {
+  if (bill.publicSupport === null) return null
   return bill.publicSupport - parliamentSupportPct(bill)
 }
 
@@ -446,11 +448,13 @@ export function getPartyAlignment(mpId: string, billId: string): number {
   return mpVote === partyMajDir ? 100 : 0
 }
 
+/** @deprecated No real public-opinion data source exists for any bill — kept only
+ *  for orphaned callers pending their removal; never wire this into new UI. */
 export function getPublicAlignment(mpId: string, billId: string): number {
   const mpVote = getMPVoteForBill(mpId, billId)
   if (mpVote === 'absent') return 50
   const bill = billVoteRows.find(b => b.id === billId)
-  if (!bill) return 50
+  if (!bill || bill.publicPrediction === null) return 50
   const publicLeanFor = bill.publicPrediction >= 50
   return (mpVote === 'for') === publicLeanFor ? 100 : 0
 }

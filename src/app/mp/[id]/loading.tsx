@@ -1,42 +1,42 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
+// Mirrors page.tsx's single-column, narrow (max-w-2xl) profile layout —
+// avatar header, party tag, MetadataLine, role card, voting sections. The
+// previous skeleton showed a 4-tile stats row and a 6-row voting table that
+// don't exist on the real page.
 export default function MPLoading() {
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
+    <div className="mx-auto max-w-2xl px-5 py-10 md:px-8">
       {/* Breadcrumb */}
-      <Skeleton className="h-4 w-24 mb-6" />
+      <Skeleton className="h-4 w-28 mb-6" />
 
-      {/* MP profile header */}
-      <div className="flex items-start gap-5 mb-8">
-        <Skeleton className="h-20 w-20 rounded-full shrink-0" />
-        <div className="space-y-2 flex-1">
+      {/* Profile header */}
+      <div className="mb-4 flex items-start gap-5">
+        <Skeleton className="h-16 w-16 shrink-0 rounded-full" />
+        <div className="flex-1 space-y-2">
           <Skeleton className="h-7 w-48" />
-          <Skeleton className="h-4 w-32" />
-          <div className="flex gap-2">
-            <Skeleton className="h-5 w-20 rounded-full" />
-            <Skeleton className="h-5 w-24 rounded-full" />
-          </div>
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-5 w-24" />
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-8">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 rounded-xl" />
-        ))}
+      <Skeleton className="h-3 w-full max-w-sm mb-8" />
+
+      {/* Role card */}
+      <div className="mb-6 space-y-2 border border-border p-5">
+        <Skeleton className="h-4 w-56" />
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-5/6" />
+        <Skeleton className="h-3 w-2/3" />
       </div>
 
-      {/* Voting record */}
+      {/* Simulate button */}
+      <Skeleton className="h-9 w-64 mb-6" />
+
+      {/* Voting analysis + history */}
       <div className="space-y-3">
-        <Skeleton className="h-5 w-40" />
-        <div className="rounded-xl border border-border/40 overflow-hidden">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex gap-4 px-4 py-3 border-b border-border/30 last:border-0">
-              <Skeleton className="h-4 flex-1" />
-              <Skeleton className="h-5 w-16 rounded-full" />
-            </div>
-          ))}
-        </div>
+        <Skeleton className="h-16 w-full border border-border" />
+        <Skeleton className="h-16 w-full border border-border" />
       </div>
     </div>
   )

@@ -26,7 +26,7 @@ describe('MP score misleading copy is not present', () => {
 
   it('mp/[id]/page.tsx shows the neutral placeholder instead', () => {
     const source = read('src/app/mp/[id]/page.tsx')
-    expect(source).toContain('Individual voting analysis is being verified.')
+    expect(source).toContain('Individual voting analysis is not yet available for this representative.')
   })
 
   it('MPVoteGrid no longer shows the "votes with majority" accuracy claim', () => {

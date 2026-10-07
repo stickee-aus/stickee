@@ -15,11 +15,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     partyShort: 'ALP',
     electorate: 'Grayndler, NSW',
     level: 'federal',
-    approvalRating: 42,
     keyResponsibilities: ['National leadership', 'Foreign affairs', 'Cabinet coordination'],
     decisions: ['d-housing-fund', 'd-cost-relief', 'd-future-made'],
-    trustScore: 44,
-    totalRatings: 18320,
   },
   {
     id: 'dm-chalmers',
@@ -29,11 +26,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     partyShort: 'ALP',
     electorate: 'Rankin, QLD',
     level: 'federal',
-    approvalRating: 47,
     keyResponsibilities: ['Federal budget', 'Economic policy', 'Inflation management'],
     decisions: ['d-cost-relief', 'd-future-made'],
-    trustScore: 49,
-    totalRatings: 11450,
   },
   {
     id: 'dm-butler',
@@ -43,11 +37,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     partyShort: 'ALP',
     electorate: 'Hindmarsh, SA',
     level: 'federal',
-    approvalRating: 55,
     keyResponsibilities: ['Medicare', 'Public hospitals', 'Aged care reform'],
     decisions: ['d-bulk-billing', 'd-aged-care'],
-    trustScore: 58,
-    totalRatings: 9870,
   },
   {
     id: 'dm-clare',
@@ -57,11 +48,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     partyShort: 'ALP',
     electorate: 'Blaxland, NSW',
     level: 'federal',
-    approvalRating: 51,
     keyResponsibilities: ['School funding', 'HECS reform', 'Early childhood education'],
     decisions: ['d-hecs-reform', 'd-free-tafe-fed'],
-    trustScore: 54,
-    totalRatings: 8240,
   },
   {
     id: 'dm-dutton',
@@ -71,11 +59,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     partyShort: 'Liberal',
     electorate: 'Dickson, QLD',
     level: 'federal',
-    approvalRating: 35,
     keyResponsibilities: ['Opposition leadership', 'Scrutiny of government', 'National security policy'],
     decisions: ['d-nuclear-energy'],
-    trustScore: 36,
-    totalRatings: 14900,
   },
 
   // ── State — NSW ──────────────────────────────────────────────────────────
@@ -88,11 +73,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     electorate: 'Kogarah, NSW',
     level: 'state',
     state: 'NSW',
-    approvalRating: 49,
     keyResponsibilities: ['State leadership', 'Housing supply', 'Public transport'],
     decisions: ['d-nsw-homes', 'd-metro-west'],
-    trustScore: 51,
-    totalRatings: 7640,
   },
   {
     id: 'dm-mookhey',
@@ -103,11 +85,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     electorate: 'Lakemba, NSW',
     level: 'state',
     state: 'NSW',
-    approvalRating: 45,
     keyResponsibilities: ['NSW budget', 'Fiscal strategy', 'Infrastructure investment'],
     decisions: ['d-nsw-school-fund'],
-    trustScore: 47,
-    totalRatings: 3210,
   },
 
   // ── State — VIC ──────────────────────────────────────────────────────────
@@ -120,11 +99,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     electorate: 'Bendigo East, VIC',
     level: 'state',
     state: 'VIC',
-    approvalRating: 43,
     keyResponsibilities: ['State leadership', 'Big Build infrastructure', 'TAFE & training'],
     decisions: ['d-rail-loop', 'd-vic-free-tafe'],
-    trustScore: 45,
-    totalRatings: 6880,
   },
 
   // ── State — QLD ──────────────────────────────────────────────────────────
@@ -137,11 +113,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     electorate: 'Broadwater, QLD',
     level: 'state',
     state: 'QLD',
-    approvalRating: 52,
     keyResponsibilities: ['State leadership', 'Olympics 2032 preparation', 'Cost of living relief'],
     decisions: ['d-qld-energy', 'd-qld-olympics'],
-    trustScore: 54,
-    totalRatings: 5530,
   },
 
   // ── Local — Sydney ───────────────────────────────────────────────────────
@@ -155,11 +128,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     level: 'local',
     state: 'NSW',
     council: 'City of Sydney Council',
-    approvalRating: 61,
     keyResponsibilities: ['City planning', 'Green spaces', 'Local transport & cycling'],
     decisions: ['d-green-square', 'd-sydney-cycle'],
-    trustScore: 63,
-    totalRatings: 4120,
   },
 
   // ── Local — Melbourne ────────────────────────────────────────────────────
@@ -173,11 +143,8 @@ export const DECISION_MAKERS: DecisionMaker[] = [
     level: 'local',
     state: 'VIC',
     council: 'City of Melbourne Council',
-    approvalRating: 54,
     keyResponsibilities: ['City activation', 'Housing affordability', 'Zero-emissions transport'],
     decisions: ['d-melb-housing', 'd-yarra-precinct'],
-    trustScore: 56,
-    totalRatings: 3670,
   },
 ]
 

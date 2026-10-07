@@ -9,7 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-serif);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,84 +46,119 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  /* Kalshi accent colors */
-  --color-k-green: #2ec266;
-  --color-k-red: #f04747;
-  --color-k-amber: #f5a623;
-  --color-k-dim: #5a5a5e;
-  --color-k-subdim: #3a3a3e;
 }
 
-/* ── Light mode (kept minimal — app is dark by default) ─────────────────── */
+/* ── Civic Design System — Phase 1 token foundation ──────────────────────
+   One palette, one type system, one radius/elevation/motion contract.
+   See CIVIC_DESIGN_SYSTEM.md for the approved spec this implements.
+   Light is the default and only shipped theme this batch — `.dark` below
+   intentionally mirrors `:root` rather than introducing a second palette;
+   a real dark variant is a separate, not-yet-approved project. ────────── */
 :root {
-  --background: #0a0a0b;
-  --foreground: #e8e8e6;
-  --card: #111113;
-  --card-foreground: #e8e8e6;
-  --popover: #111113;
-  --popover-foreground: #e8e8e6;
-  --primary: #e8e8e6;
-  --primary-foreground: #0a0a0b;
-  --secondary: #1e1e20;
-  --secondary-foreground: #e8e8e6;
-  --muted: #111113;
-  --muted-foreground: #5a5a5e;
-  --accent: #1e1e20;
-  --accent-foreground: #e8e8e6;
-  --destructive: #f04747;
-  --border: #1e1e20;
-  --input: #1e1e20;
-  --ring: #e8e8e6;
-  --chart-1: #2ec266;
-  --chart-2: #5a5a5e;
-  --chart-3: #3a3a3e;
-  --chart-4: #f5a623;
-  --chart-5: #f04747;
-  --radius: 0rem;
-  --sidebar: #0a0a0b;
-  --sidebar-foreground: #e8e8e6;
-  --sidebar-primary: #e8e8e6;
-  --sidebar-primary-foreground: #0a0a0b;
-  --sidebar-accent: #1e1e20;
-  --sidebar-accent-foreground: #e8e8e6;
-  --sidebar-border: #1e1e20;
-  --sidebar-ring: #5a5a5e;
+  /* Civic semantic tokens */
+  --paper: #f7f7f4;
+  --paper-raised: #ffffff;
+  --ink: #15171b;
+  --ink-muted: #52555c;
+  --ink-faint: #8b8e94;
+  --line: #e1e3e7;
+  --line-strong: #c7cacf;
+  --civic-accent: #2e3a8c;
+  --civic-accent-foreground: #ffffff;
+  --status-positive: #1f6c4a;
+  --status-negative: #8a2a2a;
+  --status-pending: #52555c;
+  --shadow-overlay: 0 12px 32px -8px rgba(15, 17, 26, 0.18);
+  --motion-calm: color, background-color, border-color, opacity;
+  --motion-duration: 170ms;
+  --motion-easing: cubic-bezier(0.2, 0, 0, 1);
+
+  /* shadcn/Tailwind mapping — every component reading these repaints
+     through the civic tokens above with no component-level changes */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper-raised);
+  --card-foreground: var(--ink);
+  --popover: var(--paper-raised);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: #edede9;
+  --secondary-foreground: var(--ink);
+  --muted: #efefec;
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--civic-accent);
+  --accent-foreground: var(--civic-accent-foreground);
+  --destructive: var(--status-negative);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--civic-accent);
+  --chart-1: var(--civic-accent);
+  --chart-2: var(--ink-muted);
+  --chart-3: var(--line-strong);
+  --chart-4: var(--status-positive);
+  --chart-5: var(--status-negative);
+  --radius: 0.375rem;
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--paper);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--civic-accent);
 }
 
-/* ── Dark mode (same as root — always dark) ────────────────────────────── */
+/* Not yet a real dark theme — see note above. Kept identical to :root so
+   any stray `.dark` class (or a future toggle) never falls back to the
+   old trading-terminal palette. */
 .dark {
-  --background: #0a0a0b;
-  --foreground: #e8e8e6;
-  --card: #111113;
-  --card-foreground: #e8e8e6;
-  --popover: #111113;
-  --popover-foreground: #e8e8e6;
-  --primary: #e8e8e6;
-  --primary-foreground: #0a0a0b;
-  --secondary: #1e1e20;
-  --secondary-foreground: #e8e8e6;
-  --muted: #111113;
-  --muted-foreground: #5a5a5e;
-  --accent: #1e1e20;
-  --accent-foreground: #e8e8e6;
-  --destructive: #f04747;
-  --border: #1e1e20;
-  --input: #1e1e20;
-  --ring: #e8e8e6;
-  --chart-1: #2ec266;
-  --chart-2: #5a5a5e;
-  --chart-3: #3a3a3e;
-  --chart-4: #f5a623;
-  --chart-5: #f04747;
-  --radius: 0rem;
-  --sidebar: #0a0a0b;
-  --sidebar-foreground: #e8e8e6;
-  --sidebar-primary: #e8e8e6;
-  --sidebar-primary-foreground: #0a0a0b;
-  --sidebar-accent: #1e1e20;
-  --sidebar-accent-foreground: #e8e8e6;
-  --sidebar-border: #1e1e20;
-  --sidebar-ring: #5a5a5e;
+  --paper: #f7f7f4;
+  --paper-raised: #ffffff;
+  --ink: #15171b;
+  --ink-muted: #52555c;
+  --ink-faint: #8b8e94;
+  --line: #e1e3e7;
+  --line-strong: #c7cacf;
+  --civic-accent: #2e3a8c;
+  --civic-accent-foreground: #ffffff;
+  --status-positive: #1f6c4a;
+  --status-negative: #8a2a2a;
+  --status-pending: #52555c;
+  --shadow-overlay: 0 12px 32px -8px rgba(15, 17, 26, 0.18);
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper-raised);
+  --card-foreground: var(--ink);
+  --popover: var(--paper-raised);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: #edede9;
+  --secondary-foreground: var(--ink);
+  --muted: #efefec;
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--civic-accent);
+  --accent-foreground: var(--civic-accent-foreground);
+  --destructive: var(--status-negative);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--civic-accent);
+  --chart-1: var(--civic-accent);
+  --chart-2: var(--ink-muted);
+  --chart-3: var(--line-strong);
+  --chart-4: var(--status-positive);
+  --chart-5: var(--status-negative);
+  --radius: 0.375rem;
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--paper);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--civic-accent);
 }
 
 @layer base {
@@ -136,159 +171,74 @@
   html {
     @apply font-sans;
   }
+
+  /* Keyboard focus must always be visible — safety net for elements that
+     don't opt into Tailwind's focus-visible:ring utilities. */
+  :focus-visible {
+    outline: 2px solid var(--civic-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
-  /* ── Decision card typography ──────────────────────────────────────────── */
-  .decision-title   { @apply text-base font-bold leading-snug tracking-tight; }
-  .decision-meta    { @apply text-xs text-muted-foreground; }
-  .decision-summary { @apply text-sm text-muted-foreground leading-relaxed; }
+  /* ── Civic Design System — type scale ──────────────────────────────────
+     Serif headings, sans body, mono metadata. Bind to these classes from
+     shared primitives rather than one-off clamp()/text-[Npx] values. */
+  .text-page-title    { font-family: var(--font-heading); font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); }
+  .text-section-title { font-family: var(--font-heading); font-size: 1.375rem; font-weight: 600; line-height: 1.25; color: var(--ink); }
+  .text-card-title     { font-family: var(--font-heading); font-size: 1.0625rem; font-weight: 600; line-height: 1.35; color: var(--ink); }
+  .text-body-copy       { font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 400; line-height: 1.6; color: var(--ink); }
+  .text-metadata       { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
+  .text-micro-label    { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }
 
-  /* ── Impact badge semantic colors ──────────────────────────────────────── */
-  .impact-high   { color: #f04747; background: rgba(240,71,71,0.1); box-shadow: inset 0 0 0 1px rgba(240,71,71,0.2); }
-  .impact-medium { color: #f5a623; background: rgba(245,166,35,0.1); box-shadow: inset 0 0 0 1px rgba(245,166,35,0.2); }
-  .impact-low    { color: #5a5a5e; background: rgba(90,90,94,0.1); box-shadow: inset 0 0 0 1px rgba(90,90,94,0.2); }
-
-  /* ── Sentiment colors ──────────────────────────────────────────────────── */
-  .sentiment-positive { color: #2ec266; }
-  .sentiment-negative { color: #f04747; }
-
-  /* ── Trending accent ───────────────────────────────────────────────────── */
-  .trending-pill { color: #e8e8e6; background: rgba(232,232,230,0.08); box-shadow: inset 0 0 0 1px rgba(232,232,230,0.12); }
-
-  /* ── Kalshi grade badges ───────────────────────────────────────────────── */
-  .k-grade-a { color: #2ec266; border: 1px solid #0e3020; background: #041008; }
-  .k-grade-b { color: #2ec266; border: 1px solid #0e3020; background: #081a10; }
-  .k-grade-c { color: #f5a623; border: 1px solid #3a2e10; background: #1e1800; }
-  .k-grade-d { color: #f04747; border: 1px solid #3a1414; background: #1e0a0a; }
-  .k-grade-f { color: #f04747; border: 1px solid #3a1414; background: #200a0a; }
-}
-
-@layer utilities {
-  /* Legacy gradient utilities — kept for compatibility with other pages */
-  .gradient-text {
-    color: #e8e8e6;
-  }
-
-  .glow-primary {
-    box-shadow: none;
-  }
-
-  .glow-sm {
-    box-shadow: none;
-  }
-
-  .hero-gradient {
-    background: transparent;
+  .transition-calm {
+    transition-property: var(--motion-calm);
+    transition-duration: var(--motion-duration);
+    transition-timing-function: var(--motion-easing);
   }
 }
 
-/* ── Simple Stickee experience ─────────────────────────────────────────── */
+/* ── Simple Stickee experience ─────────────────────────────────────────
+   Re-themed onto the civic tokens above (Phase 1). Structure/markup is
+   unchanged — only colour, radius, elevation and motion were rewritten
+   to drop every Part 5 ban-list violation (shadow, gradient, pill radius,
+   hover-lift, translucent/blur panels, off-palette orange). A full
+   component-level rebuild of these pages is Phase 3, not this batch. */
 .simple-nav {
-  border-bottom: 1px solid #dfe3dc;
-  background: rgba(250, 249, 244, 0.94);
-  color: #17231c;
-  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-raised);
+  color: var(--ink);
 }
 
-.simple-brand { display: flex; align-items: center; gap: 10px; color: #17231c; font-size: 20px; font-weight: 650; letter-spacing: -0.04em; }
-.simple-brand-mark { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 9px 9px 9px 2px; background: #d85f36; color: white; font-size: 15px; font-weight: 700; }
-.simple-nav-link { position: relative; color: #656c67; font-size: 13px; font-weight: 550; transition: color 160ms ease; }
-.simple-nav-link:hover, .simple-nav-link.is-active { color: #17231c; }
-.simple-nav-link.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -23px; height: 2px; background: #d85f36; }
-.simple-support-link { align-items: center; border: 1px solid #17231c; border-radius: 999px; padding: 7px 14px; color: #17231c; font-size: 12px; font-weight: 650; transition: all 160ms ease; }
-.simple-support-link:hover { background: #17231c; color: white; }
-.simple-bottom-nav { border-top: 1px solid #dfe3dc; background: rgba(250,249,244,.97); }
+.simple-brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 20px; font-weight: 650; letter-spacing: -0.04em; }
+.simple-brand-mark { display: grid; place-items: center; width: 29px; height: 29px; border-radius: var(--radius); background: var(--civic-accent); color: var(--civic-accent-foreground); font-size: 15px; font-weight: 700; }
+.simple-nav-link { position: relative; color: var(--ink-muted); font-size: 13px; font-weight: 550; transition: color var(--motion-duration) var(--motion-easing); }
+.simple-nav-link:hover, .simple-nav-link.is-active { color: var(--ink); }
+.simple-nav-link.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -23px; height: 2px; background: var(--civic-accent); }
+.simple-support-link { align-items: center; border: 1px solid var(--ink); border-radius: var(--radius); padding: 7px 14px; color: var(--ink); font-size: 12px; font-weight: 650; transition: background var(--motion-duration) var(--motion-easing), color var(--motion-duration) var(--motion-easing); }
+.simple-support-link:hover { background: var(--ink); color: var(--paper); }
+.simple-bottom-nav { border-top: 1px solid var(--line); background: var(--paper-raised); }
 
-.simple-home { min-height: 100%; background: #faf9f4; color: #17231c; }
-.simple-shell { width: min(1120px, calc(100% - 40px)); margin-inline: auto; }
-.simple-hero { overflow: hidden; border-bottom: 1px solid #dfe3dc; background: radial-gradient(circle at 80% 10%, #f1dfca 0, transparent 34%), #faf9f4; }
-.simple-hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: clamp(48px, 8vw, 100px); align-items: center; min-height: 555px; padding-block: 72px; }
-.simple-eyebrow, .simple-kicker { color: #687068; font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
-.simple-eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 22px; }
-.simple-eyebrow span { width: 8px; height: 8px; border-radius: 50%; background: #d85f36; }
-.simple-hero h1 { max-width: 720px; font-size: clamp(45px, 6vw, 76px); font-weight: 570; line-height: .98; letter-spacing: -.055em; }
-.simple-lede { max-width: 580px; margin-top: 26px; color: #59625c; font-size: 18px; line-height: 1.65; }
-.simple-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-.simple-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 47px; border-radius: 999px; padding: 0 20px; font-size: 13px; font-weight: 700; transition: transform 160ms ease, background 160ms ease; }
-.simple-button:hover { transform: translateY(-1px); }
-.simple-button-primary { background: #17231c; color: #fff; }
-.simple-button-primary:hover { background: #2d3d33; }
-.simple-button-secondary { border: 1px solid #cbd0ca; background: rgba(255,255,255,.55); color: #17231c; }
-.simple-score-card { border: 1px solid #d4d9d2; border-radius: 24px; background: rgba(255,255,255,.78); padding: 26px; box-shadow: 0 24px 70px rgba(37,53,44,.08); }
-.simple-score-topline { display: flex; justify-content: space-between; border-bottom: 1px solid #e3e6e1; padding-bottom: 18px; color: #656d67; font-size: 12px; font-weight: 650; }
-.simple-live { display: flex; align-items: center; gap: 7px; }
-.simple-live i { width: 7px; height: 7px; border-radius: 50%; background: #4f8667; box-shadow: 0 0 0 4px #e3eee7; }
-.simple-score-main { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: end; padding-block: 30px; }
-.simple-score-main strong { font-size: clamp(64px, 8vw, 88px); font-weight: 540; line-height: .85; letter-spacing: -.07em; }
-.simple-score-main > div > span { margin-left: 5px; color: #8b928d; font-size: 14px; }
-.simple-score-main > div > p { margin-top: 12px; color: #747b76; font-size: 12px; }
-.simple-score-summary { border-left: 1px solid #e1e4df; padding-left: 24px; }
-.simple-score-summary span { display: inline-flex; margin: 0 !important; border-radius: 999px; background: #fff0c9; padding: 5px 10px; color: #75540c !important; font-size: 11px !important; font-weight: 700; }
-.simple-score-summary p { color: #59625c !important; font-size: 13px !important; line-height: 1.5; }
-.simple-card-link { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #e3e6e1; padding-top: 18px; color: #445049; font-size: 12px; font-weight: 700; }
-.simple-quick-section { border-bottom: 1px solid #dfe3dc; background: #fff; }
-.simple-quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
-.simple-quick-card { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; min-height: 110px; padding: 22px 28px; border-right: 1px solid #e3e6e1; transition: background 160ms ease; }
-.simple-quick-card:first-child { border-left: 1px solid #e3e6e1; }
-.simple-quick-card:hover { background: #f8f7f1; }
-.simple-icon-box { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: #e7eee9; color: #315843; }
-.simple-quick-card strong, .simple-quick-card small { display: block; }
-.simple-quick-card strong { margin-bottom: 3px; font-size: 14px; }
-.simple-quick-card small { color: #7a817c; font-size: 11px; }
-.simple-section { padding-block: 88px; }
-.simple-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 34px; }
-.simple-section-heading h2, .simple-cta h2 { margin-top: 8px; font-size: clamp(30px, 4vw, 43px); font-weight: 560; line-height: 1.08; letter-spacing: -.045em; }
-.simple-section-heading > a { display: flex; align-items: center; gap: 8px; color: #48534c; font-size: 12px; font-weight: 700; }
-.simple-issue-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid #d9ddd7; border-left: 1px solid #d9ddd7; }
-.simple-issue-card { min-height: 292px; border-right: 1px solid #d9ddd7; border-bottom: 1px solid #d9ddd7; background: rgba(255,255,255,.45); padding: 24px; transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease; }
-.simple-issue-card:hover { position: relative; z-index: 1; transform: translateY(-4px); background: white; box-shadow: 0 18px 45px rgba(32,45,37,.08); }
-.simple-issue-head { display: flex; align-items: start; justify-content: space-between; margin-bottom: 44px; }
-.simple-issue-head > strong { color: #a7ada8; font-size: 28px; font-weight: 500; letter-spacing: -.04em; }
-.simple-trend { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 5px 8px; font-size: 10px; font-weight: 700; }
-.simple-trend.up { background: #e6f1ea; color: #31714e; }
-.simple-trend.down { background: #f7e6de; color: #a44a2f; }
-.simple-issue-card h3 { margin-bottom: 11px; font-size: 19px; font-weight: 650; letter-spacing: -.02em; }
-.simple-issue-card p { color: #707872; font-size: 12px; line-height: 1.6; }
-.simple-read-more { display: flex; align-items: center; gap: 3px; margin-top: 25px; font-size: 11px; font-weight: 700; }
-.simple-decisions-wrap { width: 100%; background: #eef0eb; }
-.simple-decision-list { border-top: 1px solid #cfd5ce; }
-.simple-decision-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 22px; align-items: center; border-bottom: 1px solid #cfd5ce; padding: 24px 4px; }
-.simple-decision-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #fff; color: #4c6256; }
-.simple-decision-copy small { display: block; margin-bottom: 5px; color: #778079; font-size: 9px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
-.simple-decision-copy strong { display: block; font-size: 15px; }
-.simple-decision-copy p { max-width: 720px; margin-top: 5px; overflow: hidden; color: #69716b; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-.simple-impact { border-radius: 999px; background: #fff; padding: 6px 10px; color: #687169; font-size: 10px; font-weight: 700; }
-.simple-cta { display: flex; align-items: center; justify-content: space-between; gap: 40px; margin-block: 88px; border-radius: 28px; background: #20372b; padding: clamp(34px, 6vw, 66px); color: #fff; }
-.simple-cta .simple-kicker { color: #a9c1b2; }
-.simple-button-light { background: #f5e6cd; color: #24372d; white-space: nowrap; }
-
-@media (max-width: 900px) {
-  .simple-hero-grid { grid-template-columns: 1fr; gap: 44px; padding-block: 58px; }
-  .simple-score-card { max-width: 620px; }
-  .simple-issue-grid { grid-template-columns: repeat(2, 1fr); }
-  .simple-quick-card { padding-inline: 18px; }
-  .simple-quick-card > svg { display: none; }
-}
-
-@media (max-width: 640px) {
-  .simple-shell { width: min(100% - 30px, 1120px); }
-  .simple-hero-grid { min-height: auto; padding-block: 46px 54px; }
-  .simple-hero h1 { font-size: 43px; }
-  .simple-lede { font-size: 16px; }
-  .simple-button { width: 100%; }
-  .simple-score-card { padding: 20px; border-radius: 19px; }
-  .simple-score-main { grid-template-columns: 1fr; }
-  .simple-score-summary { border-top: 1px solid #e1e4df; border-left: 0; padding-top: 18px; padding-left: 0; }
-  .simple-quick-grid { grid-template-columns: 1fr; }
-  .simple-quick-card, .simple-quick-card:first-child { min-height: 88px; border-right: 1px solid #e3e6e1; border-bottom: 1px solid #e3e6e1; border-left: 1px solid #e3e6e1; }
-  .simple-section { padding-block: 62px; }
-  .simple-section-heading { align-items: start; flex-direction: column; margin-bottom: 26px; }
-  .simple-issue-grid { grid-template-columns: 1fr; }
-  .simple-issue-card { min-height: 240px; }
-  .simple-issue-head { margin-bottom: 28px; }
-  .simple-decision-row { grid-template-columns: auto 1fr auto; gap: 13px; }
-  .simple-decision-row > svg { display: none; }
-  .simple-decision-copy p, .simple-impact { display: none; }
-  .simple-cta { align-items: flex-start; flex-direction: column; margin-block: 62px; }
-}
+/* Phase 3A (2026-08-05): the homepage itself no longer uses any of the
+ * page-scoped .simple-* classes that used to live here — it now composes
+ * PageShell/SectionHeader/ArticleCard/EmptyState directly, per
+ * DESIGN_SYSTEM_PHASE_3A_HOME_REPORT.md. Everything above this comment
+ * (simple-nav, simple-brand, simple-nav-link, simple-support-link,
+ * simple-bottom-nav) remains because Navbar and BottomNav still consume it;
+ * removing those would be a Phase 6 chrome migration, out of this batch's
+ * scope. Every homepage-only rule that used to follow (.simple-home,
+ * .simple-shell, .simple-hero*, .simple-score-*, .simple-quick-*,
+ * .simple-issue-*, .simple-decision-*, .simple-cta, .simple-forecast-*, and
+ * their responsive media queries) has been deleted outright — confirmed via
+ * repo-wide grep to have zero remaining consumers. */

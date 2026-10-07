@@ -506,7 +506,6 @@ function Field({
 }) {
   return (
     <input
-      // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus={autoFocus}
       type={type}
       value={value}

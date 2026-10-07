@@ -2,23 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, FileText, Landmark, Users, Sparkles } from 'lucide-react'
-
-const NAV_ITEMS = [
-  { href: '/',            label: 'Home',    icon: Home },
-  { href: '/issues', label: 'Issues', icon: FileText },
-  { href: '/decisions', label: 'Decisions', icon: Landmark },
-  { href: '/leaders', label: 'People', icon: Users },
-  { href: '/simulator', label: 'Test', icon: Sparkles, accent: true },
-]
+import { PRIMARY_NAV, isPrimaryNavItemActive } from '@/lib/navigation'
 
 export function BottomNav() {
   const pathname = usePathname()
-
-  function isActive(href: string) {
-    if (href === '/') return pathname === '/'
-    return pathname === href || pathname.startsWith(href + '/')
-  }
 
   return (
     <nav
@@ -27,17 +14,18 @@ export function BottomNav() {
       aria-label="Mobile navigation"
     >
       <div className="flex items-center justify-around px-2 py-3">
-        {NAV_ITEMS.map(({ href, label, icon: Icon, accent }) => {
-          const active = isActive(href)
-          const color = accent ? '#d85f36' : active ? '#17231c' : '#7a817c'
+        {PRIMARY_NAV.map(item => {
+          const active = isPrimaryNavItemActive(item, pathname)
+          const color = active ? '#17231c' : '#7a817c'
           return (
             <Link
-              key={href}
-              href={href}
+              key={item.id}
+              href={item.href}
+              aria-current={active ? 'page' : undefined}
               className="flex flex-col items-center gap-1 px-2 py-1 min-w-[44px] relative"
             >
               <div className="relative">
-                <Icon
+                <item.icon
                   className="h-4.5 w-4.5"
                   style={{ color }}
                 />
@@ -46,7 +34,7 @@ export function BottomNav() {
                 className="text-[10px] font-semibold"
                 style={{ color }}
               >
-                {label}
+                {item.label}
               </span>
             </Link>
           )

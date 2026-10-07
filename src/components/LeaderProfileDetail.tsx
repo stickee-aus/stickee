@@ -58,7 +58,7 @@ export function LeaderProfileDetail({ leader }: LeaderProfileDetailProps) {
           href="/leaders"
           className="inline-flex items-center gap-1 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
         >
-          ← Leaders
+          ← People
         </Link>
 
         <div className="flex items-start justify-between gap-4 flex-wrap">

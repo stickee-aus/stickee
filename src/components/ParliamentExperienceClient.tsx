@@ -1,18 +1,22 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { ChevronDown } from 'lucide-react'
 import { PriorityBillFocus } from '@/components/PriorityBillFocus'
-import { BillSmartRow } from '@/components/BillSmartRow'
 import { MPActionStrip } from '@/components/MPActionStrip'
 import { ChamberSummaryCard } from '@/components/ChamberSummaryCard'
 import { TwoHousesExplainer } from '@/components/TwoHousesExplainer'
+import { SectionHeader } from '@/components/ui/section-header'
+import { RecordRow } from '@/components/ui/record-row'
+import { StatusLabel } from '@/components/ui/status-label'
+import { LinkButton } from '@/components/LinkButton'
+import { EmptyState } from '@/components/ui/empty-state'
 import { useElectorate } from '@/hooks/useElectorate'
-import { useStreak } from '@/hooks/useStreak'
 import {
   billVoteRows as mockBillRows,
   selectTodaysAction,
+  parliamentSupportPct,
   ELECTORATE_MP_MAP as mockElectorateMPMap,
-  type BillUrgency,
 } from '@/lib/mock-parliament-data'
 import { MPIndex as mockMPIndex } from '@/lib/mock-data'
 import type { MP } from '@/types'
@@ -30,42 +34,6 @@ interface ParliamentExperienceClientProps {
   voteMatrix?:      Record<string, Record<string, 'for' | 'against' | 'absent'>>
 }
 
-// ─── Section divider ──────────────────────────────────────────────────────────
-
-function SectionDivider({ label }: { label: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-3 w-px" style={{ background: '#2ec266' }} />
-      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-        {label}
-      </p>
-    </div>
-  )
-}
-
-// ─── Bill sorting ─────────────────────────────────────────────────────────────
-
-const URGENCY_SORT_SCORE: Record<BillUrgency, number> = {
-  'swing-vote': 4,
-  'highly-contested': 3,
-  'closing-soon': 2,
-  'just-moved': 1,
-}
-
-function sortBills(bills: BillVoteRow[]): BillVoteRow[] {
-  return [...bills].sort((a, b) => {
-    if (a.status === 'ongoing' && b.status !== 'ongoing') return -1
-    if (b.status === 'ongoing' && a.status !== 'ongoing') return 1
-    const au = a.urgency ? URGENCY_SORT_SCORE[a.urgency] : 0
-    const bu = b.urgency ? URGENCY_SORT_SCORE[b.urgency] : 0
-    if (au !== bu) return bu - au
-    if (a.daysUntilVote !== undefined && b.daysUntilVote !== undefined) return a.daysUntilVote - b.daysUntilVote
-    if (a.daysUntilVote !== undefined) return -1
-    if (b.daysUntilVote !== undefined) return 1
-    return b.controversy - a.controversy
-  })
-}
-
 // ─── Education accordion ──────────────────────────────────────────────────────
 
 function EducationAccordion() {
@@ -74,37 +42,25 @@ function EducationAccordion() {
     <div>
       <button
         onClick={() => setOpen(v => !v)}
-        className="flex items-center gap-2 w-full border border-border px-5 py-4 text-left hover:bg-card/30 transition-colors"
+        aria-expanded={open}
+        className="transition-calm flex w-full items-center gap-2 border border-border px-5 py-4 text-left hover:bg-muted/40"
       >
         <div className="flex-1 min-w-0">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            Learn how parliament works
-          </p>
-          <p className="font-mono text-[9px] text-muted-foreground/50 mt-0.5">
+          <p className="text-micro-label">How Parliament works</p>
+          <p className="text-xs text-muted-foreground/60 mt-0.5">
             How a bill becomes law · House vs Senate explained
           </p>
         </div>
-        <span className="font-mono text-[10px] text-muted-foreground/40 shrink-0">{open ? '↑' : '↓'}</span>
+        <ChevronDown size={14} className={open ? 'rotate-180 shrink-0 text-muted-foreground/40' : 'shrink-0 text-muted-foreground/40'} aria-hidden="true" />
       </button>
 
       {open && (
-        <div className="border border-t-0 border-border animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="border border-t-0 border-border">
           <TwoHousesExplainer />
         </div>
       )}
     </div>
   )
-}
-
-// ─── Filter tabs ──────────────────────────────────────────────────────────────
-
-type BillFilter = 'all' | 'ongoing' | 'passed' | 'most-urgent'
-
-const FILTER_LABELS: Record<BillFilter, string> = {
-  'all': 'All',
-  'ongoing': 'Ongoing',
-  'passed': 'Passed',
-  'most-urgent': 'Most Urgent',
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -117,20 +73,24 @@ export function ParliamentExperienceClient({
   bills,
   voteMatrix,
 }: ParliamentExperienceClientProps) {
-  const [expandedBillId, setExpandedBillId] = useState<string | null>(null)
-  const [chamberBillId, setChamberBillId] = useState<string | null>(null)
-  const [activeBillFilter, setActiveBillFilter] = useState<BillFilter>('all')
   const [pressureSummaries, setPressureSummaries] = useState<PressureSummary[]>([])
   const [allCampaigns, setAllCampaigns] = useState<Record<string, 'support' | 'oppose'>>({})
 
-  const { streak, recordAction } = useStreak()
   const {
     electorate,
     mp: electorateMP,
+    detectState,
+    suggestedElectorate,
     setElectorate,
     clearElectorate,
     detectByLocation,
+    confirmSuggestedElectorate,
+    rejectSuggestedElectorate,
   } = useElectorate()
+
+  // Data source classification — surfaced to the reader via MetadataLine/StatusLabel
+  // wherever a claim on this page depends on it. Never silently treated as equivalent.
+  const source: 'database' | 'mock' = bills && bills.length > 0 ? 'database' : 'mock'
 
   const houseBills = bills ?? mockBillRows
   const MPIndex = memberIndex ?? mockMPIndex
@@ -140,17 +100,11 @@ export function ParliamentExperienceClient({
     electorate ? (MPIndex[ELECTORATE_MP_MAP[electorate] ?? ''] ?? null) : null
   )
 
-  const sortedBills = useMemo(() => sortBills(houseBills), [houseBills])
   const priorityBill = useMemo(() => selectTodaysAction(houseBills, allCampaigns), [houseBills, allCampaigns])
-
-  const filteredBills = useMemo(() => {
-    switch (activeBillFilter) {
-      case 'ongoing':     return sortedBills.filter(b => b.status === 'ongoing')
-      case 'passed':      return sortedBills.filter(b => b.status === 'passed')
-      case 'most-urgent': return sortedBills.filter(b => b.urgency === 'swing-vote' || b.urgency === 'closing-soon')
-      default:            return sortedBills
-    }
-  }, [sortedBills, activeBillFilter])
+  const otherBills = useMemo(
+    () => houseBills.filter(b => b.id !== priorityBill?.id).slice(0, 3),
+    [houseBills, priorityBill]
+  )
 
   // Read campaigns from localStorage on mount
   useEffect(() => {
@@ -165,7 +119,7 @@ export function ParliamentExperienceClient({
     fetch('/api/bills/pressure-summary')
       .then(r => r.ok ? r.json() as Promise<PressureSummary[]> : Promise.resolve([]))
       .then(setPressureSummaries)
-      .catch(() => { /* fall back to mock counts */ })
+      .catch(() => { /* real count unavailable — components fall back to an honest zero */ })
   }, [])
 
   function getPressureSummary(billId: string): PressureSummary | null {
@@ -177,109 +131,93 @@ export function ParliamentExperienceClient({
     const next = { ...allCampaigns, [billId]: stance }
     setAllCampaigns(next)
     try { localStorage.setItem('stickee:campaigns', JSON.stringify(next)) } catch { /* ignore */ }
-    recordAction()
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
 
-      {/* ── 1. PRIORITY FOCUS ───────────────────────────────────────────────── */}
-      {priorityBill && (
-        <PriorityBillFocus
-          bill={priorityBill}
-          pressureSummary={getPressureSummary(priorityBill.id)}
-          mp={legacyElectorateMP}
-          electorate={electorate}
-          userStance={allCampaigns[priorityBill.id] ?? null}
-          streakCount={streak.count}
-          isActiveToday={streak.isActiveToday}
-          allCampaigns={allCampaigns}
-          voteMatrix={voteMatrix}
-          onTakeStance={handleStanceTaken}
-        />
-      )}
+      {/* ── 1. CURRENT PARLIAMENTARY ACTIVITY ──────────────────────────────── */}
+      <section className="space-y-4">
+        <SectionHeader title="Current parliamentary activity" />
 
-      {/* ── 2. BILL FEED ────────────────────────────────────────────────────── */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <SectionDivider label="Active Bills" />
-
-          {/* Filter tabs */}
-          <div className="flex items-center gap-5">
-            {(Object.keys(FILTER_LABELS) as BillFilter[]).map(f => (
-              <button
-                key={f}
-                onClick={() => setActiveBillFilter(f)}
-                className="relative pb-3 font-mono text-[10px] uppercase tracking-wider transition-colors"
-                style={{ color: activeBillFilter === f ? '#e8e8e6' : '#5a5a5e' }}
-              >
-                {FILTER_LABELS[f]}
-                {activeBillFilter === f && (
-                  <span
-                    className="absolute bottom-0 left-0 right-0 h-px"
-                    style={{ background: '#e8e8e6' }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {filteredBills.length === 0 ? (
-          <div className="border border-border px-4 py-8 text-center">
-            <p className="font-mono text-xs text-muted-foreground">No bills match this filter.</p>
-          </div>
+        {priorityBill ? (
+          <PriorityBillFocus
+            bill={priorityBill}
+            pressureSummary={getPressureSummary(priorityBill.id)}
+            mp={legacyElectorateMP}
+            electorate={electorate}
+            userStance={allCampaigns[priorityBill.id] ?? null}
+            source={source}
+            onTakeStance={handleStanceTaken}
+          />
         ) : (
-          <div className="divide-y divide-border border border-border overflow-hidden">
-            {filteredBills.map(bill => (
-              <BillSmartRow
-                key={bill.id}
-                bill={bill}
-                pressureSummary={getPressureSummary(bill.id)}
-                electorate={electorate}
-                mpName={legacyElectorateMP?.name ?? null}
-                isExpanded={expandedBillId === bill.id}
-                userStance={allCampaigns[bill.id] ?? null}
-                onToggleExpand={id => setExpandedBillId(prev => prev === id ? null : id)}
-                onStanceTaken={handleStanceTaken}
-                onViewChamber={id => {
-                  setChamberBillId(id)
-                  // Scroll to chamber section
-                  setTimeout(() => {
-                    document.getElementById('chamber-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  }, 100)
-                }}
-              />
-            ))}
+          <EmptyState
+            variant="no-data"
+            title="No active parliamentary item right now"
+            description="Check back once a new bill is before the House."
+          />
+        )}
+
+        {otherBills.length > 0 && (
+          <div role="list">
+            {otherBills.map(bill => {
+              const parlPct = parliamentSupportPct(bill)
+              return (
+                <div role="listitem" key={bill.id}>
+                  <RecordRow
+                    label={bill.name}
+                    meta={`${bill.totalFor} for · ${bill.totalAgainst} against`}
+                    value={<span className="font-mono text-sm text-foreground">{parlPct}%</span>}
+                    status={bill.status !== 'ongoing' ? (
+                      <StatusLabel status={bill.status === 'passed' ? 'passed' : 'voided'} label={bill.status === 'passed' ? 'Passed' : 'Failed'} />
+                    ) : undefined}
+                  />
+                </div>
+              )
+            })}
           </div>
         )}
+
+        <LinkButton href="/issues" variant="outline" size="sm">
+          View all issues →
+        </LinkButton>
       </section>
 
-      {/* ── 3. YOUR MP ──────────────────────────────────────────────────────── */}
-      <section className="space-y-3">
-        <SectionDivider label="Your Rep" />
+      {/* ── 2. YOUR REPRESENTATIVE ──────────────────────────────────────────── */}
+      <section className="space-y-4">
+        <SectionHeader title="Your representative" />
         <MPActionStrip
           mp={legacyElectorateMP}
           electorate={electorate}
-          bills={houseBills}
-          voteMatrix={voteMatrix}
-          allCampaigns={allCampaigns}
+          detectState={detectState}
+          suggestedElectorate={suggestedElectorate}
           onDetectByLocation={detectByLocation}
           onManualSetElectorate={setElectorate}
           onClearElectorate={clearElectorate}
+          onConfirmSuggested={confirmSuggestedElectorate}
+          onRejectSuggested={rejectSuggestedElectorate}
         />
       </section>
 
-      {/* ── 4. CHAMBER ──────────────────────────────────────────────────────── */}
-      <section className="space-y-3" id="chamber-section">
-        <SectionDivider label="Chamber" />
+      {/* ── 3. PARLIAMENT (CHAMBER) ─────────────────────────────────────────── */}
+      <section className="space-y-4" id="chamber-section">
+        <SectionHeader title="Parliament" />
         <ChamberSummaryCard
-          selectedBillId={chamberBillId}
+          selectedBillId={priorityBill?.id ?? null}
           members={members}
           memberStates={memberStates}
           bills={houseBills}
           voteMatrix={voteMatrix}
         />
+      </section>
+
+      {/* ── 4. RELATED ───────────────────────────────────────────────────────── */}
+      <section className="space-y-4">
+        <SectionHeader title="Related" />
+        <div className="flex flex-wrap gap-3">
+          <LinkButton href="/issues" variant="outline">Full issue &amp; bill catalogue</LinkButton>
+          <LinkButton href="/leaders" variant="outline">All representatives</LinkButton>
+        </div>
       </section>
 
       {/* ── 5. EDUCATION (collapsed) ────────────────────────────────────────── */}

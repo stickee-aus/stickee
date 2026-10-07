@@ -71,8 +71,6 @@ export function BadgeChip({ def, earned, earnedAt, size = 'md' }: BadgeChipProps
 
 // ─── Full badge grid ──────────────────────────────────────────────────────────
 
-type CategoryFilter = 'all' | BadgeDef['category']
-
 const CATEGORY_LABELS: Record<BadgeDef['category'], string> = {
   streak:      'Streak',
   prediction:  'Prediction',

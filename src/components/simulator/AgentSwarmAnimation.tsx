@@ -56,7 +56,7 @@ interface Props {
 }
 
 export function AgentSwarmAnimation({ status }: Props) {
-  const dots = useMemo(layoutDots, [])
+  const dots = useMemo(() => layoutDots(), [])
   const [tick, setTick] = useState(0)
 
   useEffect(() => {

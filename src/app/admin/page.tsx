@@ -23,6 +23,38 @@ export const metadata: Metadata = {
 
 const WINDOW_DAYS = 14
 
+type AdminClient = ReturnType<typeof createAdminSupabaseClient>
+type TableQuery = ReturnType<AdminClient['from']>
+type CountQuery = ReturnType<TableQuery['select']>
+
+interface ContentReportRow {
+  id: string
+  target_type: string
+  target_id: string
+  reason: string
+  notes: string | null
+  status: string
+}
+
+interface ModerationActionRow {
+  id: string
+  target_type: string
+  target_id: string
+  action: string
+  notes: string | null
+  created_at: string
+}
+
+interface RecentUserRow {
+  user_id: string
+  handle: string | null
+  display_name: string | null
+  electorate: string | null
+  civic_score: number | null
+  onboarding_completed_at: string | null
+  created_at: string
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function startOfDayUTC(d: Date) {
@@ -70,7 +102,7 @@ function deltaPct(today: number, yesterday: number) {
   return Math.round(((today - yesterday) / yesterday) * 100)
 }
 
-async function getCount(table: string, filters?: (q: any) => any) {
+async function getCount(table: string, filters?: (query: CountQuery) => CountQuery) {
   const admin = createAdminSupabaseClient()
   let q = admin.from(table).select('*', { count: 'exact', head: true })
   if (filters) q = filters(q)
@@ -339,7 +371,7 @@ export default async function AdminOverviewPage() {
             <Empty>No content reports yet.</Empty>
           ) : (
             <div className="divide-y divide-border">
-              {(recentReports.data as any[]).map(report => (
+              {(recentReports.data as ContentReportRow[]).map(report => (
                 <form key={report.id} action={updateReportAction} className="space-y-3 px-5 py-4">
                   <input type="hidden" name="reportId" value={report.id} />
                   <input type="hidden" name="targetType" value={report.target_type} />
@@ -404,7 +436,7 @@ export default async function AdminOverviewPage() {
             <Empty>No moderation actions yet.</Empty>
           ) : (
             <div className="divide-y divide-border">
-              {(recentActions.data as any[]).map(a => (
+              {(recentActions.data as ModerationActionRow[]).map(a => (
                 <div key={a.id} className="px-5 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm text-foreground truncate">{a.action}</p>
@@ -440,7 +472,7 @@ export default async function AdminOverviewPage() {
           <Empty>No user profiles yet.</Empty>
         ) : (
           <div className="divide-y divide-border">
-            {(recentUsers.data as any[]).map(row => (
+            {(recentUsers.data as RecentUserRow[]).map(row => (
               <div key={row.user_id} className="flex items-center gap-4 px-5 py-3">
                 <Avatar name={row.display_name ?? row.handle ?? row.user_id} />
                 <div className="min-w-0 flex-1">

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Lightweight, dependency-free secret scanner.
 //
-// Scans every file Git currently tracks (plus anything staged) for patterns that
+// Scans every tracked, staged, and untracked non-ignored file for patterns that
 // look like committed credentials. This intentionally does not call any external
 // service and does not print matched values — only file path + line number + which
 // pattern matched, so a real secret is never echoed to CI logs.
@@ -28,10 +28,12 @@ const ALLOWLIST = new Set([
   'MVP_LAUNCH.example.md',
 ])
 
-function trackedFiles() {
-  const out = execSync('git ls-files -z', { maxBuffer: 1024 * 1024 * 64 })
+function repositoryFiles() {
+  const out = execSync('git ls-files -z --cached --others --exclude-standard', {
+    maxBuffer: 1024 * 1024 * 64,
+  })
     .toString('utf8')
-  return out.split('\0').filter(Boolean)
+  return [...new Set(out.split('\0').filter(Boolean))]
 }
 
 function isBinary(buf) {
@@ -62,15 +64,15 @@ function scanFile(path) {
 }
 
 function main() {
-  const files = trackedFiles().filter(f => !ALLOWLIST.has(f))
+  const files = repositoryFiles().filter(f => !ALLOWLIST.has(f))
   const allHits = files.flatMap(scanFile)
 
   if (allHits.length === 0) {
-    console.log('secret-scan: no suspicious patterns found in tracked files.')
+    console.log('secret-scan: no suspicious patterns found in tracked and untracked files.')
     process.exit(0)
   }
 
-  console.error(`secret-scan: ${allHits.length} suspicious pattern(s) found (values not printed):`)
+  console.error(`secret-scan: ${allHits.length} suspicious pattern(s) found in tracked or untracked files (values not printed):`)
   for (const hit of allHits) {
     console.error(`  ${hit.path}:${hit.line} — matched "${hit.pattern}"`)
   }

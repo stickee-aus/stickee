@@ -85,12 +85,12 @@ export function SimulateThisButton({ entity, size = 'sm', label, className }: Pr
 
 function defaultLabel(type: EntityRef['type']): string {
   switch (type) {
-    case 'leader':   return "Simulate this leader's stance"
-    case 'bill':     return 'Simulate this bill'
-    case 'decision': return 'Simulate this decision'
-    case 'campaign': return 'Simulate this campaign'
-    case 'market':   return 'Simulate this market'
+    case 'leader':   return "Explore scenarios for this leader"
+    case 'bill':     return 'Explore scenarios for this bill'
+    case 'decision': return 'Explore scenarios for this decision'
+    case 'campaign': return 'Explore scenarios for this campaign'
+    case 'market':   return 'Explore scenarios for this market'
     case 'issue':
-    default:         return 'Simulate this'
+    default:         return 'Explore scenarios'
   }
 }

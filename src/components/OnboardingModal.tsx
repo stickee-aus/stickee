@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { CheckCircle2, X, MapPin, Layers, Mail, ChevronRight, TrendingUp, ShieldCheck } from 'lucide-react'
-import { CIVIC_PILLARS } from '@/lib/mock-civic-data'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

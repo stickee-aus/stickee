@@ -1,6 +1,16 @@
 import { PillarScoreboard } from '@/components/PillarScoreboard'
-import { CivicScorecard } from '@/components/CivicScorecard'
+import { EmptyState } from '@/components/ui/empty-state'
 import { CIVIC_PILLARS } from '@/lib/mock-civic-data'
+
+// Politician scorecards used to render here from POLITICIAN_SCORECARDS —
+// fabricated per-MP "Civic Score" and pillar ratings with no real voting-
+// record methodology behind them (the same defect class as the removed
+// HouseChamber generateScores() and DecisionMaker.approvalRating/trustScore
+// fields). Removed per STICKEE_V1_BATCH_8_TRUTHFULNESS_REPORT.md. The
+// underlying CivicScorecard component and mock-civic-data.ts are kept, not
+// deleted, in case a real, sourced replacement is built per
+// docs/MP_SCORE_METHODOLOGY_REQUIREMENTS.md — but nothing derived from them
+// is public-facing until then.
 
 function overallScore(scores: number[]) {
   return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
@@ -39,8 +49,12 @@ export default function ImpactPage() {
       {/* Pillar scoreboard */}
       <PillarScoreboard />
 
-      {/* Politician scorecards */}
-      <CivicScorecard />
+      {/* Politician scorecards: not shown until they're real */}
+      <EmptyState
+        variant="unavailable"
+        title="Individual politician scoring is being verified"
+        description="Stickee doesn't yet have a sourced, real-vote-based methodology for rating individual MPs, so no per-politician score is shown here."
+      />
 
     </div>
   )

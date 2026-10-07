@@ -104,7 +104,7 @@ export function PillarCard({ pillar, showGrade = false }: PillarCardProps) {
   const trendLabel  = isImproving ? '↑ improving' : isWorsening ? '↓ declining' : '→ stable'
 
   return (
-    <div className="border-b border-border">
+    <div id={pillar.id} className="border-b border-border scroll-mt-24">
       <button
         onClick={() => setExpanded(e => !e)}
         className="w-full flex items-center gap-4 py-4 px-1 text-left hover:bg-card/30 transition-colors"

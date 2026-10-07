@@ -2,18 +2,30 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { getVotesForIssue, MPs, PARTY_COLORS } from '@/lib/mock-data'
-import { ChevronUp, ChevronDown, Search, CheckCircle2, XCircle, MinusCircle } from 'lucide-react'
+import { MPs, PARTY_COLORS } from '@/lib/mock-data'
+import { ChevronUp, ChevronDown, Search } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 //
-// This grid used to show a per-MP "accuracy" column derived from
-// calculateStickeeScore() — removed along with the same fabricated score on
-// /mp/[id] (see docs/MP_SCORE_METHODOLOGY_REQUIREMENTS.md). Sorting now
-// covers name/party/electorate/vote only.
+// This grid used to show each MP's actual vote on the current issue, sourced
+// from getVotesForIssue()/PARTY_VOTE_MAP in mock-data.ts. That map assigns
+// every MP of a party the same yes/no/abstain vote on a handful of
+// illustrative mock issues — not this MP's actual recorded division vote —
+// and rendered it as if it were the real Hansard record: the same defect
+// already removed from /mp/[id] (see PEOPLE_TRUTHFULNESS_BATCH_REPORT.md)
+// and from calculateStickeeScore() (see
+// docs/MP_SCORE_METHODOLOGY_REQUIREMENTS.md). Removed per
+// STICKEE_V1_BATCH_8_TRUTHFULNESS_REPORT.md. Real per-MP votes exist in
+// member_votes/divisions (synced via /api/sync/divisions) but are not yet
+// wired to this grid — that requires the MP id-scheme reconciliation scoped
+// in PAGE_REFACTOR_ROADMAP.md's Batch 4/13.
+//
+// Sorting now covers name/party/electorate only. The crowd "implied
+// probability" readout is unaffected — it's computed purely from other
+// users' own predictions, never from a fabricated ground-truth vote.
 
-type SortKey = 'name' | 'party' | 'electorate' | 'vote'
+type SortKey = 'name' | 'party' | 'electorate'
 type SortDir = 'asc' | 'desc'
 
 interface MPRow {
@@ -21,7 +33,6 @@ interface MPRow {
   name: string
   party: string
   electorate: string
-  vote: 'yes' | 'no' | 'abstain'
   userPick: 'yes' | 'no' | null
 }
 
@@ -37,25 +48,6 @@ function PartyDot({ party }: { party: string }) {
     />
   )
 }
-
-function VoteBadge({ vote }: { vote: 'yes' | 'no' | 'abstain' }) {
-  if (vote === 'yes') return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 dark:bg-green-900/40 dark:text-green-300">
-      <CheckCircle2 className="h-3 w-3" /> Yes
-    </span>
-  )
-  if (vote === 'no') return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800 dark:bg-red-900/40 dark:text-red-300">
-      <XCircle className="h-3 w-3" /> No
-    </span>
-  )
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-      <MinusCircle className="h-3 w-3" /> Abstain
-    </span>
-  )
-}
-
 
 function PickButtons({
   userPick,
@@ -113,15 +105,12 @@ function SortTh({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function MPVoteGrid({ issueId }: { issueId: string }) {
+export function MPVoteGrid({ issueId: _issueId }: { issueId: string }) {
   const [search, setSearch] = useState('')
   const [partyFilter, setPartyFilter] = useState('All')
-  const [sortKey, setSortKey] = useState<SortKey>('vote')
+  const [sortKey, setSortKey] = useState<SortKey>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [userPicks, setUserPicks] = useState<Record<string, 'yes' | 'no' | null>>({})
-
-  const issueVotes = useMemo(() => getVotesForIssue(issueId), [issueId])
-  const voteMap = useMemo(() => Object.fromEntries(issueVotes.map(v => [v.mpId, v.vote])), [issueVotes])
 
   const parties = useMemo(() => {
     const set = new Set(MPs.map(mp => mp.party))
@@ -134,7 +123,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
       name: mp.name,
       party: mp.party,
       electorate: mp.electorate,
-      vote: (voteMap[mp.id] ?? 'abstain') as 'yes' | 'no' | 'abstain',
       userPick: userPicks[mp.id] ?? null,
     }))
 
@@ -146,16 +134,13 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
       result = result.filter(r => r.party === partyFilter)
     }
 
-    const voteOrder = { yes: 0, no: 1, abstain: 2 }
     result.sort((a, b) => {
-      let cmp = 0
-      if (sortKey === 'vote') cmp = voteOrder[a.vote] - voteOrder[b.vote]
-      else cmp = (a[sortKey] as string).localeCompare(b[sortKey] as string)
+      const cmp = a[sortKey].localeCompare(b[sortKey])
       return sortDir === 'asc' ? cmp : -cmp
     })
 
     return result
-  }, [search, partyFilter, sortKey, sortDir, voteMap, userPicks])
+  }, [search, partyFilter, sortKey, sortDir, userPicks])
 
   function handleSort(col: SortKey) {
     if (col === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -176,7 +161,7 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-semibold text-foreground">MP Votes & Your Predictions</h2>
+          <h2 className="font-semibold text-foreground">MP Predictions</h2>
           <p className="text-xs text-muted-foreground mt-0.5">
             Click Yes/No to predict how each MP will vote. Predictions update probability in real time.
           </p>
@@ -190,6 +175,12 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
           </div>
         )}
       </div>
+
+      {/* Truthfulness note — real per-MP vote data isn't wired in yet */}
+      <p className="text-xs text-muted-foreground rounded-lg border border-border bg-muted/20 px-3 py-2">
+        Individual voting analysis is being verified against the real parliamentary record. This list shows
+        MP name, party and electorate only.
+      </p>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
@@ -229,7 +220,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
                 <SortTh col="name" label="MP" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="min-w-40" />
                 <SortTh col="party" label="Party" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="hidden sm:table-cell" />
                 <SortTh col="electorate" label="Electorate" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="hidden md:table-cell" />
-                <SortTh col="vote" label="MP Vote" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground whitespace-nowrap">
                   Predict
                 </th>
@@ -269,9 +259,6 @@ export function MPVoteGrid({ issueId }: { issueId: string }) {
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell">
                     <span className="text-xs text-muted-foreground">{row.electorate}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <VoteBadge vote={row.vote} />
                   </td>
                   <td className="px-4 py-3">
                     <PickButtons userPick={row.userPick} onPick={v => setPick(row.mpId, v)} />

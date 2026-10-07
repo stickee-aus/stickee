@@ -17,13 +17,15 @@ const MILESTONE_CONFIG: Record<number, { emoji: string; title: string; body: str
 
 export function StreakMilestone({ count, onDismiss }: StreakMilestoneProps) {
   const cfg = MILESTONE_CONFIG[count]
-  if (!cfg) return null
 
   // Auto-dismiss after 6 seconds
   useEffect(() => {
+    if (!cfg) return
     const t = setTimeout(onDismiss, 6000)
     return () => clearTimeout(t)
-  }, [onDismiss])
+  }, [cfg, onDismiss])
+
+  if (!cfg) return null
 
   return (
     <div

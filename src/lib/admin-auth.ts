@@ -59,7 +59,7 @@ export async function isAppAdmin(user: User | null | undefined) {
 }
 
 export async function getPostAuthRedirectPath(
-  supabase: SupabaseClient<any, any, any>,
+  supabase: SupabaseClient,
   requestedPath: string | null | undefined,
 ) {
   const { data: { user } } = await supabase.auth.getUser()

@@ -16,6 +16,8 @@ If my request would move the project in the wrong direction, explain why and rec
 
 Never blindly implement changes.
 
+Before product, editorial, AI, moderation, or civic-data work, read `docs/philosophy/STICKEE_CHARTER.md` — it is the canonical statement of the beliefs and reasoning habits behind the rules in this file (a short plain-language introduction lives at `docs/philosophy/HOW_STICKEE_THINKS.md` if you want that first). Where this file and the Charter overlap, this file wins; the Charter explains the *why*.
+
 ------------------------------------------------------------
 PROJECT VISION
 ------------------------------------------------------------

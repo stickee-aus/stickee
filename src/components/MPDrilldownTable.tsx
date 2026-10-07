@@ -9,21 +9,23 @@ import {
   MP_STATES as mockMPStates,
   getMPVoteForBill as mockGetMPVoteForBill,
   getPartyAlignment as mockGetPartyAlignment,
-  getPublicAlignment as mockGetPublicAlignment,
 } from '@/lib/mock-parliament-data'
 import type { BillVoteRow } from '@/lib/mock-parliament-data'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+// Note: this table intentionally has no "public alignment" column — no real
+// public-opinion data source exists for any bill (no polling table, no linked
+// market), so there is nothing truthful to compute it from. Do not reintroduce
+// one without a real source behind it.
 
 type VoteValue = 'for' | 'against' | 'absent'
-type SortKey = 'name' | 'vote' | 'partyAlign' | 'publicAlign'
+type SortKey = 'name' | 'vote' | 'partyAlign'
 type SortDir = 'asc' | 'desc'
 
 interface DrillRow {
   mp: MP
   vote: VoteValue
   partyAlign: number
-  publicAlign: number
   isSwing: boolean
   state: string
 }
@@ -129,7 +131,6 @@ export function MPDrilldownTable({
     let list: DrillRow[] = namedMPs.map(mp => {
       let vote: VoteValue
       let partyAlign: number
-      let publicAlign: number
 
       if (useRealData && voteMap) {
         vote = voteMap[mp.id] ?? 'absent'
@@ -140,19 +141,15 @@ export function MPDrilldownTable({
         else if (partyDir === 'against') partyAlign = vote === 'against' ? 100 : vote === 'absent' ? 50 : 0
         else if (partyDir === 'abstain') partyAlign = vote === 'absent'  ? 100 : 50
         else partyAlign = 50 // split or unknown
-        const publicLeanFor = (bill?.publicPrediction ?? 50) >= 50
-        publicAlign = vote === 'absent' ? 50 : (vote === 'for') === publicLeanFor ? 100 : 0
       } else {
         vote = mockGetMPVoteForBill(mp.id, billId)
         partyAlign = mockGetPartyAlignment(mp.id, billId)
-        publicAlign = mockGetPublicAlignment(mp.id, billId)
       }
 
       return {
         mp,
         vote,
         partyAlign,
-        publicAlign,
         isSwing: partyAlign < 100,
         state: MP_STATES[mp.id] ?? '—',
       }
@@ -169,7 +166,6 @@ export function MPDrilldownTable({
         case 'name':        av = a.mp.name;    bv = b.mp.name;    break
         case 'vote':        av = a.vote;       bv = b.vote;       break
         case 'partyAlign':  av = a.partyAlign; bv = b.partyAlign; break
-        case 'publicAlign': av = a.publicAlign; bv = b.publicAlign; break
         default:            av = 0; bv = 0
       }
       if (typeof av === 'string') {
@@ -180,7 +176,7 @@ export function MPDrilldownTable({
     })
 
     return list
-  }, [billId, partyFilter, stateFilter, swingOnly, sortKey, sortDir])
+  }, [MP_STATES, bill?.parties, billId, namedMPs, partyFilter, sortDir, sortKey, stateFilter, swingOnly, useRealData, voteMap])
 
   function handleSort(key: SortKey) {
     if (key === sortKey) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))
@@ -280,11 +276,10 @@ export function MPDrilldownTable({
               </th>
               <SortTh label="Vote"         sk="vote"        sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
               <SortTh label="Party align"  sk="partyAlign"  sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
-              <SortTh label="Public align" sk="publicAlign" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
             </tr>
           </thead>
           <tbody className="divide-y divide-border/25">
-            {rows.map(({ mp, vote, partyAlign, publicAlign, isSwing, state }) => {
+            {rows.map(({ mp, vote, partyAlign, isSwing, state }) => {
               const vStyle = VOTE_STYLES[vote]
               const partyColor = PARTY_COLORS[mp.party] ?? '#999'
               return (
@@ -329,10 +324,6 @@ export function MPDrilldownTable({
                   <td className="px-3 py-2.5 text-center">
                     <AlignBar value={partyAlign} swing={isSwing} />
                   </td>
-
-                  <td className="px-3 py-2.5 text-center">
-                    <AlignBar value={publicAlign} />
-                  </td>
                 </tr>
               )
             })}
@@ -350,8 +341,8 @@ export function MPDrilldownTable({
       <div className="px-5 py-2 border-t border-border/40 bg-muted/10">
         <p className="text-[10px] text-muted-foreground">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400 mr-1" />
-          Amber dot indicates a swing MP who voted against their party line.
-          Party and public alignment shown as 0% or 100% based on final vote direction.
+          Amber dot indicates a swing MP who voted against their party&apos;s position.
+          {!useRealData && ' Demo data — individual votes are inferred from party position, not individually recorded.'}
         </p>
       </div>
     </div>

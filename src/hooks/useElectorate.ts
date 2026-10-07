@@ -8,12 +8,18 @@ import type { MP } from '@/types'
 const STORAGE_KEY = 'stickee:electorate'
 const DISMISSED_KEY = 'stickee:electorate-dismissed'
 
-export type ElectorateDetectState = 'idle' | 'detecting' | 'detected' | 'prompted' | 'dismissed'
+export type ElectorateDetectState = 'idle' | 'detecting' | 'detected' | 'prompted' | 'dismissed' | 'suggested' | 'error'
 
 export function useElectorate() {
   const [electorate, setElectorateState] = useState<string | null>(null)
   const [detectState, setDetectState] = useState<ElectorateDetectState>('idle')
   const [mp, setMp] = useState<MP | null>(null)
+  // A location-based guess that has NOT been confirmed as the user's actual
+  // electorate. /api/electorate-lookup is a coarse state-bounding-box match
+  // that returns the first known electorate in that state — never a precise
+  // geographic electorate boundary lookup. It must never be presented as
+  // "your representative" until the user explicitly confirms it.
+  const [suggestedElectorate, setSuggestedElectorate] = useState<string | null>(null)
 
   // Derive MP from electorate
   function resolveMp(e: string): MP | null {
@@ -58,6 +64,7 @@ export function useElectorate() {
   const clearElectorate = useCallback(() => {
     setElectorateState(null)
     setMp(null)
+    setSuggestedElectorate(null)
     setDetectState('prompted')
     try {
       localStorage.removeItem(STORAGE_KEY)
@@ -65,8 +72,13 @@ export function useElectorate() {
     } catch { /* ignore */ }
   }, [])
 
+  // Detection only ever produces a suggestion, never a confirmed electorate —
+  // the lookup is a coarse state match, not a real geographic boundary match.
   const detectByLocation = useCallback(async () => {
-    if (!navigator.geolocation) return
+    if (!navigator.geolocation) {
+      setDetectState('error')
+      return
+    }
     setDetectState('detecting')
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -78,26 +90,48 @@ export function useElectorate() {
           })
           if (res.ok) {
             const { electorate: detected } = await res.json() as { electorate: string }
-            if (detected) setElectorate(detected)
+            if (detected) {
+              setSuggestedElectorate(detected)
+              setDetectState('suggested')
+            } else {
+              setDetectState('error')
+            }
           } else {
-            setDetectState('prompted')
+            setDetectState('error')
           }
         } catch {
-          setDetectState('prompted')
+          setDetectState('error')
         }
       },
-      () => { setDetectState('prompted') },
+      () => { setDetectState('error') },
       { timeout: 8000 }
     )
-  }, [setElectorate])
+  }, [])
+
+  // Explicit user confirmation that a location-based suggestion is correct —
+  // only after this does the electorate/MP relationship become "known."
+  const confirmSuggestedElectorate = useCallback(() => {
+    if (suggestedElectorate) {
+      setElectorate(suggestedElectorate)
+      setSuggestedElectorate(null)
+    }
+  }, [suggestedElectorate, setElectorate])
+
+  const rejectSuggestedElectorate = useCallback(() => {
+    setSuggestedElectorate(null)
+    setDetectState('prompted')
+  }, [])
 
   return {
     electorate,
     mp,
     detectState,
+    suggestedElectorate,
     setElectorate,
     dismissPrompt,
     clearElectorate,
     detectByLocation,
+    confirmSuggestedElectorate,
+    rejectSuggestedElectorate,
   }
 }

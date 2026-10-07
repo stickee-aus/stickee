@@ -137,7 +137,7 @@ export function FeaturedMarketCard({
           <SimulateThisButton
             size="lg"
             className="rounded-lg"
-            label="Simulate this market"
+            label="Explore scenarios for this market"
             entity={{
               type: 'market',
               id: market.id,

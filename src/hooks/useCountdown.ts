@@ -42,14 +42,15 @@ export function useCountdown(targetDate: string | Date | null | undefined): Coun
   const isExpired     = target !== null && msLeft <= 0
   const isUrgent      = !isExpired && msLeft <= 24 * 60 * 60 * 1000   // ≤ 24 h
   const isClosingSoon = !isExpired && msLeft <= 72 * 60 * 60 * 1000   // ≤ 72 h
+  const isUnderOneHour = msLeft < 3600_000
 
   useEffect(() => {
     if (!target) return
     // Fast tick when under 1 h, slow tick otherwise
-    const interval = msLeft < 3600_000 ? 1000 : 60_000
+    const interval = isUnderOneHour ? 1000 : 60_000
     const id = setInterval(() => setNow(Date.now()), interval)
     return () => clearInterval(id)
-  }, [target, msLeft < 3600_000]) // re-establish when we cross the 1-h threshold
+  }, [target, isUnderOneHour]) // re-establish when we cross the 1-h threshold
 
   return {
     label: target ? formatCountdown(msLeft) : '—',

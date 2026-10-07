@@ -111,7 +111,7 @@ interface WeeklyReportCardProps {
   alwaysShow?: boolean
 }
 
-export function WeeklyReportCard({ civicScore = 62, onView, alwaysShow = false }: WeeklyReportCardProps) {
+export function WeeklyReportCard({ civicScore = 62, onView }: WeeklyReportCardProps) {
   const { streak } = useStreak()
   const { totalEarned, positions, hydrated } = useWallet()
   const { earnedDefs } = useBadges()

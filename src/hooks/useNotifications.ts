@@ -74,6 +74,7 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<AppNotification[]>([])
   const [hydrated, setHydrated] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
+  const [error, setError] = useState(false)
 
   const supabaseRef = useRef(configured ? createClient() : null)
   const userIdRef = useRef<string | null>(null)
@@ -106,6 +107,7 @@ export function useNotifications() {
           if (!cancelled) {
             setAuthenticated(false)
             setNotifications(load())
+            setError(false)
             setHydrated(true)
           }
           return
@@ -122,13 +124,14 @@ export function useNotifications() {
         if (!cancelled) {
           setAuthenticated(true)
           setNotifications(data?.map(mapNotification) ?? [])
+          setError(false)
           setHydrated(true)
         }
-      } catch (error) {
-        console.warn('Failed to load notifications:', error)
+      } catch (err) {
+        console.warn('Failed to load notifications:', err)
         if (!cancelled) {
-          setAuthenticated(false)
-          setNotifications(load())
+          setError(true)
+          setNotifications([])
           setHydrated(true)
         }
       } finally {
@@ -269,6 +272,7 @@ export function useNotifications() {
     unreadCount,
     hydrated,
     authenticated,
+    error,
     push,
     markRead,
     markAllRead,

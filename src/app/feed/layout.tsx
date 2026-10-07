@@ -1,15 +1,15 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Feed — Stickee',
-  description: 'Live civic alerts, decision updates, and community perspectives on Australian democracy. High-impact voices boosted automatically.',
+  title: 'Political Pulse — Stickee',
+  description: 'A chronological, sourced record of what changed in Australian civic life — Parliament votes, bill stages, and forecast resolutions.',
   openGraph: {
-    title: 'Civic Feed — Stickee',
-    description: 'Real-time alerts when civic scores move, bills progress, and markets shift. Plus community voices from across Australia.',
+    title: 'Political Pulse — Stickee',
+    description: 'What changed across Australian civic life? A dated, sourced stream of real Parliament and bill-stage events.',
     type: 'website',
   },
 }
 
-export default function FeedLayout({ children }: { children: React.ReactNode }) {
+export default function PoliticalPulseLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }

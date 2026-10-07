@@ -107,12 +107,20 @@ describe('the page cannot display a featured market while activeCount is zero', 
   })
 })
 
-describe('featured-market selection wiring is not the old hardcoded lookup', () => {
-  it('PredictionsPageClient no longer hardcodes urgent-rba-rate as the featured market', () => {
+describe('Forecasts V1 removed the featured-market slot from PredictionsPageClient entirely', () => {
+  // Superseded by FORECASTS_V1_SIMPLIFICATION_REPORT.md: the featured slot
+  // itself (not just its old hardcoded-id bug) was removed — one flat
+  // forecast list, no elevated item, per the approved plan's decision that
+  // no real editorial/ranking methodology exists to justify featuring one
+  // forecast over another. This assertion previously pinned
+  // `selectFeaturedMarket(markets)` being called from this file; it no
+  // longer is, and that is the intended behaviour, not a regression.
+  it('does not hardcode urgent-rba-rate, does not call selectFeaturedMarket, does not import FeaturedMarketCard', () => {
     const source = read('src/components/PredictionsPageClient.tsx')
     expect(source).not.toContain("market.id === 'urgent-rba-rate'")
     expect(source).not.toMatch(/featuredMarket[^\n]*markets\[0\]/)
-    expect(source).toContain('selectFeaturedMarket(markets)')
+    expect(source).not.toContain('selectFeaturedMarket')
+    expect(source).not.toContain('FeaturedMarketCard')
   })
 })
 

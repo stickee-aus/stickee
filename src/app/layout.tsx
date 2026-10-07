@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
+import { IBM_Plex_Sans, IBM_Plex_Mono, IBM_Plex_Serif } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Navbar } from '@/components/Navbar'
@@ -24,6 +24,12 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ['400', '500'],
 })
 
+const ibmPlexSerif = IBM_Plex_Serif({
+  variable: '--font-serif',
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+})
+
 export const metadata: Metadata = {
   title: 'Stickee — Where decisions stick',
   description: 'Understand Australian politics, track your MPs, and take action on the issues that matter.',
@@ -37,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${ibmPlexSerif.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">

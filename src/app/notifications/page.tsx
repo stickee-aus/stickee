@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import Link from 'next/link'
-import { Bell, CheckCheck, Trash2, TrendingUp, Flame, Star, Trophy, Megaphone, Users, Landmark } from 'lucide-react'
-import { useNotifications, type NotificationType } from '@/hooks/useNotifications'
+import { Bell, CheckCheck, Trash2, TrendingUp, Flame, Star, Trophy, Megaphone, Users, Landmark, AlertTriangle } from 'lucide-react'
+import { useNotifications, type NotificationType, type AppNotification } from '@/hooks/useNotifications'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -28,74 +27,13 @@ const TYPE_CONFIG: Record<NotificationType, { icon: React.ElementType; color: st
   leaderboard: { icon: Users,       color: '#f5a623', label: 'Leaderboard' },
 }
 
-// ─── Demo notifications seeded if empty ──────────────────────────────────────
-
-type DemoNotif = { id: string; type: NotificationType; title: string; body: string; href: string; read: boolean; createdAt: string }
-
-const DEMO_NOTIFICATIONS: DemoNotif[] = [
-  {
-    id: 'demo-1',
-    type: 'bonus' as NotificationType,
-    title: '🎉 Daily bonus claimed',
-    body: '+100 pts added to your wallet. Come back tomorrow for another bonus.',
-    href: '/predictions',
-    read: false,
-    createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
-  },
-  {
-    id: 'demo-2',
-    type: 'streak' as NotificationType,
-    title: '🔥 7-day streak milestone!',
-    body: "You've kept your civic streak going for 7 days. +250 bonus points awarded.",
-    href: '/profile',
-    read: false,
-    createdAt: new Date(Date.now() - 2 * 3600000).toISOString(),
-  },
-  {
-    id: 'demo-3',
-    type: 'market' as NotificationType,
-    title: '⏰ Market closing in 24h',
-    body: '"Will the Housing Bill pass?" resolves tomorrow. You have an open stake.',
-    href: '/predictions',
-    read: true,
-    createdAt: new Date(Date.now() - 6 * 3600000).toISOString(),
-  },
-  {
-    id: 'demo-4',
-    type: 'leaderboard' as NotificationType,
-    title: '↑ You moved up 3 spots',
-    body: "You're now ranked #14 on the predictions leaderboard. Keep predicting to climb.",
-    href: '/leaderboard',
-    read: true,
-    createdAt: new Date(Date.now() - 24 * 3600000).toISOString(),
-  },
-  {
-    id: 'demo-5',
-    type: 'campaign' as NotificationType,
-    title: '🏆 Housing campaign milestone',
-    body: '10,000 Australians have emailed their MP on the housing bill. You were one of them.',
-    href: '/campaigns',
-    read: true,
-    createdAt: new Date(Date.now() - 48 * 3600000).toISOString(),
-  },
-  {
-    id: 'demo-6',
-    type: 'mp' as NotificationType,
-    title: 'Your MP voted on the NDIS Bill',
-    body: 'Anthony Albanese (Grayndler) voted YES on the NDIS Reform Bill.',
-    href: '/leaders',
-    read: true,
-    createdAt: new Date(Date.now() - 72 * 3600000).toISOString(),
-  },
-]
-
 // ─── Notification row ─────────────────────────────────────────────────────────
 
 function NotifRow({
   notif,
   onRead,
 }: {
-  notif: typeof DEMO_NOTIFICATIONS[number]
+  notif: AppNotification
   onRead: (id: string) => void
 }) {
   const cfg = TYPE_CONFIG[notif.type]
@@ -151,14 +89,7 @@ function NotifRow({
 // ─── Notifications page ───────────────────────────────────────────────────────
 
 export default function NotificationsPage() {
-  const { notifications, unreadCount, markRead, markAllRead, clearAll } = useNotifications()
-
-  // Seed demo notifications if empty
-  const displayList: DemoNotif[] = notifications.length > 0
-    ? notifications.map(n => ({ ...n, href: n.href ?? '' }))
-    : DEMO_NOTIFICATIONS
-
-  const unread = displayList.filter(n => !n.read).length
+  const { notifications, unreadCount, hydrated, error, markRead, markAllRead, clearAll } = useNotifications()
 
   return (
     <div className="mx-auto max-w-5xl px-6">
@@ -174,17 +105,17 @@ export default function NotificationsPage() {
               className="font-mono font-normal leading-none text-foreground"
               style={{ fontSize: 'clamp(40px, 8vw, 56px)', letterSpacing: '-0.02em' }}
             >
-              {unread}
+              {hydrated ? unreadCount : '—'}
             </span>
             <span className="font-mono text-xl text-muted-foreground/40">unread</span>
           </div>
           <p className="font-mono text-xs text-muted-foreground mt-2">
-            {displayList.length} total notifications
+            {hydrated ? `${notifications.length} total notifications` : 'Loading…'}
           </p>
         </div>
 
         <div className="flex items-center gap-2 pb-1">
-          {unread > 0 && (
+          {hydrated && unreadCount > 0 && (
             <button
               onClick={markAllRead}
               className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase px-3 py-1.5 border border-border transition-colors hover:bg-card/50"
@@ -192,7 +123,7 @@ export default function NotificationsPage() {
               <CheckCheck className="h-3 w-3" /> Mark all read
             </button>
           )}
-          {displayList.length > 0 && notifications.length > 0 && (
+          {hydrated && notifications.length > 0 && (
             <button
               onClick={clearAll}
               className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase px-3 py-1.5 border border-border transition-colors hover:bg-card/50"
@@ -204,8 +135,23 @@ export default function NotificationsPage() {
       </div>
 
       {/* ── Notification list ── */}
-      {displayList.length === 0 ? (
-        <div className="py-20 flex flex-col items-center gap-4 text-center">
+      {!hydrated ? (
+        <div className="py-20 flex flex-col items-center gap-3 text-center" data-state="loading">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" />
+          <p className="font-mono text-xs text-muted-foreground">Loading notifications…</p>
+        </div>
+      ) : error ? (
+        <div className="py-20 flex flex-col items-center gap-4 text-center" data-state="error">
+          <div className="h-12 w-12 flex items-center justify-center" style={{ background: '#1e1e20' }}>
+            <AlertTriangle className="h-5 w-5" style={{ color: '#f04747' }} />
+          </div>
+          <p className="font-mono text-xs text-muted-foreground">Couldn&apos;t load notifications</p>
+          <p className="font-mono text-[10px] text-muted-foreground/60 max-w-xs">
+            Something went wrong reaching the server. Try refreshing the page.
+          </p>
+        </div>
+      ) : notifications.length === 0 ? (
+        <div className="py-20 flex flex-col items-center gap-4 text-center" data-state="empty">
           <div className="h-12 w-12 flex items-center justify-center" style={{ background: '#1e1e20' }}>
             <Bell className="h-5 w-5" style={{ color: '#3a3a3e' }} />
           </div>
@@ -222,8 +168,8 @@ export default function NotificationsPage() {
           </Link>
         </div>
       ) : (
-        <div className="mt-0">
-          {displayList.map(notif => (
+        <div className="mt-0" data-state="populated">
+          {notifications.map(notif => (
             <NotifRow
               key={notif.id}
               notif={notif}

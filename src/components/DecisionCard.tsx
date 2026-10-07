@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, MapPin, TrendingUp, ArrowRight, CheckCircle2, Circle } from 'lucide-react'
+import { ChevronUp, MapPin, TrendingUp, ArrowRight, CheckCircle2, Circle } from 'lucide-react'
 import type { Decision, DecisionMaker, DecisionStatus, ImpactLevel } from '@/types/government'
 import type { IssueMarket } from '@/lib/mock-market-data'
 import { useToast } from '@/components/ui/toast'
@@ -197,11 +197,9 @@ function SocialProofReveal({
 function InlinePrediction({
   question,
   market,
-  decisionId,
 }: {
   question: string
   market?: IssueMarket
-  decisionId: string
 }) {
   const { toast } = useToast()
   const [pick, setPick] = useState<'yes' | 'no' | null>(null)
@@ -211,7 +209,7 @@ function InlinePrediction({
     const next = pick === v ? null : v
     setPick(next)
     if (next) {
-      toast(`Prediction saved: ${next.toUpperCase()}`, 'success')
+      toast(`Your pick: ${next.toUpperCase()} (this session only, not saved to your account)`, 'success')
       // Short delay before showing social proof for impact
       setTimeout(() => setShowProof(true), 400)
     } else {
@@ -268,24 +266,6 @@ function InlinePrediction({
   )
 }
 
-// ─── CTA button logic ─────────────────────────────────────────────────────────
-
-function ctaLabel(decision: Decision): string {
-  if (decision.status === 'Proposed' || decision.status === 'In Debate') return 'Predict Outcome'
-  if (decision.isControversial) return 'Agree / Disagree'
-  return 'Track Impact'
-}
-
-function ctaStyle(decision: Decision): string {
-  if (decision.status === 'Proposed' || decision.status === 'In Debate') {
-    return 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
-  }
-  if (decision.isControversial) {
-    return 'bg-violet-500/15 text-violet-400 ring-1 ring-violet-500/25 hover:bg-violet-500/25'
-  }
-  return 'border border-border/60 text-foreground/70 hover:bg-foreground/5'
-}
-
 // ─── DecisionCard ─────────────────────────────────────────────────────────────
 
 export interface DecisionCardProps {
@@ -298,9 +278,6 @@ export interface DecisionCardProps {
 
 export function DecisionCard({ decision, decisionMaker, market, defaultExpanded = false, showEmailMP = false }: DecisionCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded)
-
-  const label = ctaLabel(decision)
-  const btnStyle = ctaStyle(decision)
 
   return (
     <article className={[
@@ -355,13 +332,10 @@ export function DecisionCard({ decision, decisionMaker, market, defaultExpanded 
             </span>
           )}
 
-          <button
-            onClick={e => { e.stopPropagation() }}
-            className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${btnStyle}`}
-          >
-            {label}
-            <ArrowRight className="h-3 w-3" aria-hidden="true" />
-          </button>
+          <span className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground/70">
+            {expanded ? 'Collapse' : 'View details'}
+            {expanded ? <ChevronUp className="h-3 w-3" aria-hidden="true" /> : <ArrowRight className="h-3 w-3" aria-hidden="true" />}
+          </span>
         </div>
       </div>
 
@@ -411,7 +385,6 @@ export function DecisionCard({ decision, decisionMaker, market, defaultExpanded 
             <InlinePrediction
               question={decision.predictionQuestion}
               market={market}
-              decisionId={decision.id}
             />
           )}
 
@@ -439,7 +412,7 @@ export function DecisionCard({ decision, decisionMaker, market, defaultExpanded 
 
           {/* Simulate-this action */}
           <div className="flex items-center justify-between gap-3 pt-1 border-t border-border/30">
-            <p className="text-xs text-muted-foreground">Rehearse the alternatives before they're decided</p>
+            <p className="text-xs text-muted-foreground">Rehearse the alternatives before they’re decided</p>
             <SimulateThisButton
               entity={{
                 type: decision.type === 'Bill' ? 'bill' : 'decision',

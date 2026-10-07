@@ -13,7 +13,7 @@ export async function getLiveBillMarkets(): Promise<PredictionMarket[]> {
     const supabase = await createServerSupabaseClient()
     const { data, error } = await supabase
       .from('issue_markets')
-      .select('issue_id, question, category, status, probability, total_participants, resolves_by, yes_change, yes_volume, no_volume, yes_history')
+      .select('issue_id, question, category, status, probability, total_participants, resolves_by, yes_change, yes_volume, no_volume, yes_history, resolution_source')
       .eq('is_test_fixture', false)
       .order('updated_at', { ascending: false })
 

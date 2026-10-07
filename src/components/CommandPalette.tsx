@@ -3,14 +3,15 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Search, FileText, User, LayoutDashboard, Building2, Trophy,
-  Landmark, X, Bell, Megaphone, ListChecks, TrendingUp, Users,
-  Rss, ShieldAlert,
+  Search, FileText, User, Trophy,
+  Landmark, X, Bell, Megaphone, Users,
+  Rss, ShieldAlert, HeartHandshake,
 } from 'lucide-react'
 import { dashboardRows } from '@/lib/mock-market-data'
 import { MPs } from '@/lib/mock-data'
 import { FEED_POSTS } from '@/lib/mock-feed-data'
 import { MOCK_PROFILES } from '@/hooks/useFollows'
+import { PRIMARY_NAV, SECONDARY_NAV } from '@/lib/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,18 +27,36 @@ interface CommandItem {
 
 // ─── Static nav items ─────────────────────────────────────────────────────────
 
-const NAV_ITEMS: CommandItem[] = [
-  { id: 'nav-home',          label: 'Dashboard',      href: '/',              icon: LayoutDashboard, group: 'Navigation' },
-  { id: 'nav-feed',          label: 'Feed',            href: '/feed',          icon: Rss,             group: 'Navigation' },
-  { id: 'nav-parliament',    label: 'Parliament',      href: '/parliament',    icon: Landmark,        group: 'Navigation' },
-  { id: 'nav-government',    label: 'Decisions',       href: '/government',    icon: Building2,       group: 'Navigation' },
-  { id: 'nav-issues',        label: 'Issues & Bills',  href: '/issues',        icon: ListChecks,      group: 'Navigation' },
-  { id: 'nav-campaigns',     label: 'Campaigns',       href: '/campaigns',     icon: Megaphone,       group: 'Navigation' },
-  { id: 'nav-predictions',   label: 'Predictions',     href: '/predictions',   icon: TrendingUp,      group: 'Navigation' },
-  { id: 'nav-leaderboard',   label: 'Leaderboard',     href: '/leaderboard',   icon: Trophy,          group: 'Navigation' },
-  { id: 'nav-notifications', label: 'Notifications',   href: '/notifications', icon: Bell,            group: 'Navigation' },
-  { id: 'nav-profile',       label: 'My Profile',      href: '/profile',       icon: User,            group: 'Navigation' },
+// The five primary sections, sourced from the same shared config Navbar and
+// BottomNav use, so the palette can never drift to a different label or
+// destination for the same section (see src/lib/navigation.ts).
+const PRIMARY_NAV_ITEMS: CommandItem[] = PRIMARY_NAV.map(item => ({
+  id: `nav-${item.id}`,
+  label: item.label,
+  href: item.href,
+  icon: item.icon,
+  group: 'Navigation',
+}))
+
+// Real destinations that aren't one of the five primary sections but are
+// still worth surfacing directly in search.
+const SECONDARY_NAV_ITEMS: CommandItem[] = [
+  { id: 'nav-feed',          label: 'Feed',          href: '/feed',          icon: Rss,       group: 'Navigation' },
+  { id: 'nav-parliament',    label: 'Parliament',    href: '/parliament',    icon: Landmark,  group: 'Navigation' },
+  { id: 'nav-campaigns',     label: 'Campaigns',     href: '/campaigns',     icon: Megaphone, group: 'Navigation' },
+  { id: 'nav-leaderboard',   label: 'Leaderboard',   href: '/leaderboard',   icon: Trophy,    group: 'Navigation' },
+  { id: 'nav-notifications', label: 'Notifications', href: '/notifications', icon: Bell,      group: 'Navigation' },
+  { id: 'nav-profile',       label: 'My Profile',    href: '/profile',       icon: User,      group: 'Navigation' },
+  ...SECONDARY_NAV.map(item => ({
+    id: `nav-${item.label.toLowerCase()}`,
+    label: item.label,
+    href: item.href,
+    icon: HeartHandshake,
+    group: 'Navigation',
+  })),
 ]
+
+const NAV_ITEMS: CommandItem[] = [...PRIMARY_NAV_ITEMS, ...SECONDARY_NAV_ITEMS]
 
 // ─── Campaign items ───────────────────────────────────────────────────────────
 

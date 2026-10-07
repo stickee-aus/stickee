@@ -201,7 +201,6 @@ export function ImpactSimulator() {
     window.history.replaceState(null, '', url)
   }, [])
 
-  const totalSeats = Object.values(seats).reduce((a, b) => a + b, 0)
   const hasChanged = ADJUSTABLE.some(p => seats[p] !== BASE_SEAT_COUNTS[p])
 
   function adjust(party: 'Labor' | 'Coalition', delta: number) {

@@ -1,19 +1,103 @@
 'use client'
 
 import { useState } from 'react'
-import { Activity, Bot, Clock3, GitCompare, Newspaper, Users } from 'lucide-react'
-import { SimulateThisButton } from '@/components/simulator/SimulateThisButton'
-import { useCountdown } from '@/hooks/useCountdown'
-import type { LiveElectionSnapshot } from '@/lib/aec-election-types'
+import Link from 'next/link'
+import { Bot, GitCompare, Newspaper } from 'lucide-react'
+import { RecordRow } from '@/components/ui/record-row'
+import { StatusLabel, type Status } from '@/components/ui/status-label'
 import type { MarketCategory, MarketTimelineImpact, PredictionMarket } from '@/lib/mock-market-data'
 import { getMarketEligibility } from '@/lib/market-eligibility'
 
 export const CATEGORY_LABELS: Record<MarketCategory, string> = {
-  bill: 'BILL',
-  civic: 'CIVIC',
-  election: 'ELEC',
-  'mp-vote': 'MP',
+  bill: 'Bill',
+  civic: 'Civic',
+  election: 'Election',
+  'mp-vote': 'MP Vote',
 }
+
+function statusFor(market: PredictionMarket): Status {
+  const { isDemo, isVoided, isResolved } = getMarketEligibility(market)
+  if (isDemo) return 'demo'
+  if (isVoided) return 'voided'
+  if (isResolved) return 'resolved'
+  return 'active'
+}
+
+/** One sentence max, so a sourced summary never dominates a list row. */
+function firstSentence(text: string, maxLength = 140): string {
+  const match = text.match(/^[^.!?]*[.!?]/)
+  const candidate = (match ? match[0] : text).trim()
+  return candidate.length > maxLength ? `${candidate.slice(0, maxLength - 1).trimEnd()}…` : candidate
+}
+
+export function MarketCard({
+  market,
+  hasPosition,
+  onStake,
+  whyThisMatters,
+}: {
+  market: PredictionMarket
+  hasPosition: boolean
+  onStake: (market: PredictionMarket, direction: 'yes' | 'no') => void
+  /** Real, sourced issue summary — only ever passed for a bill market with one. Never generated. */
+  whyThisMatters?: string
+}) {
+  const { canStake, isResolved, isResolvedYes, isDemo, isVoided } = getMarketEligibility(market)
+  const meta = [
+    CATEGORY_LABELS[market.category] ?? market.category,
+    `Resolves ${market.resolvesBy}`,
+    isResolved && market.resolutionSource ? `Resolution source: ${market.resolutionSource}` : null,
+  ].filter(Boolean).join(' · ')
+  const settledLabel = isResolved && !isDemo && !isVoided ? (isResolvedYes ? 'Resolved Yes' : 'Resolved No') : undefined
+
+  return (
+    <RecordRow
+      label={market.question}
+      summary={whyThisMatters ? `Why this matters: ${firstSentence(whyThisMatters)}` : undefined}
+      meta={meta}
+      value={`${market.probability}%`}
+      status={
+        <div className="flex flex-col items-end gap-2">
+          <StatusLabel status={statusFor(market)} label={settledLabel} />
+          {canStake && (
+            <div className="flex items-center gap-2">
+              {hasPosition && <span className="text-micro-label">Staked</span>}
+              <button
+                type="button"
+                onClick={() => onStake(market, 'yes')}
+                className="transition-calm rounded-[var(--radius-sm)] border border-[var(--status-positive)] px-2.5 py-1 text-micro-label text-[var(--status-positive)] hover:bg-[var(--status-positive)]/10"
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => onStake(market, 'no')}
+                className="transition-calm rounded-[var(--radius-sm)] border border-[var(--status-negative)] px-2.5 py-1 text-micro-label text-[var(--status-negative)] hover:bg-[var(--status-negative)]/10"
+              >
+                No
+              </button>
+            </div>
+          )}
+          {market.category === 'bill' && (
+            <Link href={`/issue/${market.id}`} className="text-micro-label text-muted-foreground hover:text-foreground">
+              See issue →
+            </Link>
+          )}
+        </div>
+      }
+    />
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Legacy subcomponents — kept only because FeaturedMarketCard.tsx (a
+// pre-existing tracked file with its own uncommitted changes, currently
+// unrendered anywhere in the app as of the Forecasts V1 simplification
+// batch — see FORECASTS_V1_SIMPLIFICATION_REPORT.md) still imports them.
+// None of these are used by MarketCard above. Do not extend or fix bugs in
+// this block for FeaturedMarketCard's benefit — if FeaturedMarketCard is
+// ever deleted, delete this block with it.
+// ─────────────────────────────────────────────────────────────────────────
 
 export const CATEGORY_COLORS: Record<MarketCategory, string> = {
   bill: '#6b7280',
@@ -55,6 +139,8 @@ export function MarketThumbnail({
       }}
     >
       {!failed && market.imageUrl && (
+        // Legacy remote URLs are not constrained to configured Next.js image hosts.
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={market.imageUrl}
           alt={market.imageAlt}
@@ -71,46 +157,6 @@ export function MarketThumbnail({
           </span>
         </div>
       )}
-    </div>
-  )
-}
-
-function MarketCountdownBadge({ resolvesBy }: { resolvesBy: string }) {
-  const parsed = new Date(resolvesBy)
-  const isExact = !isNaN(parsed.getTime())
-  const countdown = useCountdown(isExact ? parsed : null)
-
-  if (!isExact || !countdown.isClosingSoon) return null
-
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-mono text-[9px] tracking-widest uppercase"
-      style={{
-        color: countdown.isUrgent ? '#f04747' : '#f5a623',
-        background: countdown.isUrgent ? '#f0474712' : '#f5a62312',
-        border: `1px solid ${countdown.isUrgent ? '#f0474730' : '#f5a62330'}`,
-      }}
-    >
-      <Clock3 size={10} />
-      {countdown.label}
-    </span>
-  )
-}
-
-function ProbabilityBars({ probability }: { probability: number }) {
-  const yes = Math.max(0, Math.min(100, probability))
-  const no = 100 - yes
-
-  return (
-    <div className="space-y-1.5">
-      <div className="flex h-2 overflow-hidden rounded-full bg-secondary">
-        <div className="bg-[#2ec266]" style={{ width: `${yes}%` }} />
-        <div className="bg-[#f04747]" style={{ width: `${no}%` }} />
-      </div>
-      <div className="flex justify-between font-mono text-[9px] tracking-widest uppercase text-muted-foreground">
-        <span>Yes {yes}%</span>
-        <span>No {no}%</span>
-      </div>
     </div>
   )
 }
@@ -235,190 +281,5 @@ export function SimulatorComparison({ market }: { market: PredictionMarket }) {
         </p>
       </div>
     </div>
-  )
-}
-
-function electionSignalFor(market: PredictionMarket, liveElection: LiveElectionSnapshot) {
-  if (market.category !== 'election' || !liveElection.active) return []
-
-  return [
-    liveElection.national.leadingParty
-      ? `${liveElection.national.leadingParty} leading in ${liveElection.national.calledSeats + liveElection.national.leadingSeats} seats`
-      : null,
-    liveElection.national.reportingProgressPct !== null
-      ? `${liveElection.national.reportingProgressPct}% counted`
-      : null,
-    'AEC live signal',
-  ].filter((line): line is string => Boolean(line))
-}
-
-export function MarketCard({
-  market,
-  hasPosition,
-  onStake,
-  liveElection,
-}: {
-  market: PredictionMarket
-  hasPosition: boolean
-  onStake: (market: PredictionMarket, direction: 'yes' | 'no') => void
-  liveElection: LiveElectionSnapshot
-}) {
-  const { isResolved: resolved, isResolvedYes: resolvedY, isDemo, isVoided } = getMarketEligibility(market)
-  const color = probColor(market.probability)
-  const cColor = changeColor(market.priceChange)
-  const sign = market.priceChange > 0 ? '+' : ''
-  const catColor = CATEGORY_COLORS[market.category] ?? '#5a5a5e'
-  const catLabel = CATEGORY_LABELS[market.category] ?? market.category
-  const electionSignal = electionSignalFor(market, liveElection)
-
-  return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-[0_18px_50px_rgba(0,0,0,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
-      <div className="relative">
-        <MarketThumbnail market={market} className="aspect-[16/9]" />
-        <div className="absolute left-3 top-3 flex flex-wrap items-center gap-2">
-          <span
-            className="rounded-full px-2.5 py-1 font-mono text-[9px] tracking-widest uppercase backdrop-blur"
-            style={{ color: catColor, background: '#0a0a0bcc', border: `1px solid ${catColor}45` }}
-          >
-            {catLabel}
-          </span>
-          <span className="rounded-full border border-white/10 bg-black/55 px-2.5 py-1 font-mono text-[9px] tracking-widest uppercase text-foreground/80 backdrop-blur">
-            {market.topic}
-          </span>
-        </div>
-        {hasPosition && !resolved && (
-          <span className="absolute right-3 top-3 rounded-full border border-[#f5a62330] bg-[#0a0a0bcc] px-2.5 py-1 font-mono text-[9px] tracking-widest uppercase text-[#f5a623] backdrop-blur">
-            Staked
-          </span>
-        )}
-      </div>
-
-      <div className="flex flex-1 flex-col p-4">
-        <div className="mb-3 flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="mb-1 font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-              Resolves {market.resolvesBy}
-            </p>
-            <h3 className="text-[15px] font-medium leading-snug text-foreground">{market.question}</h3>
-          </div>
-          <div className="shrink-0 text-right">
-            <p className="font-mono text-2xl leading-none" style={{ color }}>
-              {market.probability}%
-            </p>
-            <p className="mt-1 font-mono text-[9px] tracking-widest uppercase text-muted-foreground">YES</p>
-          </div>
-        </div>
-
-        {electionSignal.length > 0 && (
-          <div className="mb-3 rounded-md border border-[#3b82f630] bg-[#3b82f610] px-3 py-2">
-            {electionSignal.map(line => (
-              <p key={line} className="font-mono text-[10px] leading-relaxed text-muted-foreground/80">
-                {line}
-              </p>
-            ))}
-          </div>
-        )}
-
-        <ProbabilityBars probability={market.probability} />
-
-        <div className="mt-3">
-          <ProbabilityHistoryChart history={market.history} color={color} />
-        </div>
-
-        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Activity size={14} />
-            <div>
-              <p className="font-mono text-[9px] tracking-widest uppercase">24h</p>
-              <p className="font-mono text-xs" style={{ color: cColor }}>
-                {sign}{market.priceChange.toFixed(1)}pp
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Users size={14} />
-            <div>
-              <p className="font-mono text-[9px] tracking-widest uppercase">Volume</p>
-              <p className="font-mono text-xs text-foreground">{market.participants.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {!resolved && <MarketCountdownBadge resolvesBy={market.resolvesBy} />}
-          {isDemo && (
-            <span
-              className="rounded-full px-2 py-1 font-mono text-[9px] tracking-widest uppercase"
-              style={{ color: '#f5a623', background: '#f5a62312', border: '1px solid #f5a62330' }}
-              title="Not backed by a verified, currently-open market — staking is disabled until it is."
-            >
-              Demo — not tradeable
-            </span>
-          )}
-          {isVoided && (
-            <span
-              className="rounded-full px-2 py-1 font-mono text-[9px] tracking-widest uppercase"
-              style={{ color: '#5a5a5e', background: '#5a5a5e12', border: '1px solid #5a5a5e30' }}
-            >
-              Voided — refunded
-            </span>
-          )}
-          {resolved && !isDemo && !isVoided && (
-            <span
-              className="rounded-full px-2 py-1 font-mono text-[9px] tracking-widest uppercase"
-              style={{
-                color: resolvedY ? '#2ec266' : '#f04747',
-                background: resolvedY ? '#2ec26612' : '#f0474712',
-                border: `1px solid ${resolvedY ? '#2ec26630' : '#f0474730'}`,
-              }}
-            >
-              {resolvedY ? 'Resolved Yes' : 'Resolved No'}
-            </span>
-          )}
-        </div>
-
-        <div className="mt-3 space-y-3">
-          <MarketNewsTimeline market={market} />
-          <BullBearCase market={market} />
-          <SimulatorComparison market={market} />
-        </div>
-
-        <div className="mt-auto pt-4">
-          {!resolved && (
-            <SimulateThisButton
-              size="sm"
-              className="mb-3 w-full justify-center rounded-md py-2"
-              entity={{
-                type: 'market',
-                id: market.id,
-                title: market.question,
-                summary: `Resolves ${market.resolvesBy}. Current market: ${market.probability}% YES.`,
-              }}
-            />
-          )}
-
-          {resolved ? (
-            <div className="rounded-md border border-border bg-secondary/50 py-2 text-center font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-              {isDemo ? 'Not tradeable' : 'Closed'}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => onStake(market, 'yes')}
-                className="rounded-md border border-[#2ec26640] bg-[#2ec26612] px-3 py-2.5 font-mono text-[10px] tracking-widest text-[#2ec266] uppercase transition-colors hover:bg-[#2ec26622]"
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => onStake(market, 'no')}
-                className="rounded-md border border-[#f0474740] bg-[#f0474712] px-3 py-2.5 font-mono text-[10px] tracking-widest text-[#f04747] uppercase transition-colors hover:bg-[#f0474722]"
-              >
-                No
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </article>
   )
 }

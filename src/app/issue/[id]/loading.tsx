@@ -1,15 +1,18 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
+// Mirrors page.tsx's single-column, narrow (max-w-2xl) investigative layout —
+// kept in sync with that page's PageShell width and section order so the
+// skeleton doesn't promise a two-column dashboard the real content no
+// longer renders.
 export default function IssueLoading() {
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
+    <div className="mx-auto max-w-2xl px-5 py-10 md:px-8">
       {/* Breadcrumb */}
       <Skeleton className="h-4 w-24 mb-6" />
 
-      {/* Issue header */}
-      <div className="mb-8 space-y-3">
+      {/* Overview header */}
+      <div className="mb-8 space-y-3 border-b border-border pb-8">
         <div className="flex items-center gap-3">
-          <Skeleton className="h-5 w-16 rounded-full" />
           <Skeleton className="h-4 w-32" />
         </div>
         <Skeleton className="h-8 w-full" />
@@ -18,27 +21,15 @@ export default function IssueLoading() {
         <Skeleton className="h-4 w-5/6" />
       </div>
 
-      {/* Two columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* MP vote summary */}
-          <Skeleton className="h-32 rounded-xl" />
-          {/* Vote grid */}
-          <div className="rounded-xl border border-border/40 overflow-hidden">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="flex gap-4 px-4 py-3 border-b border-border/30 last:border-0">
-                <Skeleton className="h-4 flex-1" />
-                <Skeleton className="h-5 w-16 rounded-full" />
-              </div>
-            ))}
+      {/* Sequential sections */}
+      <div className="space-y-10">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="space-y-3">
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
           </div>
-        </div>
-        <div className="space-y-4">
-          {/* Prediction widget */}
-          <Skeleton className="h-48 rounded-xl" />
-          {/* Email button */}
-          <Skeleton className="h-10 w-full rounded-lg" />
-        </div>
+        ))}
       </div>
     </div>
   )

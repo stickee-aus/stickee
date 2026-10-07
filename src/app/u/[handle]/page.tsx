@@ -2,13 +2,12 @@
 
 import { use } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, MapPin, BadgeCheck, Users, UserCheck } from 'lucide-react'
+import { ArrowLeft, MapPin, BadgeCheck } from 'lucide-react'
 import { MOCK_PROFILES } from '@/hooks/useFollows'
 import { useFollows } from '@/hooks/useFollows'
 import { FollowButton } from '@/components/FollowButton'
 import { FEED_POSTS } from '@/lib/mock-feed-data'
 import { scoreToGrade, gradeTextColor } from '@/lib/civic-utils'
-import { CIVIC_PILLARS } from '@/lib/mock-civic-data'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -38,7 +37,7 @@ const PILLAR_DISPLAY: Record<string, { label: string; color: string }> = {
 export default function PublicProfilePage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = use(params)
   const profile = MOCK_PROFILES[handle]
-  const { followingCount: myFollowingCount } = useFollows()
+  useFollows()
 
   if (!profile) {
     return (

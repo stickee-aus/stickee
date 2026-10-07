@@ -51,7 +51,7 @@ function MiniGapBar({ bill }: { bill: BillVoteRow }) {
   return (
     <div className="w-20 shrink-0 space-y-0.5">
       <div className="h-1 bg-muted/30 overflow-hidden">
-        <div className="h-full bg-emerald-500" style={{ width: `${bill.publicSupport}%` }} />
+        <div className="h-full bg-emerald-500" style={{ width: `${bill.publicSupport ?? 0}%` }} />
       </div>
       <div className="h-1 bg-muted/30 overflow-hidden">
         <div className="h-full bg-blue-500" style={{ width: `${parlPct}%` }} />
@@ -64,6 +64,7 @@ function MiniGapBar({ bill }: { bill: BillVoteRow }) {
 
 function GapLabel({ bill }: { bill: BillVoteRow }) {
   const gap = computeGap(bill)
+  if (gap === null) return null
   const abs = Math.abs(gap)
 
   if (abs <= 5) {
@@ -107,7 +108,6 @@ export function BillSmartRow({
   bill,
   pressureSummary,
   electorate,
-  mpName,
   isExpanded,
   userStance,
   onToggleExpand,
@@ -136,10 +136,22 @@ export function BillSmartRow({
 
   return (
     <div>
-      {/* ── Collapsed row ────────────────────────────────────────────────────── */}
-      <button
-        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-card/30 transition-colors"
+      {/* ── Collapsed row ──────────────────────────────────────────────────────
+          A div, not a button: it contains its own interactive children (the
+          "Stance" button below), and nested <button>s are invalid HTML and
+          trigger a hydration error. role="button" + onKeyDown restores
+          button semantics/keyboard activation without the nesting. */}
+      <div
+        role="button"
+        tabIndex={0}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-card/30 transition-colors cursor-pointer"
         onClick={() => onToggleExpand(bill.id)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onToggleExpand(bill.id)
+          }
+        }}
         aria-expanded={isExpanded}
       >
         <UrgencyDot urgency={bill.urgency} />
@@ -180,7 +192,7 @@ export function BillSmartRow({
         ) : null}
 
         {isExpanded ? <ChevronUp size={12} className="text-muted-foreground/60 shrink-0" /> : <ChevronDown size={12} className="text-muted-foreground/60 shrink-0" />}
-      </button>
+      </div>
 
       {/* ── Expanded content ──────────────────────────────────────────────────── */}
       {isExpanded && (
@@ -260,8 +272,7 @@ export function BillSmartRow({
         onOpenChange={open => { if (!open) setCampaignOpen(false) }}
         onConfirm={handleCampaignConfirm}
         electorate={electorate}
-        mpName={mpName}
-        localCount={0}
+        pressureSummary={pressureSummary}
       />
     </div>
   )

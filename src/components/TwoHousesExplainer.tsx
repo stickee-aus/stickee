@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { Scale, Shield, Users, Building2, ChevronDown, Gavel, Vote, FileCheck } from 'lucide-react'
+import { Scale, Shield, Users, Building2, Gavel, Vote, FileCheck } from 'lucide-react'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -81,8 +80,6 @@ function BillFlowStep({ step, index, isLast }: { step: (typeof HOW_A_BILL_PASSES
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function TwoHousesExplainer() {
-  const [expanded, setExpanded] = useState(false)
-
   return (
     <div className="overflow-hidden">
       {/* Toggle header (rendered by EducationAccordion in ParliamentExperienceClient) */}
@@ -186,7 +183,7 @@ export function TwoHousesExplainer() {
             <span className="text-foreground">The key difference: </span>
             The House decides <em>who governs</em> and <em>what laws get passed first</em>.
             The Senate acts as a <em>democratic safeguard</em> — it can reject or force changes to legislation
-            that doesn't have broad support across states and communities. This tension is by design.
+            that doesn’t have broad support across states and communities. This tension is by design.
           </p>
         </div>
       </div>

@@ -64,7 +64,7 @@ function PressureBar({ value }: { value: number }) {
 
 // ─── Single MP card ────────────────────────────────────────────────────────────
 
-function SwingMPCard({ mp, billName, onEmail }: { mp: SwingMP; billName: string; onEmail: (mp: SwingMP) => void }) {
+function SwingMPCard({ mp, onEmail }: { mp: SwingMP; onEmail: (mp: SwingMP) => void }) {
   const [expanded, setExpanded] = useState(false)
   const partyColor = PARTY_COLORS[mp.party] ?? '#999'
   const partyShort = mp.party === "Katter's Australian Party" ? 'KAP'
@@ -239,7 +239,7 @@ export function SwingVotePanel({ billId, billName, totalFor, totalAgainst }: Swi
       {/* MP grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {swingMPs.map(mp => (
-          <SwingMPCard key={mp.id} mp={mp} billName={billName} onEmail={setEmailTarget} />
+          <SwingMPCard key={mp.id} mp={mp} onEmail={setEmailTarget} />
         ))}
       </div>
 

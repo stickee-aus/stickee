@@ -2,46 +2,28 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { User, TrendingUp, CheckCircle2, MessageSquare, ArrowRight, LogIn, Flame, Snowflake, Share2, Mail, Trophy, Award } from 'lucide-react'
+import { User, TrendingUp, MessageSquare, ArrowRight, LogIn, CheckCircle2, Share2, Trophy, Award } from 'lucide-react'
 import { StreakBadge } from '@/components/StreakBadge'
 import { StreakMilestone } from '@/components/StreakMilestone'
-import { PillarGradeChip } from '@/components/PillarGradeChip'
-import { FeedPost } from '@/components/FeedPost'
 import { BadgeGrid, BadgeStrip, BadgeToastWatcher } from '@/components/BadgeDisplay'
-import { WeeklyReportCard } from '@/components/WeeklyReportCard'
 import { CIVIC_PILLARS } from '@/lib/mock-civic-data'
-import { DECISIONS, DECISION_MAKER_INDEX } from '@/lib/mock-government-data'
-import { FEED_POSTS, type FeedReaction } from '@/lib/mock-feed-data'
-import { scoreToGrade, gradeTextColor } from '@/lib/civic-utils'
+import { PillarGradeChip } from '@/components/PillarGradeChip'
+import { useAuthStatus } from '@/hooks/useAuthStatus'
 import { useStreak, FREEZE_COST_PTS } from '@/hooks/useStreak'
 import { useWallet } from '@/hooks/useWallet'
 import { useBadges } from '@/hooks/useBadges'
 import { useToast } from '@/components/ui/toast'
 
-// ─── Mocked user state ────────────────────────────────────────────────────────
+type TabId = 'activity' | 'predictions' | 'issues' | 'badges'
 
-const DEMO_USER = {
-  name: 'Demo User',
-  handle: '@demouser',
-  civicScore: 62,
-  isLoggedIn: true,
-}
+// ─── Loading view ─────────────────────────────────────────────────────────────
 
-// Score breakdown (mock — in production derived from real actions)
-const SCORE_BREAKDOWN = [
-  { label: 'Prediction accuracy',  pct: 72, weight: 0.40, color: '#3b82f6',  trend: '+4% this week' },
-  { label: 'Actions taken',        pct: 55, weight: 0.35, color: '#2ec266',  trend: '2 emails sent' },
-  { label: 'Community engagement', pct: 48, weight: 0.25, color: '#f5a623',  trend: '↑ 12 reactions' },
-]
-
-type TabId = 'activity' | 'predictions' | 'positions' | 'score' | 'badges'
-
-const ACTIVITY_POSTS = FEED_POSTS.filter(p => p.type === 'user_post').slice(0, 3)
-const PREDICTION_DECISIONS = DECISIONS.filter(d => d.predictionQuestion).slice(0, 4)
-const USER_PICKS: Record<string, 'yes' | 'no'> = {
-  [PREDICTION_DECISIONS[0]?.id]: 'yes',
-  [PREDICTION_DECISIONS[1]?.id]: 'no',
-  [PREDICTION_DECISIONS[2]?.id]: 'yes',
+function LoadingView() {
+  return (
+    <div className="flex items-center justify-center py-24">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary" />
+    </div>
+  )
 }
 
 // ─── Logged-out view ──────────────────────────────────────────────────────────
@@ -53,17 +35,16 @@ function LoggedOutView() {
         <User className="h-8 w-8 text-primary" />
       </div>
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Your civic identity.</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Sign in to see your profile.</h1>
         <p className="text-sm text-muted-foreground max-w-xs">
-          Track your impact, earn a civic score, and build your reputation as a voice for change.
+          Your profile shows activity tied to your real account — sign in to view it.
         </p>
       </div>
       <ul className="space-y-2 text-sm text-left max-w-xs w-full">
         {[
-          'See your personalised civic score (A–F)',
-          'Track your prediction accuracy over time',
           'Build a streak by taking daily actions',
-          'Get boosted in the Feed when your impact grows',
+          'Earn badges for consistent civic engagement',
+          'Track your daily bonus points',
           'Contact your MP with one tap',
         ].map(item => (
           <li key={item} className="flex items-start gap-2">
@@ -73,7 +54,7 @@ function LoggedOutView() {
         ))}
       </ul>
       <Link
-        href="/auth/sign-in"
+        href="/auth/sign-in?next=/profile"
         className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         <LogIn className="h-4 w-4" /> Sign in with email
@@ -82,123 +63,17 @@ function LoggedOutView() {
   )
 }
 
-// ─── Score breakdown tab ──────────────────────────────────────────────────────
-
-function ScoreTab({ civicScore }: { civicScore: number }) {
-  const grade = scoreToGrade(civicScore)
-  const nextGradeScore = grade === 'D' ? 40 : grade === 'C' ? 60 : grade === 'B' ? 80 : 95
-  const daysToNext = Math.ceil((nextGradeScore - civicScore) / 0.4) // rough estimate
-
-  return (
-    <div className="space-y-5">
-      <p className="font-mono text-xs text-muted-foreground">
-        Your civic score is built from three components. Improve each to level up your grade.
-      </p>
-
-      {/* Component breakdown */}
-      <div className="space-y-4">
-        {SCORE_BREAKDOWN.map(s => {
-          const contribution = Math.round(s.pct * s.weight)
-          return (
-            <div key={s.label} className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full" style={{ background: s.color }} />
-                  <span className="font-mono text-xs text-foreground">{s.label}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px]" style={{ color: '#3a3a3e' }}>
-                    {Math.round(s.weight * 100)}% weight
-                  </span>
-                  <span className="font-mono text-xs font-medium" style={{ color: s.color }}>
-                    +{contribution}pts
-                  </span>
-                </div>
-              </div>
-              <div className="h-1.5 w-full rounded-full" style={{ background: '#1e1e20' }}>
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${s.pct}%`, background: s.color }}
-                />
-              </div>
-              <p className="font-mono text-[9px]" style={{ color: '#3a3a3e' }}>{s.trend}</p>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Path to next grade */}
-      <div className="border border-border p-4 space-y-2" style={{ background: '#0e0e10' }}>
-        <p className="font-mono text-[9px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>
-          Path to grade {grade === 'D' ? 'C' : grade === 'C' ? 'B' : grade === 'B' ? 'A' : 'A+'}
-        </p>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="text-center">
-            <p className="font-mono text-sm" style={{ color: '#3b82f6' }}>
-              {Math.max(0, 75 - Math.round(SCORE_BREAKDOWN[0].pct))}%
-            </p>
-            <p className="font-mono text-[9px] text-muted-foreground">accuracy needed</p>
-          </div>
-          <div className="text-center">
-            <p className="font-mono text-sm" style={{ color: '#2ec266' }}>3</p>
-            <p className="font-mono text-[9px] text-muted-foreground">more actions</p>
-          </div>
-          <div className="text-center">
-            <p className="font-mono text-sm" style={{ color: '#f5a623' }}>~{daysToNext}d</p>
-            <p className="font-mono text-[9px] text-muted-foreground">at current pace</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick actions to boost score */}
-      <div className="space-y-2">
-        <p className="font-mono text-[9px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>
-          Boost your score now
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          <Link
-            href="/predictions"
-            className="flex items-center gap-2 border border-border p-3 hover:bg-card/50 transition-colors"
-          >
-            <TrendingUp className="h-4 w-4 shrink-0" style={{ color: '#3b82f6' }} />
-            <div>
-              <p className="font-mono text-xs text-foreground">Make prediction</p>
-              <p className="font-mono text-[9px]" style={{ color: '#3a3a3e' }}>+accuracy</p>
-            </div>
-          </Link>
-          <Link
-            href="/issues"
-            className="flex items-center gap-2 border border-border p-3 hover:bg-card/50 transition-colors"
-          >
-            <Mail className="h-4 w-4 shrink-0" style={{ color: '#2ec266' }} />
-            <div>
-              <p className="font-mono text-xs text-foreground">Email MP</p>
-              <p className="font-mono text-[9px]" style={{ color: '#3a3a3e' }}>+actions</p>
-            </div>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── Activity tab ─────────────────────────────────────────────────────────────
 
 function ActivityTab() {
-  const [reactions, setReactions] = useState<Record<string, Partial<Record<FeedReaction, boolean>>>>({})
-  function handleReact(postId: string, reaction: FeedReaction) {
-    setReactions(prev => ({
-      ...prev,
-      [postId]: { ...(prev[postId] ?? {}), [reaction]: !(prev[postId]?.[reaction]) },
-    }))
-  }
   return (
-    <div className="space-y-3">
-      {ACTIVITY_POSTS.map(post => (
-        <FeedPost key={post.id} post={post} onReact={handleReact} userReactions={reactions[post.id] ?? {}} />
-      ))}
-      <Link href="/feed" className="flex items-center justify-center gap-2 rounded-xl border border-border/50 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        See full Feed <ArrowRight className="h-4 w-4" />
+    <div className="rounded-xl border border-border/50 bg-card/80 p-6 text-center space-y-2">
+      <MessageSquare className="h-5 w-5 mx-auto text-muted-foreground" />
+      <p className="text-sm text-muted-foreground">
+        Your personal activity history isn&apos;t tracked here yet.
+      </p>
+      <Link href="/feed" className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:text-primary/80 transition-colors">
+        See the community Feed <ArrowRight className="h-3.5 w-3.5" />
       </Link>
     </div>
   )
@@ -208,54 +83,58 @@ function ActivityTab() {
 
 function PredictionsTab() {
   return (
-    <div className="space-y-2">
-      <p className="font-mono text-xs text-muted-foreground pb-1">
-        Your picks vs crowd probability. Accuracy builds your civic score.
+    <div className="rounded-xl border border-border/50 bg-card/80 p-6 text-center space-y-2">
+      <TrendingUp className="h-5 w-5 mx-auto text-muted-foreground" />
+      <p className="text-sm text-muted-foreground">
+        Your predictions aren&apos;t tracked on this page yet.
       </p>
-      {PREDICTION_DECISIONS.map(decision => {
-        const pick = USER_PICKS[decision.id]
-        const crowdPct = Math.round(40 + Math.random() * 40)
-        return (
-          <div key={decision.id} className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/80 p-3">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{decision.title}</p>
-              <p className="text-xs text-muted-foreground truncate">{decision.predictionQuestion}</p>
-            </div>
-            <div className="shrink-0 text-right space-y-0.5">
-              <div className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${pick === 'yes' ? 'bg-emerald-500/15 text-emerald-400' : pick === 'no' ? 'bg-red-500/15 text-red-400' : 'bg-muted text-muted-foreground'}`}>
-                {pick ? pick.toUpperCase() : '—'}
-              </div>
-              <p className="text-[10px] text-muted-foreground">{crowdPct}% crowd yes</p>
-            </div>
-          </div>
-        )
-      })}
-      <Link href="/predictions" className="flex items-center justify-center gap-2 rounded-xl border border-border/50 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        See all markets <ArrowRight className="h-4 w-4" />
+      <Link href="/predictions" className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:text-primary/80 transition-colors">
+        Go to Forecasts <ArrowRight className="h-3.5 w-3.5" />
       </Link>
     </div>
   )
 }
 
-// ─── Positions tab ────────────────────────────────────────────────────────────
+// ─── Issues tab ───────────────────────────────────────────────────────────────
 
-function PositionsTab() {
+function IssuesTab() {
   return (
     <div className="space-y-4">
-      <p className="font-mono text-xs text-muted-foreground">Issues you&apos;ve engaged with.</p>
+      <p className="text-xs text-muted-foreground">National issues, at a glance.</p>
       <div className="grid grid-cols-5 gap-2">
         {CIVIC_PILLARS.map(pillar => (
-          <Link key={pillar.id} href={`/issues`}>
+          <Link key={pillar.id} href="/issues">
             <PillarGradeChip pillar={pillar} />
           </Link>
         ))}
       </div>
       <div className="rounded-xl border border-border/50 bg-card/80 p-4 text-center">
-        <p className="text-xs text-muted-foreground mb-2">Take more actions to see your personal impact breakdown here.</p>
+        <p className="text-xs text-muted-foreground mb-2">Personal issue tracking isn&apos;t available yet.</p>
         <Link href="/issues" className="inline-flex items-center gap-2 text-xs font-medium text-primary hover:text-primary/80 transition-colors">
           Explore Issues <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
+    </div>
+  )
+}
+
+// ─── Badges tab ───────────────────────────────────────────────────────────────
+
+function BadgesTab() {
+  const { earnedDefs } = useBadges()
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-muted-foreground">
+        Badges are earned by taking consistent civic actions on this device.
+      </p>
+      {earnedDefs.length === 0 ? (
+        <div className="rounded-xl border border-border/50 bg-card/80 p-6 text-center space-y-2">
+          <p className="text-2xl">🔒</p>
+          <p className="text-sm text-muted-foreground">No badges yet — check in daily to start earning.</p>
+        </div>
+      ) : (
+        <BadgeGrid showLocked />
+      )}
     </div>
   )
 }
@@ -279,7 +158,6 @@ function StreakSection() {
   function handleRecordAction() {
     const { newCount, isMilestone } = recordAction()
     if (newCount > 0 && isMilestone) {
-      // Award milestone bonus points
       const BONUSES: Record<number, number> = { 7: 250, 30: 1000, 100: 5000 }
       const bonus = BONUSES[newCount] ?? 0
       if (bonus > 0) addPoints(bonus)
@@ -288,7 +166,6 @@ function StreakSection() {
 
   return (
     <div className="border border-border p-4 space-y-3" style={{ background: '#0e0e10' }}>
-      {/* Milestone celebration */}
       {streak.milestoneReached && (
         <StreakMilestone count={streak.milestoneReached} onDismiss={clearMilestone} />
       )}
@@ -307,7 +184,7 @@ function StreakSection() {
           className="h-10 w-10 flex items-center justify-center shrink-0"
           style={{ background: '#1e1800', border: '1px solid #f5a62330' }}
         >
-          <Flame className="h-5 w-5" style={{ color: streak.count > 0 ? '#f5a623' : '#2a2a2e' }} />
+          <Trophy className="h-5 w-5" style={{ color: streak.count > 0 ? '#f5a623' : '#2a2a2e' }} />
         </div>
         <div className="flex-1">
           <p className="font-mono text-xl font-normal" style={{ color: streak.count > 0 ? '#f5a623' : '#3a3a3e' }}>
@@ -329,7 +206,6 @@ function StreakSection() {
         )}
       </div>
 
-      {/* Milestone progress */}
       <div className="space-y-1">
         <p className="font-mono text-[9px]" style={{ color: '#3a3a3e' }}>Milestones</p>
         <div className="flex items-center gap-3">
@@ -347,10 +223,8 @@ function StreakSection() {
         </div>
       </div>
 
-      {/* Freeze mechanic */}
       <div className="flex items-center justify-between pt-2 border-t border-border">
         <div className="flex items-center gap-2">
-          <Snowflake className="h-3.5 w-3.5" style={{ color: streak.freezesAvailable > 0 ? '#3b82f6' : '#2a2a2e' }} />
           <span className="font-mono text-[10px]" style={{ color: '#3a3a3e' }}>
             {streak.freezesAvailable} freeze{streak.freezesAvailable !== 1 ? 's' : ''} available
           </span>
@@ -360,12 +234,15 @@ function StreakSection() {
             onClick={handleBuyFreeze}
             className="font-mono text-[9px] tracking-widest uppercase px-2 py-1 border transition-colors hover:bg-card/50"
             style={{ borderColor: '#1e1e20', color: '#3a3a3e' }}
-            title={`Buy a streak freeze for ${FREEZE_COST_PTS.toLocaleString()} pts — protects your streak if you miss a day`}
+            title={`Buy a streak freeze for ${FREEZE_COST_PTS.toLocaleString()} pts — protects your streak if you miss a day. Points are local to this device, not your account.`}
           >
             Buy freeze ({FREEZE_COST_PTS.toLocaleString()} pts)
           </button>
         )}
       </div>
+      <p className="font-mono text-[9px]" style={{ color: '#3a3a3e' }}>
+        Balance: {hydrated ? balance.toLocaleString() : '—'} pts (stored on this device, not your account)
+      </p>
     </div>
   )
 }
@@ -378,24 +255,21 @@ function ReferralSection() {
   function copyLink() {
     const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/sign-in?ref=stickee-user`
     navigator.clipboard.writeText(url)
-    toast('Referral link copied! Share it — you both get 250 pts on sign-up.', 'success')
+    toast('Referral link copied!', 'success')
   }
 
   return (
     <div className="border border-border p-4 space-y-3" style={{ background: '#0e0e10' }}>
       <div className="flex items-center gap-2">
-        <Trophy className="h-4 w-4" style={{ color: '#2ec266' }} />
-        <p className="font-mono text-xs text-foreground">Refer friends, earn points</p>
+        <Share2 className="h-4 w-4" style={{ color: '#2ec266' }} />
+        <p className="font-mono text-xs text-foreground">Invite friends to Stickee</p>
       </div>
-      <p className="font-mono text-[10px] text-muted-foreground leading-relaxed">
-        Share your referral link. You earn <span style={{ color: '#2ec266' }}>250 pts</span> for every friend who signs up and makes their first prediction.
-      </p>
       <button
         onClick={copyLink}
         className="flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 transition-colors"
         style={{ background: '#e8e8e6', color: '#0a0a0b' }}
       >
-        <Share2 className="h-3 w-3" /> Copy referral link (+250 pts each)
+        <Share2 className="h-3 w-3" /> Copy invite link
       </button>
     </div>
   )
@@ -403,36 +277,16 @@ function ReferralSection() {
 
 // ─── Logged-in view ───────────────────────────────────────────────────────────
 
-function BadgesTab() {
-  const { earnedDefs } = useBadges()
-  return (
-    <div className="space-y-4">
-      <p className="font-mono text-xs text-muted-foreground">
-        Badges are earned by taking consistent civic actions. Each one comes with bonus points.
-      </p>
-      {earnedDefs.length === 0 ? (
-        <div className="rounded-xl border border-border/50 bg-card/80 p-6 text-center space-y-2">
-          <p className="text-2xl">🔒</p>
-          <p className="text-sm text-muted-foreground">No badges yet — check in daily to start earning.</p>
-        </div>
-      ) : (
-        <BadgeGrid showLocked />
-      )}
-    </div>
-  )
-}
-
-function LoggedInView() {
+function LoggedInView({ email }: { email: string | null }) {
   const [tab, setTab] = useState<TabId>('activity')
-
-  const grade = scoreToGrade(DEMO_USER.civicScore)
-  const gradeColor = gradeTextColor(grade)
-
   const { streak } = useStreak()
   const { addPoints } = useWallet()
   const { awardBadge, hasBadge } = useBadges()
 
-  // Award first-action badge whenever streak becomes active today
+  const displayName = email ? email.split('@')[0] : 'Your account'
+  const initial = displayName.charAt(0).toUpperCase() || '?'
+
+  // Award streak-based badges as real local milestones are reached
   useEffect(() => {
     if (streak.isActiveToday && !hasBadge('first-action')) {
       const bonus = awardBadge('first-action')
@@ -450,77 +304,38 @@ function LoggedInView() {
       const bonus = awardBadge('streak-100')
       if (bonus > 0) addPoints(bonus)
     }
-    if (DEMO_USER.civicScore >= 75 && !hasBadge('score-b')) {
-      const bonus = awardBadge('score-b')
-      if (bonus > 0) addPoints(bonus)
-    }
   }, [streak.isActiveToday, streak.count, hasBadge, awardBadge, addPoints])
 
   const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
     { id: 'activity',    label: 'Activity',    icon: MessageSquare },
     { id: 'predictions', label: 'Predictions', icon: TrendingUp },
-    { id: 'positions',   label: 'Positions',   icon: CheckCircle2 },
-    { id: 'score',       label: 'Score',       icon: Trophy },
+    { id: 'issues',      label: 'Issues',      icon: CheckCircle2 },
     { id: 'badges',      label: 'Badges',      icon: Award },
   ]
 
   return (
     <div className="space-y-6">
-      {/* Badge toast watcher — fires toasts when badges are earned */}
       <BadgeToastWatcher />
 
       {/* ── Profile card ── */}
       <div className="rounded-2xl border border-border/50 bg-card/80 p-5">
         <div className="flex items-start gap-4">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-xl font-bold text-primary">
-            {DEMO_USER.name.split(' ').map(w => w[0]).join('')}
+            {initial}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold text-foreground">{DEMO_USER.name}</h1>
-            <p className="text-sm text-muted-foreground">{DEMO_USER.handle}</p>
+            <h1 className="text-lg font-bold text-foreground truncate">{displayName}</h1>
+            {email && <p className="text-sm text-muted-foreground truncate">{email}</p>}
             <div className="mt-2 flex flex-col gap-1.5">
               <StreakBadge count={streak.count} isActiveToday={streak.isActiveToday} />
               <BadgeStrip max={6} />
             </div>
           </div>
-          <div className="text-center">
-            <p className={`text-4xl font-black ${gradeColor}`}>{grade}</p>
-            <p className="text-xs text-muted-foreground">{DEMO_USER.civicScore}/100</p>
-          </div>
         </div>
-
-        {/* Score progress bar */}
-        <div className="mt-4 space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Civic Score</span>
-            <span className="font-medium text-foreground">{DEMO_USER.civicScore}/100</span>
-          </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-border/40">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all"
-              style={{ width: `${DEMO_USER.civicScore}%` }}
-            />
-          </div>
-          <p className="text-[10px] text-muted-foreground">
-            Predictions · Actions · Engagement — keep going to reach grade{' '}
-            <span className="font-semibold">B (75+)</span>.{' '}
-            <button onClick={() => setTab('score')} className="underline hover:opacity-70 transition-opacity">
-              See breakdown →
-            </button>
-          </p>
-        </div>
+        <p className="mt-4 text-xs text-muted-foreground border-t border-border/50 pt-3">
+          Civic score isn&apos;t available yet — this is still being built and verified.
+        </p>
       </div>
-
-      {/* ── Weekly Report Card ── */}
-      <WeeklyReportCard
-        civicScore={DEMO_USER.civicScore}
-        onView={() => {
-          if (!hasBadge('weekly-reporter')) {
-            const bonus = awardBadge('weekly-reporter')
-            if (bonus > 0) addPoints(bonus)
-          }
-        }}
-      />
 
       {/* ── Streak section ── */}
       <StreakSection />
@@ -549,8 +364,7 @@ function LoggedInView() {
       {/* ── Tab content ── */}
       {tab === 'activity'    && <ActivityTab />}
       {tab === 'predictions' && <PredictionsTab />}
-      {tab === 'positions'   && <PositionsTab />}
-      {tab === 'score'       && <ScoreTab civicScore={DEMO_USER.civicScore} />}
+      {tab === 'issues'      && <IssuesTab />}
       {tab === 'badges'      && <BadgesTab />}
     </div>
   )
@@ -559,9 +373,17 @@ function LoggedInView() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
+  const auth = useAuthStatus()
+
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8">
-      {DEMO_USER.isLoggedIn ? <LoggedInView /> : <LoggedOutView />}
+      {!auth.hydrated ? (
+        <LoadingView />
+      ) : auth.authenticated ? (
+        <LoggedInView email={auth.email} />
+      ) : (
+        <LoggedOutView />
+      )}
     </div>
   )
 }

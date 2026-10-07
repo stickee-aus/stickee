@@ -3,7 +3,15 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, ChevronRight, Zap, BarChart3 } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { ChamberToggle, type Chamber } from '@/components/ChamberToggle'
+import { UnderlineTabs, type UnderlineTabItem } from '@/components/ui/underline-tabs'
+import { StatusLabel } from '@/components/ui/status-label'
+
+type Chamber = 'house' | 'senate'
+
+const CHAMBER_TABS: UnderlineTabItem[] = [
+  { id: 'house', label: 'House of Reps (150)' },
+  { id: 'senate', label: 'Senate (76)' },
+]
 
 const HouseChamber = dynamic(
   () => import('@/components/HouseChamber').then(mod => mod.HouseChamber),
@@ -76,18 +84,15 @@ export function ChamberSummaryCard({
         aria-expanded={expanded}
       >
         <div className="flex-1 min-w-0">
-          <p className="font-mono text-xs text-foreground truncate">{summaryText}</p>
-          <p className="font-mono text-[10px] text-muted-foreground mt-0.5">
+          <p className="text-body-copy truncate font-medium text-foreground">{summaryText}</p>
+          <p className="text-metadata mt-0.5 normal-case tracking-normal text-muted-foreground">
             {expanded ? 'Click to collapse' : 'Explore Chamber →'}
           </p>
         </div>
         {isLiveBill && (
-          <span
-            className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest border px-2 py-0.5 shrink-0"
-            style={{ color: '#f5a623', borderColor: '#3a2e10' }}
-          >
-            <Zap size={9} />
-            Live
+          <span className="inline-flex shrink-0 items-center gap-1">
+            <Zap size={9} className="text-[var(--status-positive)]" aria-hidden="true" />
+            <StatusLabel status="active" label="Live" />
           </span>
         )}
         {expanded
@@ -98,15 +103,15 @@ export function ChamberSummaryCard({
 
       {/* Expanded content */}
       {expanded && (
-        <div className="border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="border-t border-border/30 animate-in fade-in duration-200">
           {/* Controls row */}
           <div className="px-4 pt-4 pb-3 flex items-center justify-between gap-3 flex-wrap">
-            <ChamberToggle value={chamber} onChange={setChamber} />
+            <UnderlineTabs items={CHAMBER_TABS} value={chamber} onChange={value => setChamber(value as Chamber)} />
             <div className="flex items-center gap-2">
               {selectedBillId && (
                 <button
                   onClick={() => setSimulatorOpen(true)}
-                  className="flex items-center gap-1.5 border border-border px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                  className="transition-calm flex items-center gap-1.5 border border-border px-3 py-1.5 text-micro-label text-muted-foreground hover:text-foreground hover:border-foreground/30"
                 >
                   <BarChart3 size={11} />
                   Simulate
@@ -114,7 +119,7 @@ export function ChamberSummaryCard({
               )}
               <button
                 onClick={() => setMapOpen(true)}
-                className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                className="transition-calm text-micro-label text-muted-foreground/60 hover:text-muted-foreground"
               >
                 Map
               </button>
@@ -136,17 +141,19 @@ export function ChamberSummaryCard({
               <div className="mt-3">
                 <button
                   onClick={() => setShowMPBreakdown(v => !v)}
-                  className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors py-1"
+                  aria-expanded={showMPBreakdown}
+                  className="transition-calm flex items-center gap-2 py-1 text-micro-label text-muted-foreground hover:text-foreground"
                 >
                   <ChevronRight
                     size={13}
-                    className={`transition-transform duration-200 ${showMPBreakdown ? 'rotate-90' : ''}`}
+                    className={showMPBreakdown ? 'rotate-90' : ''}
+                    aria-hidden="true"
                   />
                   {showMPBreakdown ? 'Hide' : 'View'} individual MP breakdown
                 </button>
 
                 {showMPBreakdown && (
-                  <div className="mt-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="mt-2 animate-in fade-in duration-200">
                     <MPDrilldownTable
                       billId={selectedBillId}
                       onClose={() => setShowMPBreakdown(false)}
@@ -161,7 +168,7 @@ export function ChamberSummaryCard({
             )}
 
             {chamber === 'senate' && (
-              <p className="mt-2 text-[11px] text-muted-foreground/60">
+              <p className="text-metadata mt-2 normal-case tracking-normal text-muted-foreground/60">
                 Switch to House to see individual MP breakdown
               </p>
             )}

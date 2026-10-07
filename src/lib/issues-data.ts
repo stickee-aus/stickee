@@ -9,7 +9,14 @@ export interface IssueVoteSummary {
 
 export interface IssueWithStats extends Issue {
   voteSummary: IssueVoteSummary
+  /** Real `updated_at` timestamp — only present for database-backed rows. */
+  updatedAt?: string
+  /** Real `source_url` — only present for database-backed rows, and only when populated. */
+  sourceUrl?: string | null
 }
+
+/** Where a given page's data actually came from — never assume 'database' without checking. */
+export type IssuesDataSource = 'database' | 'mock'
 
 export interface IssueMarketRecord {
   issue_id: string
@@ -23,6 +30,7 @@ export interface IssueMarketRecord {
   yes_volume: number
   no_volume: number
   yes_history: Array<number | string> | null
+  resolution_source: string | null
 }
 
 function toNumber(value: number | string | null | undefined, fallback = 0) {
@@ -39,6 +47,13 @@ function toHistory(values: Array<number | string> | null | undefined) {
 
 function toMarketStatus(status: string): MarketStatus {
   if (status === 'resolved-yes' || status === 'resolved-no') return status
+  // The DB's own check constraint (migration 017) allows 'voided' and
+  // 'cancelled' in addition to 'active'/'resolved-*' — both must map to the
+  // client's 'voided' state, never fall through to 'active'. Defaulting an
+  // unrecognised status to 'active' previously let a real voided/cancelled
+  // market render live stake buttons (server-side is_market_open() still
+  // blocked the actual stake, but the client claim was false).
+  if (status === 'voided' || status === 'cancelled') return 'voided'
   return 'active'
 }
 
@@ -93,6 +108,7 @@ export function mapIssueMarketRecordToPredictionMarket(record: IssueMarketRecord
     priceChange,
     participants: record.total_participants ?? 0,
     resolvesBy: record.resolves_by,
+    resolutionSource: record.resolution_source,
     ...marketVisualFor(record.issue_id, category),
     ...marketStoryFor({
       id: record.issue_id,

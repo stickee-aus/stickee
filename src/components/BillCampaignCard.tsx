@@ -233,7 +233,6 @@ export function BillCampaignCard({
   onSelect,
   pressureSummary,
   electorate,
-  mpName,
   onAction,
 }: BillCampaignCardProps) {
   const [expanded, setExpanded] = useState(false)
@@ -378,7 +377,7 @@ export function BillCampaignCard({
         {/* Row 3: Public vs Parliament bar */}
         <div className="mb-3" onClick={e => e.stopPropagation()}>
           <PublicVsParliamentBar
-            publicSupport={bill.publicSupport}
+            publicSupport={bill.publicSupport ?? 0}
             parliamentSupport={parlPct}
           />
         </div>
@@ -562,8 +561,7 @@ export function BillCampaignCard({
         onOpenChange={open => setCampaignModal(prev => ({ ...prev, open }))}
         onConfirm={handleCampaignConfirm}
         electorate={electorate}
-        mpName={mpName}
-        localCount={localCount}
+        pressureSummary={null}
       />
     </article>
 

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Markets — Stickee',
-  description: 'Predict whether bills will pass and civic scores will improve. Join Australia\'s civic prediction market and compete on the leaderboard.',
+  title: 'Forecasts — Stickee',
+  description: 'See the crowd\'s forecast on whether bills will pass and civic scores will improve, and add your own prediction.',
   openGraph: {
-    title: 'Civic Prediction Markets — Stickee',
-    description: 'Will housing improve? Will the bill pass? Trade civic outcomes and track your prediction accuracy.',
+    title: 'Forecasts — Stickee',
+    description: 'Will housing improve? Will the bill pass? See Australia\'s crowd-forecasted civic outcomes.',
     type: 'website',
   },
 }

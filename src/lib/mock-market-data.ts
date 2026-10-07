@@ -182,6 +182,8 @@ export interface PredictionMarket {
   bearCase: string
   simulatorComparison: MarketSimulatorComparison
   pillarId?: string           // civic markets only
+  /** Admin-entered on settlement (migration 017). Only ever real when present — mock markets omit it. */
+  resolutionSource?: string | null
 }
 
 export const MARKET_VISUALS: Record<string, { topic: string; imageUrl: string; imageAlt: string }> = {

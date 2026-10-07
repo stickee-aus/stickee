@@ -200,7 +200,7 @@ function BillCard({ bill, isSelected, onSelect, userVote, onUserVote }: BillCard
           {/* Probability + sparkline */}
           <div className="flex items-center gap-3 shrink-0">
             <Sparkline data={bill.sparkline} rising={rising} />
-            <ProbabilityMeter value={bill.publicPrediction} change={bill.change} />
+            <ProbabilityMeter value={bill.publicPrediction ?? 0} change={bill.change} />
           </div>
         </div>
 

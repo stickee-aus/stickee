@@ -165,11 +165,6 @@ export function useComments(postId: string) {
     }
   }, [postId])
 
-  function persist(next: Comment[]) {
-    try { localStorage.setItem(storageKey(postId), JSON.stringify(next)) } catch { /* ignore */ }
-    setComments(next)
-  }
-
   const addComment = useCallback(async (body: string, parentId?: string): Promise<boolean> => {
     if (!body.trim()) return false
     setSubmitting(true)

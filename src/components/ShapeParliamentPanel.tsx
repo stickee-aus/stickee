@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Flame, TrendingUp, TrendingDown, Award, Zap, ChevronUp, ChevronDown, Star, Target, Info } from 'lucide-react'
+import { Flame, Award, Zap, ChevronUp, ChevronDown, Star, Target, Info } from 'lucide-react'
 import { MPs, PARTY_COLORS } from '@/lib/mock-data'
 import { billVoteRows, getMPVoteForBill } from '@/lib/mock-parliament-data'
 import type { MP } from '@/types'
@@ -463,7 +463,7 @@ export function ShapeParliamentPanel() {
       <div className="mx-5 mt-4 flex items-start gap-2 rounded-lg bg-primary/5 border border-primary/15 p-3">
         <Info size={13} className="text-primary/70 shrink-0 mt-0.5" />
         <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Your votes feed into each MP's <strong className="text-foreground">Public Pressure Score</strong> and{' '}
+          Your votes feed into each MP’s <strong className="text-foreground">Public Pressure Score</strong> and{' '}
           <strong className="text-foreground">Trust Score</strong>, shifting the probability of bills passing.
           Stake reputation points on how MPs will vote — get it right to earn more.
         </p>
@@ -491,7 +491,7 @@ export function ShapeParliamentPanel() {
         {tab === 'pressure' && (
           <div>
             <p className="text-xs text-muted-foreground mb-4">
-              Support or oppose an MP's stance to influence their public pressure score. High pressure MPs glow in the chamber map.
+              Support or oppose an MP’s stance to influence their public pressure score. High pressure MPs glow in the chamber map.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {featuredMPs.map(mp => (
