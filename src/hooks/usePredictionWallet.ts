@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import type { Position } from '@/hooks/useWallet'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 interface DBWalletRow {
   balance: number
@@ -36,9 +37,7 @@ const INITIAL_STATE: PredictionWalletState = {
   positions: [],
 }
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+const configured = isSupabaseConfigured
 
 function mapPosition(row: DBWalletPosition): Position {
   return {
@@ -72,18 +71,22 @@ export function usePredictionWallet() {
 
     let cancelled = false
     const supabase = createClient()
-    let walletChannelCleanup: (() => void) | undefined
-    let positionsChannelCleanup: (() => void) | undefined
+    let loadVersion = 0
+    let walletChannelCleanup: (() => Promise<void>) | undefined
+    let positionsChannelCleanup: (() => Promise<void>) | undefined
 
     async function loadWallet() {
-      walletChannelCleanup?.()
-      positionsChannelCleanup?.()
+      const version = ++loadVersion
+      await Promise.all([
+        walletChannelCleanup?.(),
+        positionsChannelCleanup?.(),
+      ])
       walletChannelCleanup = undefined
       positionsChannelCleanup = undefined
 
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        if (!cancelled) {
+        if (!cancelled && version === loadVersion) {
           setState({
             authenticated: false,
             hydrated: true,
@@ -121,14 +124,16 @@ export function usePredictionWallet() {
       const nextWallet = nextWalletRes.data as DBWalletRow | null
       const positions = positionsRes.data ?? []
 
-      if (!cancelled) {
-        setState({
-          authenticated: true,
-          hydrated: true,
-          balance: nextWallet?.balance ?? 0,
-          positions: positions.map(mapPosition),
-        })
-      }
+      // getUser(), the initial data fetch and an auth-state notification can
+      // overlap. Only the newest load may publish state or subscribe.
+      if (cancelled || version !== loadVersion) return
+
+      setState({
+        authenticated: true,
+        hydrated: true,
+        balance: nextWallet?.balance ?? 0,
+        positions: positions.map(mapPosition),
+      })
 
       const refresh = async () => {
         const [updatedWalletRes, updatedPositionsRes] = await Promise.all([
@@ -185,11 +190,11 @@ export function usePredictionWallet() {
         )
         .subscribe()
 
-      walletChannelCleanup = () => {
-        supabase.removeChannel(walletChannel)
+      walletChannelCleanup = async () => {
+        await supabase.removeChannel(walletChannel)
       }
-      positionsChannelCleanup = () => {
-        supabase.removeChannel(positionsChannel)
+      positionsChannelCleanup = async () => {
+        await supabase.removeChannel(positionsChannel)
       }
     }
 
@@ -202,8 +207,8 @@ export function usePredictionWallet() {
     return () => {
       cancelled = true
       subscription.unsubscribe()
-      walletChannelCleanup?.()
-      positionsChannelCleanup?.()
+      void walletChannelCleanup?.()
+      void positionsChannelCleanup?.()
     }
   }, [])
 

@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { ArrowLeft, CircleDot, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
-import { requireAdminUserId } from '../../_lib/guard'
+import { getAdminUser, requireAdminUserId } from '../../_lib/guard'
 import { runAgent, type AgentSlug, AGENT_IDS } from '@/lib/agents/registry'
 
 export const metadata: Metadata = {
@@ -46,6 +46,7 @@ export default async function AgentDetailPage({
   params,
 }: { params: Promise<{ id: string }> }) {
   await connection()
+  if (!(await getAdminUser()).isAdmin) return null
 
   const { id } = await params
   if (!AGENT_IDS.includes(id as AgentSlug)) notFound()

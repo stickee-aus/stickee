@@ -1,16 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { STRIPE_API_VERSION } from '@/lib/stripe-security'
 
 type Cadence = 'once' | 'monthly'
 
 interface CheckoutBody {
   amount?: unknown
   cadence?: unknown
+  attemptId?: unknown
 }
 
-const STRIPE_API_VERSION = '2026-02-25.clover'
 const MIN_AMOUNT_CENTS = 100
 const MAX_AMOUNT_CENTS = 500000
+const ATTEMPT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 function createServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -26,9 +28,11 @@ function createServiceClient() {
 }
 
 function getOrigin(request: Request) {
-  const forwardedHost = request.headers.get('x-forwarded-host')
-  const forwardedProto = request.headers.get('x-forwarded-proto')
-  if (forwardedHost) return `${forwardedProto || 'https'}://${forwardedHost}`
+  const configured = process.env.NEXT_PUBLIC_SITE_URL
+  if (configured) {
+    const origin = new URL(configured).origin
+    if (origin.startsWith('https://') || origin.startsWith('http://localhost:')) return origin
+  }
   return new URL(request.url).origin
 }
 
@@ -70,9 +74,14 @@ export async function POST(request: Request) {
 
   const amountCents = cleanAmountCents(body.amount)
   const cadence = cleanCadence(body.cadence)
+  const attemptId = typeof body.attemptId === 'string' ? body.attemptId : ''
 
   if (!amountCents) {
     return Response.json({ error: 'Enter a donation amount between $1 and $5,000 AUD.' }, { status: 400 })
+  }
+
+  if (!ATTEMPT_ID_PATTERN.test(attemptId)) {
+    return Response.json({ error: 'Invalid checkout attempt.' }, { status: 400 })
   }
 
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY
@@ -83,23 +92,38 @@ export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   const admin = createServiceClient()
-  let donationRecordId: string | null = null
+  let donationRecordId: string
+  if (!admin) {
+    return Response.json({ error: 'Donation records are not configured.' }, { status: 503 })
+  }
 
-  if (admin) {
-    const { data } = await admin
+  const { data: donationRecord, error: donationError } = await admin
       .from('donation_records')
-      .insert({
+      .upsert({
         user_id: user?.id ?? null,
         amount_cents: amountCents,
         currency: 'aud',
         cadence: cadence === 'monthly' ? 'monthly' : 'one_time',
         status: 'started',
         source: 'donate_page',
-      })
+        checkout_attempt_id: attemptId,
+      }, { onConflict: 'checkout_attempt_id', ignoreDuplicates: true })
       .select('id')
       .single()
 
-    donationRecordId = data?.id ?? null
+  if (donationError || !donationRecord?.id) {
+    const { data: existing, error: existingError } = await admin
+      .from('donation_records')
+      .select('id')
+      .eq('checkout_attempt_id', attemptId)
+      .maybeSingle()
+
+    if (existingError || !existing?.id) {
+      return Response.json({ error: 'Unable to record this checkout safely.' }, { status: 503 })
+    }
+    donationRecordId = existing.id
+  } else {
+    donationRecordId = donationRecord.id
   }
 
   const origin = getOrigin(request)
@@ -121,6 +145,7 @@ export async function POST(request: Request) {
       Authorization: `Bearer ${stripeSecretKey}`,
       'Content-Type': 'application/x-www-form-urlencoded',
       'Stripe-Version': STRIPE_API_VERSION,
+      'Idempotency-Key': attemptId,
     },
     body: params,
   })
@@ -134,11 +159,15 @@ export async function POST(request: Request) {
     )
   }
 
-  if (admin && donationRecordId) {
-    await admin
+  if (donationRecordId) {
+    const { error: updateError } = await admin
       .from('donation_records')
       .update({ stripe_checkout_session_id: session.id, updated_at: new Date().toISOString() })
       .eq('id', donationRecordId)
+
+    if (updateError) {
+      return Response.json({ error: 'Checkout was created but could not be recorded safely.' }, { status: 503 })
+    }
   }
 
   return Response.json({ url: session.url })

@@ -40,7 +40,7 @@ describe('Home page — pillar card links resolve to a real destination', () => 
   })
 })
 
-describe('Profile page — real auth gate, no fake identity', () => {
+describe('Profile page — no fake account activity or identity', () => {
   const source = read('src/app/profile/page.tsx')
 
   it('no longer hardcodes a fake logged-in demo user', () => {
@@ -48,13 +48,14 @@ describe('Profile page — real auth gate, no fake identity', () => {
     expect(source).not.toContain('isLoggedIn: true')
   })
 
-  it('gates the logged-in view behind real auth status', () => {
-    expect(source).toContain('useAuthStatus')
-    expect(source).toContain('auth.authenticated')
+  it('withholds account activity until verified records are available', () => {
+    expect(source).toContain('No verified account activity available')
+    expect(source).toContain('Account activity is not available in this preview')
   })
 
-  it('shows a distinct loading state before auth is known', () => {
-    expect(source).toContain('auth.hydrated')
+  it('does not expose a fake loading-to-authenticated transition', () => {
+    expect(source).not.toContain('auth.hydrated')
+    expect(source).not.toContain('auth.authenticated')
   })
 
   it('no longer fabricates a civic score, weekly report, or random crowd percentage', () => {
@@ -63,8 +64,9 @@ describe('Profile page — real auth gate, no fake identity', () => {
     expect(source).not.toContain('Math.random()')
   })
 
-  it('labels the local wallet balance as device-local, not account balance', () => {
-    expect(source).toContain('not your account')
+  it('does not render a local wallet balance as account data', () => {
+    expect(source).not.toContain('useWallet')
+    expect(source).toContain('points and mock civic grades are not shown as account records')
   })
 })
 
@@ -158,9 +160,9 @@ describe('Campaigns page — fake join/propose mechanics are disabled and labele
     expect(source).not.toContain('100 upvotes from the community')
   })
 
-  it('clearly labels the campaigns as example content and points to the real action system', () => {
-    expect(source).toContain('example')
-    expect(source).toContain('/parliament')
+  it('removes example campaigns and points to the canonical issue catalogue', () => {
+    expect(source).toContain('Example participant counts, deadlines and promised outcomes have been removed')
+    expect(source).toContain('/issues')
   })
 })
 

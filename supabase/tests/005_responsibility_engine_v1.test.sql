@@ -1,9 +1,7 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 005_responsibility_engine_v1.test.sql
 --
--- AUTHORED, NOT EXECUTED in this session — this environment has no Supabase
--- CLI, no running Docker daemon, and no local Postgres (verified: `docker
--- info` fails to connect to the daemon). Run it locally with:
+-- Run only against a disposable local/test Supabase database. Example:
 --
 --   supabase start
 --   supabase db reset          # applies all migrations (incl. 018–020) + supabase/seed.sql
@@ -48,6 +46,8 @@ on conflict (id) do nothing;
 -- up front, before any role switching, so its existence never depends on
 -- the `authenticated`/`anon` role's own CREATE TEMP TABLE privilege.
 create temp table rt_fixture_ids (key text primary key, value uuid);
+grant select on rt_fixture_ids to anon, authenticated;
+grant insert, update on rt_fixture_ids to authenticated;
 
 -- ── Test 1: a non-admin authenticated user cannot insert a Portfolio ───────
 

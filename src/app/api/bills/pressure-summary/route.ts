@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 export interface PressureSummary {
   billId: string
@@ -10,6 +11,8 @@ export interface PressureSummary {
 }
 
 export async function GET() {
+  if (!isSupabaseConfigured) return Response.json([])
+
   const supabase = await createServerSupabaseClient()
 
   const todayStart = new Date()

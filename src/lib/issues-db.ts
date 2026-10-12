@@ -8,6 +8,7 @@ import {
   type IssueWithStats,
   type IssuesDataSource,
 } from '@/lib/issues-data'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 interface DBIssueRow {
   id: string
@@ -71,6 +72,10 @@ export async function getIssuesPageData(): Promise<{
   /** 'database' only when every issue and market below is real Supabase data — never assume otherwise. */
   source: IssuesDataSource
 }> {
+  if (!isSupabaseConfigured) {
+    return { issues: getMockIssuesWithStats(), markets: mockIssueMarkets, source: 'mock' }
+  }
+
   try {
     const supabase = await createServerSupabaseClient()
     const [issuesRes, marketsRes] = await Promise.all([
@@ -117,6 +122,11 @@ export async function getIssueDetailData(issueId: string): Promise<{
   /** 'database' only when the issue itself is real Supabase data — never assume otherwise. */
   source: IssuesDataSource
 } | null> {
+  if (!isSupabaseConfigured) {
+    const issue = getMockIssueWithStats(issueId)
+    return issue ? { issue, market: null, source: 'mock' } : null
+  }
+
   try {
     const supabase = await createServerSupabaseClient()
     const [issueRes, marketRes] = await Promise.all([

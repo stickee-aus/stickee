@@ -3,6 +3,7 @@ import { ParliamentExperienceClient } from '@/components/ParliamentExperienceCli
 import { getParliamentDBData } from '@/lib/parliament-db'
 import { PageShell } from '@/components/ui/page-shell'
 import { PageHeader } from '@/components/ui/page-header'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 export const metadata: Metadata = {
   title: 'Parliament — Stickee',
@@ -16,7 +17,9 @@ export const metadata: Metadata = {
 
 export default async function ParliamentPage() {
   // Try to load real data from Supabase; fall back to mock data if DB is empty.
-  const dbData = await getParliamentDBData().catch(() => null)
+  const dbData = isSupabaseConfigured
+    ? await getParliamentDBData().catch(() => null)
+    : null
   const isLive = !!dbData
 
   return (
@@ -26,10 +29,10 @@ export default async function ParliamentPage() {
         title="Parliament"
         summary="What is Federal Parliament doing right now, and who represents you there?"
         metadata={{
-          source: isLive ? 'TheyVoteForYou · Parliament of Australia' : 'Illustrative demo data',
-          verification: isLive ? 'verified' : 'demo',
+          source: isLive ? 'TheyVoteForYou · Parliament of Australia' : 'No verified data available',
+          verification: isLive ? 'verified' : 'unverified',
         }}
-        metric={{ value: dbData?.members.length ?? 150, label: 'MPs tracked' }}
+        metric={dbData ? { value: dbData.members.length, label: 'Verified MPs tracked' } : undefined}
       />
 
       {/* Government vs Parliament — always visible, never collapsed */}
@@ -47,6 +50,7 @@ export default async function ParliamentPage() {
 
       <div className="mt-8">
         <ParliamentExperienceClient
+          hasVerifiedData={isLive}
           members={dbData?.members}
           memberIndex={dbData?.memberIndex}
           memberStates={dbData?.memberStates}

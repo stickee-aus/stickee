@@ -1,0 +1,86 @@
+/* Homepage-only rhythm. Keep shared navigation, cards and data untouched. */
+.home {
+  /* Navbar's 68px row plus its 1px rule. Update if that shared shell changes. */
+  --home-header-height: 69px;
+}
+
+.hero {
+  min-height: calc(100vh - var(--home-header-height));
+  min-height: calc(100svh - var(--home-header-height));
+  display: grid;
+  align-content: center;
+}
+
+.heroContainer {
+  padding-block: clamp(4rem, 10svh, 7rem);
+  text-align: center;
+}
+
+.heroCopy {
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
+.sections {
+  padding-block: 0;
+}
+
+.introduction,
+.guide {
+  padding-block: clamp(3.5rem, 8svh, 6rem);
+  border-bottom: 1px solid var(--border);
+}
+
+.information {
+  padding-block: clamp(2.5rem, 6svh, 4rem);
+}
+
+.guide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 0;
+}
+
+/* Header actions wrap instead of squeezing the heading on small screens. */
+.sectionHeader {
+  flex-wrap: wrap;
+}
+
+@media (min-width: 48rem) {
+  .introduction,
+  .guide {
+    min-height: 80vh;
+    min-height: 80svh;
+  }
+
+  .introduction {
+    display: grid;
+    align-content: center;
+  }
+
+  .guide {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* Printed reports should never acquire screen-sized blank areas. */
+@media print {
+  .hero,
+  .introduction,
+  .guide {
+    min-height: 0;
+  }
+
+  .heroContainer,
+  .introduction,
+  .information,
+  .guide {
+    padding-block: 2rem;
+  }
+}

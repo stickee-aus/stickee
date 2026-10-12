@@ -12,6 +12,7 @@ import {
   Flag,
 } from 'lucide-react'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
+import { getAdminUser } from '../_lib/guard'
 
 export const metadata: Metadata = { title: 'Activity — Admin' }
 
@@ -112,6 +113,7 @@ function formatAud(cents: number) {
 
 export default async function AdminActivityPage({ searchParams }: { searchParams: SearchParams }) {
   await connection()
+  if (!(await getAdminUser()).isAdmin) return null
 
   const params = await searchParams
   const requestedType = (params.type ?? 'all').toLowerCase()

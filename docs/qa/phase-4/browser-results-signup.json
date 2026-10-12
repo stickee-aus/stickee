@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-08T09:15:52.457Z",
+  "environment": "loopback Supabase + Mailpit; Chromium; external browser requests blocked",
+  "results": [
+    {
+      "name": "four-step signup browser completion",
+      "status": "PASS"
+    },
+    {
+      "name": "fixture cleanup",
+      "status": "PASS"
+    }
+  ]
+}

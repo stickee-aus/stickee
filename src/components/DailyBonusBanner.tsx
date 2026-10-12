@@ -8,6 +8,7 @@ import { usePredictionWallet } from '@/hooks/usePredictionWallet'
 import { useToast } from '@/components/ui/toast'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 import Link from 'next/link'
 
 const DISMISS_KEY = 'stickee:daily-banner-dismissed'
@@ -32,6 +33,7 @@ export function DailyBonusBanner() {
   const hiddenHere = HIDDEN_ON_PREFIXES.some(prefix => pathname?.startsWith(prefix))
 
   useEffect(() => {
+    if (!isSupabaseConfigured) return
     if (!hydrated || !authHydrated) return
     try {
       const today = new Date().toISOString().slice(0, 10)
@@ -59,7 +61,7 @@ export function DailyBonusBanner() {
     setVisible(false)
   }
 
-  if (!visible || !hydrated || !authHydrated || hiddenHere) return null
+  if (!isSupabaseConfigured || !visible || !hydrated || !authHydrated || hiddenHere) return null
 
   return (
     <div className="border-b border-border bg-card px-6 py-3">

@@ -4,6 +4,7 @@ import { useState, useTransition, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { ThumbsUp, ThumbsDown, Loader2 } from 'lucide-react'
 import { useToast } from '@/components/ui/toast'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 interface PredictionCounts {
   yes: number
@@ -15,9 +16,7 @@ interface PredictionWidgetProps {
   initialCounts: PredictionCounts
 }
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+const configured = isSupabaseConfigured
 
 function getStorageKey(issueId: string) {
   return `stickee:prediction:${issueId}`

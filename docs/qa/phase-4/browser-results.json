@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-08T09:12:11.235Z",
+  "environment": "loopback Supabase + Mailpit; Chromium; external browser requests blocked",
+  "results": [
+    {
+      "name": "recovery browser completion and password replacement",
+      "status": "PASS"
+    },
+    {
+      "name": "magic link completes local Mailpit sign-in",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary authenticated mobile navigation",
+      "status": "PASS"
+    },
+    {
+      "name": "admin authenticated mobile navigation",
+      "status": "PASS"
+    },
+    {
+      "name": "fixture cleanup",
+      "status": "PASS"
+    }
+  ]
+}

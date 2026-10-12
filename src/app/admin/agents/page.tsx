@@ -14,7 +14,7 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
-import { requireAdminUserId } from '../_lib/guard'
+import { getAdminUser, requireAdminUserId } from '../_lib/guard'
 import { runAgent, type AgentSlug } from '@/lib/agents/registry'
 
 export const metadata: Metadata = {
@@ -82,6 +82,7 @@ function statusColor(s: string | null | undefined): string {
 
 export default async function AgentsPage() {
   await connection()
+  if (!(await getAdminUser()).isAdmin) return null
 
   // headers() ensures this isn't cached at build time
   await headers()

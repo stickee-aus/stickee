@@ -100,6 +100,9 @@ export default function NotificationsPage() {
           <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground mb-2">
             Your Account · Activity
           </p>
+          <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground">
+            Notifications
+          </h1>
           <div className="flex items-baseline gap-3">
             <span
               className="font-mono font-normal leading-none text-foreground"
@@ -157,14 +160,14 @@ export default function NotificationsPage() {
           </div>
           <p className="font-mono text-xs text-muted-foreground">No notifications yet</p>
           <p className="font-mono text-[10px] text-muted-foreground/60 max-w-xs">
-            Take actions — make predictions, email MPs, build streaks — and you&apos;ll get updates here.
+            Verified updates from followed issues and available account activity will appear here.
           </p>
           <Link
-            href="/predictions"
+            href="/issues"
             className="font-mono text-[10px] tracking-widest uppercase px-4 py-2 mt-2"
             style={{ background: '#e8e8e6', color: '#0a0a0b' }}
           >
-            Make a prediction →
+            Explore issues →
           </Link>
         </div>
       ) : (

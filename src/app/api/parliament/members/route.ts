@@ -4,6 +4,7 @@ import {
   buildMockParliamentPayload,
   type ParliamentSourceMember,
 } from '@/lib/live-parliament'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 interface DBMemberRow {
   name: string
@@ -48,6 +49,8 @@ function isFresh(syncedAt: string | null) {
 }
 
 async function readSupabaseMembers() {
+  if (!isSupabaseConfigured) return null
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!supabaseUrl || !supabaseAnonKey) return null

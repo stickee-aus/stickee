@@ -7,6 +7,7 @@ const readMigration = (filename: string) => readFileSync(path.join(MIGRATIONS_DI
 
 const migration021 = readMigration('021_responsibility_first_real_slice.sql')
 const migration022 = readMigration('022_responsibility_minister_identity_pending_review.sql')
+const migration025 = readMigration('025_real_issues_v1_portfolios.sql')
 
 const componentSource = readFileSync(
   path.resolve(__dirname, '../../components/IssueResponsibilitySection.tsx'),
@@ -19,9 +20,11 @@ const pageSource = readFileSync(
 )
 
 describe('021: real data slice — guards and content', () => {
-  it('gates on the Issue being a real, non-fixture row before inserting anything', () => {
+  it('only links a real, non-fixture Issue and defers the link on a fresh install', () => {
     expect(migration021).toMatch(/is_test_fixture\s*=\s*false/i)
-    expect(migration021).toMatch(/raise exception 'BLOCKER/i)
+    expect(migration021).toContain('if exists (select 1 from issues where id = v_issue_id and is_test_fixture = false)')
+    expect(migration021).toContain('migration 025 will complete its portfolio link')
+    expect(migration025).toContain("values ('housing-affordability', v_portfolio_id, 'responsibility'")
   })
 
   it('is idempotent — checks for an existing Housing portfolio before inserting', () => {

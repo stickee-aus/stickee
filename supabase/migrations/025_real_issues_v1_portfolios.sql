@@ -145,6 +145,18 @@ begin
   select id into v_issue_portfolio_id from issue_portfolios
     where issue_id = 'housing-affordability' and is_test_fixture = false
     order by created_at asc limit 1;
+  if v_issue_portfolio_id is null then
+    select id into v_portfolio_id from portfolios
+      where canonical_name = 'Housing' and jurisdiction = 'commonwealth' and effective_to is null;
+    if v_portfolio_id is null then
+      raise exception 'BLOCKER: Housing portfolio not found — run migration 021 first.';
+    end if;
+    insert into issue_portfolios (issue_id, portfolio_id, responsibility_kind, effective_from, is_test_fixture)
+    values ('housing-affordability', v_portfolio_id, 'responsibility', '2025-05-13', false)
+    returning id into v_issue_portfolio_id;
+    insert into evidence_links (evidence_id, subject_type, subject_id)
+    values (v_evidence_aao_id, 'issue_portfolio', v_issue_portfolio_id);
+  end if;
   if v_issue_portfolio_id is not null then
     insert into evidence_links (evidence_id, subject_type, subject_id) values
       (v_evidence_help_to_buy_act_id, 'issue_portfolio', v_issue_portfolio_id),

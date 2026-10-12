@@ -48,6 +48,12 @@ describe('Phase 1 — serif heading font is loaded and wired to --font-heading',
   })
 })
 
+describe('Phase 1 — deterministic light-theme hydration', () => {
+  it('does not inject a client theme script when light is the only shipped theme', () => {
+    expect(read('src/app/layout.tsx')).not.toContain('ThemeProvider')
+  })
+})
+
 describe('Phase 1 — one canonical colour/radius token system', () => {
   const css = read('src/app/globals.css')
 

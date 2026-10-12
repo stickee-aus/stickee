@@ -15,7 +15,7 @@ import {
   UserPlus,
 } from 'lucide-react'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
-import { requireAdminUserId } from './_lib/guard'
+import { getAdminUser, requireAdminUserId } from './_lib/guard'
 
 export const metadata: Metadata = {
   title: 'Admin — Stickee',
@@ -150,6 +150,7 @@ async function updateReportAction(formData: FormData) {
 
 export default async function AdminOverviewPage() {
   await connection()
+  if (!(await getAdminUser()).isAdmin) return null
 
   const since = new Date()
   since.setUTCHours(0, 0, 0, 0)

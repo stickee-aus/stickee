@@ -154,9 +154,30 @@ describe('Daily bonus banner — Forecasts terminology and signed-out truthfulne
     expect(claimBlock?.[1]).toContain('handleClaim')
   })
 
+  it('does not offer sign-in or bonus actions when Supabase is unavailable', () => {
+    expect(source).toContain('isSupabaseConfigured')
+    expect(source).toContain('if (!isSupabaseConfigured) return')
+    expect(source).toMatch(/if \(!isSupabaseConfigured \|\| !visible/)
+  })
+
   it('no longer hardcodes off-palette dark-theme hex colours (re-themed onto civic tokens)', () => {
     expect(source).not.toContain('#041008')
     expect(source).not.toContain('#0e3020')
     expect(source).not.toContain('#2ec266')
+  })
+})
+
+describe('Live election refresh — bounded polling', () => {
+  const source = read('src/hooks/useLiveElection.ts')
+
+  it('does not restart the election request effect whenever its response updates state', () => {
+    expect(source).toContain('}, [])')
+    expect(source).not.toContain('}, [data])')
+  })
+
+  it('schedules one later refresh after a request completes', () => {
+    expect(source).toContain('window.setTimeout')
+    expect(source).toContain('active ? 90_000 : 900_000')
+    expect(source).not.toContain('window.setInterval')
   })
 })

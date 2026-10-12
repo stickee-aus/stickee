@@ -24,7 +24,7 @@ const workflows = [
   },
   {
     title: 'Test the market',
-    body: 'Use prediction markets to make a call, compare the crowd, and learn what signals matter.',
+    body: 'Review verified forecast questions, compare the evidence and record uncertainty when participation is available.',
     href: '/predictions',
     icon: TrendingUp,
     accent: '#3b82f6',

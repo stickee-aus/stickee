@@ -66,7 +66,7 @@ export function PoliticalPulseClient({ events, source }: PulsePageData) {
             ? { source: 'Automated civic agents', updatedDate: mostRecent ? formatEventTime(mostRecent) : undefined, verification: 'verified' }
             : undefined
         }
-        metric={{ value: events.length, label: 'verified civic events' }}
+        metric={source === 'database' ? { value: events.length, label: 'verified civic events' } : undefined}
       />
 
       <div className="mt-8">

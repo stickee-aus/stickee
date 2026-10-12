@@ -1,0 +1,8 @@
+{
+  "environment": "loopback Supabase and Mailpit, Chromium",
+  "source": "Captured process output from Phase 4 browser runs; earlier aggregate result files were overwritten by focused reruns",
+  "results": [
+    {"name": "Google OAuth existing disabled-provider boundary", "status": "PASS", "scope": "Local provider-disabled response only; external completion blocked"},
+    {"name": "valid agent detail toggle run history and persisted records", "status": "PASS", "scope": "Real seeded moderation-triage record, toggle, manual zero-report run, ordinary/anonymous denial and restoration", "artifact": "agent-detail.png"}
+  ]
+}

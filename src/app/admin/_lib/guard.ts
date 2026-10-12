@@ -3,11 +3,14 @@ import 'server-only'
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { isAppAdmin } from '@/lib/admin-auth'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 /**
  * Resolves the current user. Redirects to sign-in if not authenticated.
  */
 export async function requireSignedIn() {
+  if (!isSupabaseConfigured) redirect('/auth/sign-in')
+
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/sign-in')
@@ -20,6 +23,8 @@ export async function requireSignedIn() {
  * to render an "access required" panel instead of a hard redirect.
  */
 export async function getAdminUser() {
+  if (!isSupabaseConfigured) return { user: null, isAdmin: false as const }
+
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { user: null, isAdmin: false as const }

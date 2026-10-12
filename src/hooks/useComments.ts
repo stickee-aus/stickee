@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,9 +36,7 @@ interface ProfileRow {
   civic_score: number | null
 }
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+const configured = isSupabaseConfigured
 
 // ─── Storage key ──────────────────────────────────────────────────────────────
 

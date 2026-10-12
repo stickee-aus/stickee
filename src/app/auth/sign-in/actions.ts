@@ -4,25 +4,11 @@ import 'server-only'
 
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { getPostAuthRedirectPath, normalizeReturnPath } from '@/lib/admin-auth'
 import type { SignInState, PasswordSignInState } from './types'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function createOtpClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!url || !anonKey) {
-    throw new Error('Supabase auth is not configured on the server.')
-  }
-
-  return createClient(url, anonKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  })
-}
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -75,7 +61,7 @@ export async function sendMagicLink(
     if (ref) callbackUrl.searchParams.set('ref', ref)
     if (next) callbackUrl.searchParams.set('next', next)
 
-    const supabase = createOtpClient()
+    const supabase = await createServerSupabaseClient()
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: callbackUrl.toString() },

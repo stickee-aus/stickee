@@ -19,7 +19,6 @@ export function Navbar() {
           href="/"
           className="simple-brand"
         >
-          <span className="simple-brand-mark" aria-hidden="true">S</span>
           <span>stickee</span>
         </Link>
 

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import styles from './home.module.css'
 import Link from 'next/link'
 import { ArrowRight, FlaskConical, Megaphone } from 'lucide-react'
 import { getLiveBillMarkets } from '@/lib/predictions-db'
@@ -55,65 +56,69 @@ export default async function HomePage() {
     .slice(0, 2)
 
   return (
-    <div className="bg-background">
+    <div className={`bg-background ${styles.home}`}>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-3xl px-5 py-16 text-center md:px-8 md:py-24">
-          <p className="text-micro-label mb-4">Australia, in plain English</p>
-          <h1 className="font-heading text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.02] font-semibold tracking-tight text-foreground">
-            Know what&rsquo;s changing.<br />Know what to do.
-          </h1>
-          <p className="text-body-copy mx-auto mt-6 max-w-xl text-muted-foreground">
-            Stickee turns Australian politics into a clear weekly picture — the issues, the decisions,
-            and the actions that affect your life.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <LinkButton href="/issues">
-              Explore the issues <ArrowRight className="ml-1 h-4 w-4" />
-            </LinkButton>
-            <LinkButton href="/onboarding" variant="outline">
-              How Stickee works
-            </LinkButton>
+      <section className={`border-b border-border ${styles.hero}`}>
+        <PageShell width="wide" className={styles.heroContainer}>
+          <div className={styles.heroCopy}>
+            <p className="text-micro-label mb-4">Australia, in plain English</p>
+            <h1 className="font-heading text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.02] font-semibold tracking-tight text-foreground">
+              Know what&rsquo;s changing.<br />Know what to do.
+            </h1>
+            <p className="text-body-copy mx-auto mt-6 max-w-xl text-muted-foreground">
+              Stickee turns Australian politics into a clear weekly picture — the issues, the decisions,
+              and the actions that affect your life.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <LinkButton href="/issues">
+                Explore the issues <ArrowRight className="ml-1 h-4 w-4" />
+              </LinkButton>
+              <LinkButton href="/onboarding" variant="outline">
+                How Stickee works
+              </LinkButton>
+            </div>
           </div>
-        </div>
+        </PageShell>
       </section>
 
-      <PageShell>
-        <div className="space-y-16">
+      <PageShell width="wide" className={styles.sections}>
+        <div>
 
           {/* ── Primary product destinations ──────────────────────────────── */}
-          <section>
-            <SectionHeader title="Where to start" description="Three ways into what Stickee covers." />
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {PRIMARY_DESTINATIONS.map(destination => (
-                <ArticleCard
-                  key={destination.href}
-                  href={destination.href}
-                  title={destination.title}
-                  summary={destination.summary}
-                  action={
-                    <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
-                      {destination.cta} <ArrowRight className="h-3.5 w-3.5" />
-                    </span>
-                  }
-                />
-              ))}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-6">
-              {SECONDARY_ACTIONS.map(({ href, icon: Icon, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="transition-calm inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-                >
-                  <Icon className="h-4 w-4" /> {label}
-                </Link>
-              ))}
+          <section className={styles.introduction}>
+            <div>
+              <SectionHeader title="Where to start" description="Three ways into what Stickee covers." />
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
+                {PRIMARY_DESTINATIONS.map(destination => (
+                  <ArticleCard
+                    key={destination.href}
+                    href={destination.href}
+                    title={destination.title}
+                    summary={destination.summary}
+                    action={
+                      <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
+                        {destination.cta} <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
+                    }
+                  />
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap gap-6">
+                {SECONDARY_ACTIONS.map(({ href, icon: Icon, label }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="transition-calm inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    <Icon className="h-4 w-4" /> {label}
+                  </Link>
+                ))}
+              </div>
             </div>
           </section>
 
           {/* ── National snapshot ─────────────────────────────────────────── */}
-          <section>
+          <section className={styles.information}>
             <SectionHeader title="National snapshot" description="Stickee's civic indicator scorecard." />
             <div className="mt-6">
               <EmptyState
@@ -125,8 +130,9 @@ export default async function HomePage() {
           </section>
 
           {/* ── Government activity ───────────────────────────────────────── */}
-          <section>
+          <section className={styles.information}>
             <SectionHeader
+              className={styles.sectionHeader}
               title="Government activity"
               description="What Parliament has recently decided."
               action={
@@ -145,8 +151,9 @@ export default async function HomePage() {
           </section>
 
           {/* ── Forecasts ──────────────────────────────────────────────────── */}
-          <section>
+          <section className={styles.information}>
             <SectionHeader
+              className={styles.sectionHeader}
               title="Forecasts"
               description="What's likely to happen next."
               action={
@@ -192,7 +199,7 @@ export default async function HomePage() {
               so this CTA must not promise a personalised "brief" it can't
               yet deliver. See STICKEE_V1_CROSS_PAGE_CONSISTENCY_REPORT.md
               §"Today CTA truthfulness". */}
-          <section className="flex flex-col items-start justify-between gap-6 rounded-[var(--radius-lg)] border border-border bg-card p-8 md:flex-row md:items-center md:p-12">
+          <section className={styles.guide}>
             <div>
               <p className="text-micro-label mb-2">New here?</p>
               <h2 className="text-section-title">A short guide to tracking your seat,<br />your issues, and what happens next.</h2>

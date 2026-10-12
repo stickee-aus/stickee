@@ -26,6 +26,7 @@ import type { PressureSummary } from '@/app/api/bills/pressure-summary/route'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ParliamentExperienceClientProps {
+  hasVerifiedData: boolean
   members?:         MP[]
   memberIndex?:     Record<string, MP>
   memberStates?:    Record<string, string>
@@ -66,6 +67,7 @@ function EducationAccordion() {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function ParliamentExperienceClient({
+  hasVerifiedData,
   members,
   memberIndex,
   memberStates,
@@ -114,13 +116,16 @@ export function ParliamentExperienceClient({
     } catch { /* ignore */ }
   }, [])
 
-  // Fetch pressure summaries once on mount
+  // Fetch pressure summaries only when the page has verified parliamentary
+  // records to attach them to. Demo/offline mode must not imply a live tally.
   useEffect(() => {
+    if (!hasVerifiedData) return
+
     fetch('/api/bills/pressure-summary')
       .then(r => r.ok ? r.json() as Promise<PressureSummary[]> : Promise.resolve([]))
       .then(setPressureSummaries)
       .catch(() => { /* real count unavailable — components fall back to an honest zero */ })
-  }, [])
+  }, [hasVerifiedData])
 
   function getPressureSummary(billId: string): PressureSummary | null {
     return pressureSummaries.find(s => s.billId === billId) ?? null
@@ -140,7 +145,13 @@ export function ParliamentExperienceClient({
       <section className="space-y-4">
         <SectionHeader title="Current parliamentary activity" />
 
-        {priorityBill ? (
+        {!hasVerifiedData ? (
+          <EmptyState
+            variant="no-data"
+            title="No verified parliamentary activity is available."
+            description="Stickee will show bills and recorded votes here once the parliamentary data source is connected and verified."
+          />
+        ) : priorityBill ? (
           <PriorityBillFocus
             bill={priorityBill}
             pressureSummary={getPressureSummary(priorityBill.id)}
@@ -158,7 +169,7 @@ export function ParliamentExperienceClient({
           />
         )}
 
-        {otherBills.length > 0 && (
+        {hasVerifiedData && otherBills.length > 0 && (
           <div role="list">
             {otherBills.map(bill => {
               const parlPct = parliamentSupportPct(bill)
@@ -186,29 +197,45 @@ export function ParliamentExperienceClient({
       {/* ── 2. YOUR REPRESENTATIVE ──────────────────────────────────────────── */}
       <section className="space-y-4">
         <SectionHeader title="Your representative" />
-        <MPActionStrip
-          mp={legacyElectorateMP}
-          electorate={electorate}
-          detectState={detectState}
-          suggestedElectorate={suggestedElectorate}
-          onDetectByLocation={detectByLocation}
-          onManualSetElectorate={setElectorate}
-          onClearElectorate={clearElectorate}
-          onConfirmSuggested={confirmSuggestedElectorate}
-          onRejectSuggested={rejectSuggestedElectorate}
-        />
+        {hasVerifiedData ? (
+          <MPActionStrip
+            mp={legacyElectorateMP}
+            electorate={electorate}
+            detectState={detectState}
+            suggestedElectorate={suggestedElectorate}
+            onDetectByLocation={detectByLocation}
+            onManualSetElectorate={setElectorate}
+            onClearElectorate={clearElectorate}
+            onConfirmSuggested={confirmSuggestedElectorate}
+            onRejectSuggested={rejectSuggestedElectorate}
+          />
+        ) : (
+          <EmptyState
+            variant="no-data"
+            title="Representative lookup is temporarily unavailable."
+            description="No verified representative data is connected in this preview."
+          />
+        )}
       </section>
 
       {/* ── 3. PARLIAMENT (CHAMBER) ─────────────────────────────────────────── */}
       <section className="space-y-4" id="chamber-section">
         <SectionHeader title="Parliament" />
-        <ChamberSummaryCard
-          selectedBillId={priorityBill?.id ?? null}
-          members={members}
-          memberStates={memberStates}
-          bills={houseBills}
-          voteMatrix={voteMatrix}
-        />
+        {hasVerifiedData ? (
+          <ChamberSummaryCard
+            selectedBillId={priorityBill?.id ?? null}
+            members={members}
+            memberStates={memberStates}
+            bills={houseBills}
+            voteMatrix={voteMatrix}
+          />
+        ) : (
+          <EmptyState
+            variant="no-data"
+            title="No verified chamber data is available."
+            description="The chamber view will return when member and division records can be verified."
+          />
+        )}
       </section>
 
       {/* ── 4. RELATED ───────────────────────────────────────────────────────── */}

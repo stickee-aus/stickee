@@ -1,0 +1,3664 @@
+{
+  "generatedAt": "2026-10-08T05:04:24.742Z",
+  "pageCount": 33,
+  "interactiveFileCount": 95,
+  "directControlCount": 241,
+  "pages": [
+    {
+      "route": "/",
+      "file": "src/app/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 104,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 133,
+          "label": "See Parliament",
+          "href": "/parliament",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 153,
+          "label": "See all forecasts",
+          "href": "/predictions",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 180,
+          "label": "See all forecasts",
+          "href": "/predictions",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/admin",
+      "file": "src/app/admin/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 332,
+          "label": "Users",
+          "href": "/admin/users",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 338,
+          "label": "Activity",
+          "href": "/admin/activity",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 344,
+          "label": "Analytics",
+          "href": "/admin/analytics",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 368,
+          "label": "All reports →",
+          "href": "/admin/activity?type=report",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 378,
+          "label": ")} Open Reviewing Resolved Dismissed Save",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 469,
+          "label": "Manage users →",
+          "href": "/admin/users",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/admin/activity",
+      "file": "src/app/admin/activity/page.tsx",
+      "controls": [
+        {
+          "type": "a",
+          "line": 380,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 448,
+          "label": "Load more",
+          "href": "`/admin/activity?${filter !== 'all' ? `type=${filter",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/admin/agents",
+      "file": "src/app/admin/agents/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 156,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 169,
+          "label": "Run now",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 201,
+          "label": "History",
+          "href": "`/admin/agents/${a.id",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 249,
+          "label": "(dynamic or icon-only)",
+          "href": "`/admin/agents/${r.agent_id",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/admin/agents/[id]",
+      "file": "src/app/admin/agents/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 75,
+          "label": "Agents",
+          "href": "/admin/agents",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 91,
+          "label": "Run now",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/admin/analytics",
+      "file": "src/app/admin/analytics/page.tsx",
+      "controls": [
+        {
+          "type": "a",
+          "line": 313,
+          "label": "7d",
+          "href": "/admin/analytics?days=7",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 315,
+          "label": "30d",
+          "href": "/admin/analytics?days=30",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 317,
+          "label": "90d",
+          "href": "/admin/analytics?days=90",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/admin/markets",
+      "file": "src/app/admin/markets/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 113,
+          "label": "Outcome… YES NO VOID Resolve",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/admin/users",
+      "file": "src/app/admin/users/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 198,
+          "label": "Search",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 240,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 327,
+          "label": "24h 7d 30d Permanent Ban",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 353,
+          "label": "Unban",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 366,
+          "label": "Promote to admin",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 376,
+          "label": "Demote",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 387,
+          "label": "Delete user",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 413,
+          "label": "← Previous",
+          "href": "`/admin/users?page=${page - 1",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 421,
+          "label": "Next →",
+          "href": "`/admin/users?page=${page + 1",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/auth/forgot-password",
+      "file": "src/app/auth/forgot-password/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 26,
+          "label": "← Back to sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 46,
+          "label": ")}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 73,
+          "label": "← Back to sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/auth/reset-password",
+      "file": "src/app/auth/reset-password/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 20,
+          "label": ")}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 55,
+          "label": "← Back to sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/auth/sign-in",
+      "file": "src/app/auth/sign-in/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 66,
+          "label": "← Back to overview",
+          "href": "/",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 118,
+          "label": "Continue with Google",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 143,
+          "label": "setTab('magic')} className= `} > Magic link",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 152,
+          "label": "setTab('password')} className= `} > Password",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 165,
+          "label": "setEmail(e.target.value)} className=\"w-full border border-border bg-background px-4 py-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-white/20 transition-colors\" /> )} No password needed · Magic link expires in 1 hour",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 201,
+          "label": "setEmail(e.target.value)} className=\"w-full border border-border bg-background px-4 py-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-white/20 transition-colors\" /> )} Forgot password? Create account →",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 249,
+          "label": "← Continue without signing in",
+          "href": "/",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/auth/sign-up",
+      "file": "src/app/auth/sign-up/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/campaigns",
+      "file": "src/app/campaigns/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/decisions",
+      "file": "src/app/decisions/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/donate",
+      "file": "src/app/donate/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 87,
+          "label": "Admin reporting",
+          "href": "/admin",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/donate/cancel",
+      "file": "src/app/donate/cancel/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 19,
+          "label": "Back to donate",
+          "href": "/donate",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/donate/success",
+      "file": "src/app/donate/success/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 23,
+          "label": "Back to overview",
+          "href": "/",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 30,
+          "label": "Share the mission",
+          "href": "/onboarding",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/feed",
+      "file": "src/app/feed/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/government",
+      "file": "src/app/government/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/impact",
+      "file": "src/app/impact/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/issue/[id]",
+      "file": "src/app/issue/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 65,
+          "label": "Back to Issues",
+          "href": "/issues",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 116,
+          "label": "Source",
+          "href": "issue.sourceUrl",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 229,
+          "label": "View forecast →",
+          "href": "/predictions",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/issues",
+      "file": "src/app/issues/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/leaderboard",
+      "file": "src/app/leaderboard/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/leaders",
+      "file": "src/app/leaders/page.tsx",
+      "controls": [
+        {
+          "type": "input",
+          "line": 191,
+          "label": "} placeholder=\"Search by name or electorate\" aria-label=\"Search representatives by name or electorate\" className=\"flex-1 min-w-[200px] border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-foreground/40 focus:outline-none transition-calm\" /> Sort , ] as []).map(( ) => ( setSortBy(key)} className= `} > ))} } className= `} > ))} value= /> ) })} )} className=\"w-full py-3 text-center text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > Show more ( remaining) )} of shown Explore Parliament → } /> House of Representatives · seats Senate · seats setCompositionExpanded(v => !v)} aria-expanded= className=\"flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > For the full interactive chamber, live votes, and bills before Parliament, see Government · Federal Parliament . setRolesExpanded(v => !v)} aria-expanded= className=\"flex w-full items-center justify-between gap-3 border-b border-border pb-4 text-left\" > What can these roles actually do? ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 5,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/leaders/[id]",
+      "file": "src/app/leaders/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 23,
+          "label": "← Back to People",
+          "href": "/leaders",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/mp/[id]",
+      "file": "src/app/mp/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 56,
+          "label": "Back to People",
+          "href": "/leaders",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/notifications",
+      "file": "src/app/notifications/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 84,
+          "label": "(dynamic or icon-only)",
+          "href": "notif.href",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 122,
+          "label": "Mark all read",
+          "href": null,
+          "handler": "onClick: markAllRead"
+        },
+        {
+          "type": "button",
+          "line": 130,
+          "label": "Clear all",
+          "href": null,
+          "handler": "onClick: clearAll"
+        },
+        {
+          "type": "Link",
+          "line": 165,
+          "label": "Explore issues →",
+          "href": "/issues",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/onboarding",
+      "file": "src/app/onboarding/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 72,
+          "label": "Open",
+          "href": "href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/parliament",
+      "file": "src/app/parliament/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/predictions",
+      "file": "src/app/predictions/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/profile",
+      "file": "src/app/profile/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/simulator",
+      "file": "src/app/simulator/page.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "route": "/u/[handle]",
+      "file": "src/app/u/[handle]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 19,
+          "label": "Back to overview",
+          "href": "/",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    }
+  ],
+  "interactiveFiles": [
+    {
+      "file": "src/app/admin/activity/page.tsx",
+      "controls": [
+        {
+          "type": "a",
+          "line": 380,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 448,
+          "label": "Load more",
+          "href": "`/admin/activity?${filter !== 'all' ? `type=${filter",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/admin/agents/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 75,
+          "label": "Agents",
+          "href": "/admin/agents",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 91,
+          "label": "Run now",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/admin/agents/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 156,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 169,
+          "label": "Run now",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 201,
+          "label": "History",
+          "href": "`/admin/agents/${a.id",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 249,
+          "label": "(dynamic or icon-only)",
+          "href": "`/admin/agents/${r.agent_id",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/admin/analytics/page.tsx",
+      "controls": [
+        {
+          "type": "a",
+          "line": 313,
+          "label": "7d",
+          "href": "/admin/analytics?days=7",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 315,
+          "label": "30d",
+          "href": "/admin/analytics?days=30",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 317,
+          "label": "90d",
+          "href": "/admin/analytics?days=90",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/admin/layout.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 32,
+          "label": "Sign in →",
+          "href": "/auth/sign-in?next=/admin",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 55,
+          "label": "← Back to overview",
+          "href": "/",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 75,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/admin/markets/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 113,
+          "label": "Outcome… YES NO VOID Resolve",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/admin/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 332,
+          "label": "Users",
+          "href": "/admin/users",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 338,
+          "label": "Activity",
+          "href": "/admin/activity",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 344,
+          "label": "Analytics",
+          "href": "/admin/analytics",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 368,
+          "label": "All reports →",
+          "href": "/admin/activity?type=report",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 378,
+          "label": ")} Open Reviewing Resolved Dismissed Save",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 469,
+          "label": "Manage users →",
+          "href": "/admin/users",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/admin/users/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 198,
+          "label": "Search",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 240,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 327,
+          "label": "24h 7d 30d Permanent Ban",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 353,
+          "label": "Unban",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 366,
+          "label": "Promote to admin",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 376,
+          "label": "Demote",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 387,
+          "label": "Delete user",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 413,
+          "label": "← Previous",
+          "href": "`/admin/users?page=${page - 1",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 421,
+          "label": "Next →",
+          "href": "`/admin/users?page=${page + 1",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/auth/forgot-password/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 26,
+          "label": "← Back to sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 46,
+          "label": ")}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 73,
+          "label": "← Back to sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/auth/reset-password/page.tsx",
+      "controls": [
+        {
+          "type": "form",
+          "line": 20,
+          "label": ")}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 55,
+          "label": "← Back to sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/auth/sign-in/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 66,
+          "label": "← Back to overview",
+          "href": "/",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 118,
+          "label": "Continue with Google",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 143,
+          "label": "setTab('magic')} className= `} > Magic link",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 152,
+          "label": "setTab('password')} className= `} > Password",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 165,
+          "label": "setEmail(e.target.value)} className=\"w-full border border-border bg-background px-4 py-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-white/20 transition-colors\" /> )} No password needed · Magic link expires in 1 hour",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 201,
+          "label": "setEmail(e.target.value)} className=\"w-full border border-border bg-background px-4 py-3 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-white/20 transition-colors\" /> )} Forgot password? Create account →",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 249,
+          "label": "← Continue without signing in",
+          "href": "/",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/auth/sign-up/SignUpStepper.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 147,
+          "label": "Already verified? Sign in →",
+          "href": "`/auth/sign-in${nextPath ? `?next=${encodeURIComponent(nextPath)",
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 179,
+          "label": "/50 )} onEnter= /> )} className=\"absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground\" aria-label= > )} } onEnter= } paddingLeft paddingRight /> is available.`} )} )} )}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "form",
+          "line": 400,
+          "label": "Sign up with Google",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 418,
+          "label": "Sign in",
+          "href": "`/auth/sign-in${nextPath ? `?next=${encodeURIComponent(nextPath)",
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 508,
+          "label": "onChange(e.target.value)} onKeyDown= }} placeholder= className= $ `} /> ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/donate/cancel/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 19,
+          "label": "Back to donate",
+          "href": "/donate",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/donate/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 87,
+          "label": "Admin reporting",
+          "href": "/admin",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/donate/success/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 23,
+          "label": "Back to overview",
+          "href": "/",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 30,
+          "label": "Share the mission",
+          "href": "/onboarding",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/error.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 34,
+          "label": "Try again",
+          "href": null,
+          "handler": "onClick: reset"
+        },
+        {
+          "type": "Link",
+          "line": 41,
+          "label": "← Overview",
+          "href": "/",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/issue/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 65,
+          "label": "Back to Issues",
+          "href": "/issues",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 116,
+          "label": "Source",
+          "href": "issue.sourceUrl",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 229,
+          "label": "View forecast →",
+          "href": "/predictions",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/leaders/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 23,
+          "label": "← Back to People",
+          "href": "/leaders",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/leaders/page.tsx",
+      "controls": [
+        {
+          "type": "input",
+          "line": 191,
+          "label": "} placeholder=\"Search by name or electorate\" aria-label=\"Search representatives by name or electorate\" className=\"flex-1 min-w-[200px] border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-foreground/40 focus:outline-none transition-calm\" /> Sort , ] as []).map(( ) => ( setSortBy(key)} className= `} > ))} } className= `} > ))} value= /> ) })} )} className=\"w-full py-3 text-center text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > Show more ( remaining) )} of shown Explore Parliament → } /> House of Representatives · seats Senate · seats setCompositionExpanded(v => !v)} aria-expanded= className=\"flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > For the full interactive chamber, live votes, and bills before Parliament, see Government · Federal Parliament . setRolesExpanded(v => !v)} aria-expanded= className=\"flex w-full items-center justify-between gap-3 border-b border-border pb-4 text-left\" > What can these roles actually do? ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 5,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/mp/[id]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 56,
+          "label": "Back to People",
+          "href": "/leaders",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/notifications/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 84,
+          "label": "(dynamic or icon-only)",
+          "href": "notif.href",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 122,
+          "label": "Mark all read",
+          "href": null,
+          "handler": "onClick: markAllRead"
+        },
+        {
+          "type": "button",
+          "line": 130,
+          "label": "Clear all",
+          "href": null,
+          "handler": "onClick: clearAll"
+        },
+        {
+          "type": "Link",
+          "line": 165,
+          "label": "Explore issues →",
+          "href": "/issues",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/onboarding/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 72,
+          "label": "Open",
+          "href": "href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 104,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 133,
+          "label": "See Parliament",
+          "href": "/parliament",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 153,
+          "label": "See all forecasts",
+          "href": "/predictions",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 180,
+          "label": "See all forecasts",
+          "href": "/predictions",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/simulator/SimulatorClient.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 137,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: handleRun"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/app/u/[handle]/page.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 19,
+          "label": "Back to overview",
+          "href": "/",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/AustraliaSenateMap.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 185,
+          "label": "setHoveredState(info.id)} onMouseLeave= onFocus= onBlur= onClick= aria-pressed= aria-label= , $ senators`} className=\"flex w-full items-center justify-between gap-3 py-3 text-left transition-calm\" style= } > senators ›",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/AuthButton.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 53,
+          "label": "Admin",
+          "href": "/admin",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 77,
+          "label": "Sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/BillCampaignCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 197,
+          "label": "setExpanded(v => !v)} > What this means for you",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 315,
+          "label": "onSelect(null)} > ← Back",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 422,
+          "label": "} >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 449,
+          "label": "openCampaign(userStance === 'support' ? 'oppose' : 'support')} > ·",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 458,
+          "label": "openCampaign('support')} className=\"flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors\" > Support",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 465,
+          "label": "openCampaign('oppose')} className=\"flex items-center gap-1 rounded-full bg-red-500/10 border border-red-500/20 px-2.5 py-1 text-xs font-semibold text-red-400 hover:bg-red-500/20 transition-colors\" > Oppose",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 475,
+          "label": "onSelect(isSelected ? null : bill.id)} >",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 11,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/BillSmartRow.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 141,
+          "label": "s are invalid HTML and trigger a hydration error. role=\"button\" + onKeyDown restores button semantics/keyboard activation without the nesting. */} onToggleExpand(bill.id)} onKeyDown= }} aria-expanded= > > ) : bill.status === 'ongoing' ? ( } > Stance",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 214,
+          "label": "setSwingOpen(v => !v)} className=\"flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors\" > swing MPs could decide this",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 241,
+          "label": "openCampaign('support')} className=\"flex items-center gap-1.5 border px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest transition-colors hover:opacity-70\" style= } > Support",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 248,
+          "label": "openCampaign('oppose')} className=\"flex items-center gap-1.5 border px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest transition-colors hover:opacity-70\" style= } > Oppose",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 257,
+          "label": "onViewChamber(bill.id)} className=\"ml-auto font-mono text-[10px] text-muted-foreground hover:text-foreground transition-colors tracking-widest\" > View Chamber →",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 7,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/BillStageTimeline.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 74,
+          "label": "Dismiss",
+          "href": null,
+          "handler": "onClick: handleDismiss"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/BillTracker.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 230,
+          "label": "} className= `} > Will Pass",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 241,
+          "label": "} className= `} > Will Fail",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 301,
+          "label": "setFilter(f)} className= `} >",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 4,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/BottomNav.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 21,
+          "label": "(dynamic or icon-only)",
+          "href": "item.href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/CampaignModal.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 190,
+          "label": "setStance('support')} className= `} > Support",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 201,
+          "label": "setStance('oppose')} className= `} > Oppose",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "textarea",
+          "line": 220,
+          "label": "setReasoning(e.target.value.slice(0, 140))} placeholder=\"Tell us why this matters to you…\" rows= className=\"w-full rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring resize-none\" /> Continue — choose your action )} this bill. To contact your MP directly, use the separate &quot;Contact MP&quot; action elsewhere on this page — that opens a real, addressed email draft. handleAction('campaign')} className=\"w-full flex items-start gap-3 rounded-xl border border-border/60 bg-card/60 p-4 text-left hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all group\" > Register my position Add your voice to Australians who have registered a position on this bill handleAction('share')} className=\"w-full flex items-start gap-3 rounded-xl border border-border/60 bg-card/60 p-4 text-left hover:border-primary/40 hover:bg-primary/5 transition-all group\" > Share your stance Post to social media to raise awareness of this bill )} setStep('choose')}> Back )} You and others are this bill people from have now registered a position on this bill )} handleOpenChange(false)}> Done )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 8,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ChamberSummaryCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 81,
+          "label": "setExpanded(v => !v)} aria-expanded= >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 112,
+          "label": "setSimulatorOpen(true)} className=\"transition-calm flex items-center gap-1.5 border border-border px-3 py-1.5 text-micro-label text-muted-foreground hover:text-foreground hover:border-foreground/30\" > Simulate",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 120,
+          "label": "setMapOpen(true)} className=\"transition-calm text-micro-label text-muted-foreground/60 hover:text-muted-foreground\" > Map",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 142,
+          "label": "setShowMPBreakdown(v => !v)} aria-expanded= className=\"transition-calm flex items-center gap-2 py-1 text-micro-label text-muted-foreground hover:text-foreground\" > individual MP breakdown",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 4,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ChamberToggle.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 28,
+          "label": "onChange('house')} className= `} > House of Reps 150",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 45,
+          "label": "onChange('senate')} className= `} > Senate 76",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/CivicPanel.tsx",
+      "controls": [
+        {
+          "type": "select",
+          "line": 140,
+          "label": "setElectorate(e.target.value)} > Select electorate… ))}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 169,
+          "label": "Profile",
+          "href": "`/mp/${mp.id",
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 228,
+          "label": "Find your electorate",
+          "href": "https://www.aec.gov.au/Enrolling_to_vote/Enrolment_stats/electorate/",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 237,
+          "label": ") }} > See impact simulator below",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/CivicScorecard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 103,
+          "label": "setExpanded(e => !e)} className=\"w-full flex items-center gap-3 p-4 text-left\" > )} /100",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "a",
+          "line": 156,
+          "label": "e.stopPropagation()} className=\"flex items-center gap-1 text-xs text-primary hover:underline\" > Full profile",
+          "href": "`/mp/${mp.id",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 221,
+          "label": "setFilter(key)} className= >",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/CommandPalette.tsx",
+      "controls": [
+        {
+          "type": "input",
+          "line": 219,
+          "label": "} onKeyDown= placeholder=\"Search bills, MPs, campaigns, profiles…\" aria-label=\"Search\" className=\"flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none\" /> } aria-label=\"Clear search\" className=\"text-muted-foreground hover:text-foreground transition-colors\" > )} setOpen(false)} aria-label=\"Close command palette\" className=\"text-muted-foreground hover:text-foreground transition-colors ml-1\" > onMouseEnter= className= `} > )} ) })} )) )} ↑↓ navigate ↵ open esc close items indexed ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 2,
+        "menu": 0,
+        "click-handler": 5,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/CommentDrawer.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 75,
+          "label": "onReply(comment.id, comment.authorHandle)} className=\"mt-1.5 flex items-center gap-1 font-mono text-[9px] tracking-widest uppercase transition-colors hover:text-foreground\" style= } > Reply",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 136,
+          "label": "Sign in to comment",
+          "href": "/auth/sign-in",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 153,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: onClearReply"
+        },
+        {
+          "type": "textarea",
+          "line": 160,
+          "label": "setBody(e.target.value)} onKeyDown= } rows= placeholder=\"Add to the civic conversation…\" className=\"flex-1 resize-none border border-border bg-background px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-white/20 transition-colors\" /> ⌘↵ to post /500 ) } // ─── CommentDrawer ──────────────────────────────────────────────────────────── interface CommentDrawerProps export function CommentDrawer( : CommentDrawerProps) = useComments(postId) const [replyTo, setReplyTo] = useState (null) function handleReply(parentId: string, handle: string) ) } if (!open) return null return ( <> comment )} setReplyTo(null)} onSubmit= submitting= authenticated= /> ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 5,
+        "submit-handler": 1
+      }
+    },
+    {
+      "file": "src/components/CookieBanner.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 64,
+          "label": "setAdjusting(false)} className=\"text-muted-foreground hover:text-foreground transition-colors\" aria-label=\"Close preferences\" >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 91,
+          "label": "toggle('analytics')} className=\"border border-border p-4 space-y-2 text-left transition-colors hover:bg-card/40\" style= } > Analytics Helps us understand how Stickee is used so we can improve it.",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 112,
+          "label": "toggle('personalisation')} className=\"border border-border p-4 space-y-2 text-left transition-colors hover:bg-card/40\" style= } > Personalisation Tailors your feed, issue rankings, and recommendations to you.",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 134,
+          "label": "Save preferences",
+          "href": null,
+          "handler": "onClick: saveAndClose"
+        },
+        {
+          "type": "button",
+          "line": 142,
+          "label": "Accept all",
+          "href": null,
+          "handler": "onClick: acceptAll"
+        },
+        {
+          "type": "button",
+          "line": 158,
+          "label": "setAdjusting(true)} className=\"h-9 px-4 font-mono text-[10px] uppercase tracking-widest border border-border text-muted-foreground hover:text-foreground transition-colors\" > Adjust",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 165,
+          "label": "Accept all",
+          "href": null,
+          "handler": "onClick: acceptAll"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 1,
+        "menu": 0,
+        "click-handler": 7,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/DailyBonusBanner.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 90,
+          "label": "Sign in",
+          "href": "/auth/sign-in",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 95,
+          "label": "Claim",
+          "href": null,
+          "handler": "onClick: handleClaim"
+        },
+        {
+          "type": "Link",
+          "line": 98,
+          "label": "Forecasts",
+          "href": "/predictions",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 106,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: handleDismiss"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/DecisionCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 228,
+          "label": "} aria-pressed= className= `} > Yes, likely",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 239,
+          "label": "} aria-pressed= className= `} > No, unlikely",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 427,
+          "label": "setExpanded(false)} className=\"flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors\" > Collapse",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 4,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/DonateAmountForm.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 81,
+          "label": "setCadence(option)} className=\"h-12 font-mono text-xs font-medium uppercase tracking-widest transition-colors\" style= } >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 106,
+          "label": "chooseAmount(value)} className=\"h-16 border-r border-b border-border font-mono text-base transition-colors last:border-r-0 hover:bg-secondary/60\" style= } > $",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 121,
+          "label": "setCustomMode(true)} className=\"h-16 border-b border-border font-mono text-base transition-colors hover:bg-secondary/60\" style= } > Custom",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 138,
+          "label": "setCustomAmount(event.target.value)} className=\"ml-2 w-full bg-transparent font-mono text-base text-foreground outline-none placeholder:text-muted-foreground\" placeholder=\"Enter amount\" /> AUD )} Your contribution $ )} `} Secure payment powered by Stripe. Stickee does not store your payment information. ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 4,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/EmailMPButton.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 20,
+          "label": "setOpen(true)} className=\"inline-flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1.5 text-xs font-medium text-foreground/70 hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-colors\" > Email your MP about this",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 44,
+          "label": "setOpen(true)} className=\"shrink-0 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors\" > Email MP",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/EmailMPModal.tsx",
+      "controls": [
+        {
+          "type": "input",
+          "line": 116,
+          "label": "} className=\"w-full rounded-lg border border-border bg-background pl-8 pr-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring\" /> } > · )) )} )} ( ) Pre-filled message )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/EndorsementPanel.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 48,
+          "label": "setExpanded(v => !v)} className=\"mt-1 text-[11px] text-primary/70 hover:text-primary transition-colors flex items-center gap-0.5\" >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 137,
+          "label": "toggleForm('endorse')} aria-pressed= className= > Endorse",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 150,
+          "label": "toggleForm('concern')} aria-pressed= className= > Raise Concern",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "textarea",
+          "line": 176,
+          "label": "setReason(e.target.value)} placeholder= rows= className=\"w-full rounded-lg border border-border/60 bg-background/60 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 resize-none transition-colors\" /> chars ✓` : `$ more chars needed`} } className=\"text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5\" > Cancel Submit )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 5,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/FeaturedMarketCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 150,
+          "label": "onStake(market, 'yes')} className=\"rounded-md border border-[#2ec26640] bg-[#2ec26612] px-4 py-3 font-mono text-[11px] tracking-widest text-[#2ec266] uppercase transition-colors hover:bg-[#2ec26622]\" > Yes",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 156,
+          "label": "onStake(market, 'no')} className=\"rounded-md border border-[#f0474740] bg-[#f0474712] px-4 py-3 font-mono text-[11px] tracking-widest text-[#f04747] uppercase transition-colors hover:bg-[#f0474722]\" > No",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/FeedPost.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 108,
+          "label": "(dynamic or icon-only)",
+          "href": "`/u/${handleSlug",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 145,
+          "label": "e.stopPropagation()}>",
+          "href": "`/issues`",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 174,
+          "label": "onReact(post.id, reaction)} aria-label= aria-pressed= className= bg-current/10` : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5', ].join(' ')} >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 195,
+          "label": "setCommentsOpen(true)} className=\"ml-1 flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all\" >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 214,
+          "label": "Contact MP",
+          "href": "/issues",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/FindYourRepresentative.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 67,
+          "label": "Yes, that&apos;s correct",
+          "href": null,
+          "handler": "onClick: onConfirmSuggested"
+        },
+        {
+          "type": "button",
+          "line": 73,
+          "label": "} className=\"flex-1 border border-border px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > Enter manually",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 103,
+          "label": "setInput(e.target.value)} onKeyDown= placeholder=\"e.g. Kooyong, Warringah\" aria-label=\"Your electorate\" className=\"flex-1 border border-border bg-background px-3 py-2 text-body-copy text-foreground placeholder:text-muted-foreground/40 focus:border-foreground/40 focus:outline-none transition-calm\" autoFocus /> Go ) : ( setManualMode(true)} className=\"flex-1 border border-border px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > Enter manually )} ) } // ─── Main component ─────────────────────────────────────────────────────────── export function FindYourRepresentative( : FindYourRepresentativeProps) const partyColor = PARTY_COLORS[mp.party] ?? '#999' const emailIssue: Issue = `, content: '', summary: '', whatIsHappening: '', whoSupports: '', whoOpposes: '', status: 'active', } return ( · House of Representatives View full profile setEmailOpen(true)} className=\"flex items-center gap-1.5 border border-border px-3 py-2 text-[10px] uppercase tracking-widest text-foreground hover:opacity-70 transition-calm ml-auto\" > Contact Change ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 7,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/FollowButton.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 23,
+          "label": "} className= aria-pressed= aria-label= >",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/GapExplainerPanel.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 96,
+          "label": "setExpanded(v => !v)} > pt$ below public support` : `Parliament is $ pt$ ahead of public support`} Why?",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/HouseChamber.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 214,
+          "label": "Close panel",
+          "href": null,
+          "handler": "onClick: onClose"
+        },
+        {
+          "type": "button",
+          "line": 229,
+          "label": "setEmailOpen(true)} className=\"mt-2 flex items-center gap-1 text-[11px] font-semibold text-foreground hover:opacity-70 transition-colors\" > Contact →",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 296,
+          "label": "Close panel",
+          "href": null,
+          "handler": "onClick: onClose"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 5,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ImpactSimulator.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 268,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: handleShare"
+        },
+        {
+          "type": "button",
+          "line": 275,
+          "label": "Reset",
+          "href": null,
+          "handler": "onClick: reset"
+        },
+        {
+          "type": "button",
+          "line": 296,
+          "label": "setScenarioOpen(v => !v)} className=\"flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 border border-primary/20 bg-primary/5 rounded-md px-2 py-1 transition-colors\" > Load scenario",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 306,
+          "label": "loadScenario(s)} className=\"w-full text-left px-3 py-2 text-[11px] text-foreground hover:bg-muted/40 transition-colors border-b border-border/30 last:border-0\" >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 360,
+          "label": "adjust(party, -1)} >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 377,
+          "label": "adjust(party, +1)} >",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 6,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/IssueAccordion.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 239,
+          "label": "setOpen(true)} className=\"flex items-center gap-2 px-4 py-2 bg-foreground text-background font-mono text-xs font-medium tracking-widest uppercase hover:opacity-80 transition-opacity shrink-0\" > Email MP",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 279,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: onToggle"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/IssueResponsibilitySection.tsx",
+      "controls": [
+        {
+          "type": "a",
+          "line": 64,
+          "label": "(dynamic or icon-only)",
+          "href": "item.sourceUrl",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/LeaderProfileDetail.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 57,
+          "label": "← People",
+          "href": "/leaders",
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 110,
+          "label": "setSupportOpen(true)} className=\"rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-all\" > Support This Leader",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 212,
+          "label": "View",
+          "href": "/decisions",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/LinkButton.tsx",
+      "controls": [
+        {
+          "type": "a",
+          "line": 22,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 29,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/LiveElectionPulse.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 45,
+          "label": "View full live results",
+          "href": "snapshot.event.resultsUrl",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/LiveResultsExplainer.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 10,
+          "label": "setOpen(value => !value)} className=\"flex w-full items-center justify-between text-left\" > How live results work",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/MarketCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 65,
+          "label": "onStake(market, 'yes')} className=\"transition-calm rounded-[var(--radius-sm)] border border-[var(--status-positive)] px-2.5 py-1 text-micro-label text-[var(--status-positive)] hover:bg-[var(--status-positive)]/10\" > Yes",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 72,
+          "label": "onStake(market, 'no')} className=\"transition-calm rounded-[var(--radius-sm)] border border-[var(--status-negative)] px-2.5 py-1 text-micro-label text-[var(--status-negative)] hover:bg-[var(--status-negative)]/10\" > No",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 82,
+          "label": "See issue →",
+          "href": "`/issue/${market.id",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/MPActionStrip.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 66,
+          "label": "Yes, that&apos;s correct",
+          "href": null,
+          "handler": "onClick: onConfirmSuggested"
+        },
+        {
+          "type": "button",
+          "line": 72,
+          "label": "} className=\"flex-1 border border-border px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > Enter manually",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 102,
+          "label": "setInput(e.target.value)} onKeyDown= placeholder=\"e.g. Kooyong, Warringah\" className=\"flex-1 border border-border bg-background px-3 py-2 text-body-copy text-foreground placeholder:text-muted-foreground/40 focus:border-foreground/40 focus:outline-none transition-calm\" autoFocus /> Go ) : ( setManualMode(true)} className=\"flex-1 border border-border px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-calm\" > Enter manually )} ) } // ─── Main component ─────────────────────────────────────────────────────────── export function MPActionStrip( : MPActionStripProps) const partyColor = PARTY_COLORS[mp.party] ?? '#999' const emailIssue: Issue = `, content: '', summary: '', whatIsHappening: '', whoSupports: '', whoOpposes: '', status: 'active', } return ( · House of Representatives View full profile setEmailOpen(true)} className=\"flex items-center gap-1.5 border border-border px-3 py-2 text-[10px] uppercase tracking-widest text-foreground hover:opacity-70 transition-calm ml-auto\" > Contact Change ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 7,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/MPDrilldownTable.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 209,
+          "label": "Close drilldown",
+          "href": null,
+          "handler": "onClick: onClose"
+        },
+        {
+          "type": "select",
+          "line": 220,
+          "label": "setPartyFilter(e.target.value)} > All parties ))}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "select",
+          "line": 233,
+          "label": "setStateFilter(e.target.value)} > All states ))}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 244,
+          "label": "setSwingOnly(v => !v)} > Swing MPs only )`}",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/MPVoteGrid.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 61,
+          "label": "} className= `} > Yes",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 71,
+          "label": "} className= `} > No",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 189,
+          "label": "setSearch(e.target.value)} className=\"w-full rounded-lg border border-border bg-card pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30\" /> className= `} > ))} Predict · setPick(row.mpId, v)} /> ))} MPs shown · predicted Yes · predicted No ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 4,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/Navbar.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 18,
+          "label": "stickee",
+          "href": "/",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 30,
+          "label": "(dynamic or icon-only)",
+          "href": "item.href",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 50,
+          "label": "(dynamic or icon-only)",
+          "href": "item.href",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 58,
+          "label": "0 ? ` ($ unread)` : ''}`} > )}",
+          "href": "/notifications",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/NominationModal.tsx",
+      "controls": [
+        {
+          "type": "input",
+          "line": 150,
+          "label": "setName(e.target.value)} className= /> State / Territory * setState(e.target.value as AustralianState)} className= > Select… )} Field / Industry * setField(e.target.value as LeaderField)} className= > Select… )} Why should they be a leader? * Minimum characters. Be specific about their qualities and track record. setJustification(e.target.value)} placeholder=\"Describe why this person should enter public leadership — their qualities, track record, and what makes them credible…\" className= resize-none`} /> = JUST_MIN ? 'text-emerald-400' : 'text-muted-foreground/50'}`}> chars ✓` : `$ more chars needed`} )} characters. Verifiable claims carry more weight. )} className= > ))} updateEvidence(i, )} placeholder= className= resize-none text-xs`} /> = EVI_MIN ? 'text-emerald-400' : 'text-muted-foreground/40'}`}> chars ✓` : evi.description.trim().length > 0 ? `$ more needed` : `Min $ chars`} updateEvidence(i, )} className=\"h-3.5 w-3.5 rounded accent-primary\" /> Publicly verifiable )} placeholder=\"Source URL (optional)\" className=\"flex-1 rounded-md border border-border/50 bg-background/60 px-2 py-1 text-[11px] text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/30\" /> )} ))} /2 minimum evidence items complete )} Nomination summary Nominee State Field Evidence items provided Moderation notice This nomination will enter a moderation queue. The nominee will be contacted for consent before their profile goes public. Nominations that cannot be verified or that violate our guidelines will be rejected. setConsent(e.target.checked)} className=\"mt-0.5 h-4 w-4 rounded accent-primary shrink-0\" /> I confirm this nomination is made in good faith, to the best of my knowledge. I understand that false or malicious nominations may result in account restrictions. )} step === 1 ? handleClose() : setStep(s => (s - 1) as NomStep)} className=\"text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5\" > disabled= className= > Next → ) : ( Submit nomination )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 4,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/OnboardingModal.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 116,
+          "label": "handleComplete('skip')} className=\"text-muted-foreground hover:text-foreground transition-colors\" aria-label=\"Close onboarding\" >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 140,
+          "label": "setSearch(e.target.value)} className=\"w-full border border-border bg-background px-3 py-2.5 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-white/20 transition-colors\" autoFocus /> className=\"text-left font-mono text-[10px] px-2.5 py-2 border transition-colors\" style= } > ))} setStep(2)} disabled= className=\"flex-1 flex items-center justify-center gap-2 py-2.5 font-mono text-[10px] tracking-widest uppercase transition-all disabled:opacity-40 disabled:cursor-not-allowed\" style= } > Continue setStep(2)} className=\"px-4 py-2.5 font-mono text-[10px] tracking-widest uppercase border border-border text-muted-foreground hover:text-foreground transition-colors\" > Skip )} className=\"w-full flex items-center gap-3 px-3 py-2.5 border transition-colors\" style= 08` : 'transparent', opacity: disabled ? 0.4 : 1, cursor: disabled ? 'not-allowed' : 'pointer', }} > ) })} /3 selected setStep(1)} className=\"px-4 py-2.5 font-mono text-[10px] tracking-widest uppercase border border-border text-muted-foreground hover:text-foreground transition-colors\"> ← Back setStep(3)} className=\"flex-1 flex items-center justify-center gap-2 py-2.5 font-mono text-[10px] tracking-widest uppercase transition-all\" style= } > Continue )} . Start with one workflow, then Stickee will keep the rest close.` : 'Start with one workflow, then Stickee will keep the rest close.'} Your setup )} ) : null })} )} handleComplete('issues')} className=\"flex items-center justify-center gap-2 w-full py-2.5 font-mono text-[10px] tracking-widest uppercase transition-all\" style= } > Find an issue to act on handleComplete('predictions')} className=\"flex items-center justify-center gap-2 w-full py-2.5 font-mono text-[10px] tracking-widest uppercase border border-border transition-colors hover:bg-card/50\" > Make a prediction handleComplete('guide')} className=\"flex items-center justify-center gap-2 w-full py-2.5 font-mono text-[10px] tracking-widest uppercase border border-border transition-colors hover:bg-card/50\" > Open the quick guide handleComplete('explore')} className=\"w-full py-2.5 font-mono text-[10px] tracking-widest uppercase transition-colors\" style= } > Explore first → )} ) } // ─── Controller: shows modal on first visit ─────────────────────────────────── export function OnboardingController() catch }, []) if (!show) return null return ( setShow(false)} /> ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 11,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ParliamentExperienceClient.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 44,
+          "label": "setOpen(v => !v)} aria-expanded= className=\"transition-calm flex w-full items-center gap-2 border border-border px-5 py-4 text-left hover:bg-muted/40\" > How Parliament works How a bill becomes law · House vs Senate explained",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ParliamentMap.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PartyVotingGrid.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 117,
+          "label": "onSort(sk)} >",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PathwayToRealPolitics.tsx",
+      "controls": [
+        {
+          "type": "a",
+          "line": 69,
+          "label": "More info",
+          "href": "opp.url",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PillarCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 108,
+          "label": "setExpanded(e => !e)} className=\"w-full flex items-center gap-4 py-4 px-1 text-left hover:bg-card/30 transition-colors\" > ) : ( )}",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PillarGradeChip.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PortfolioPanel.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 149,
+          "label": "Reset",
+          "href": null,
+          "handler": "onClick: onReset"
+        },
+        {
+          "type": "button",
+          "line": 208,
+          "label": "setShowClosed(v => !v)} className=\"flex items-center gap-1.5 py-3 w-full text-left\" > Resolved ( )",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PredictionMarketGrid.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 264,
+          "label": "Place a real stake on Forecasts",
+          "href": "/predictions",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PredictionsPageClient.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 241,
+          "label": "setHowItWorksOpen(value => !value)} aria-expanded= className=\"flex items-center gap-2 text-metadata text-foreground\" > How forecasting works",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PredictionWidget.tsx",
+      "controls": [],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PriorityBillFocus.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 138,
+          "label": "setEmailOpen(true)} className=\"flex items-center gap-1.5 text-xs font-medium text-foreground hover:opacity-70 transition-calm\" > Contact — opens a real, addressed email draft",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ProposeMarketModal.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 112,
+          "label": "onOpenChange(false)} className=\"absolute top-4 right-4 p-1 rounded-lg transition-colors\" style= } >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 148,
+          "label": "setCategory(key)} className=\"font-mono text-[10px] tracking-wide uppercase px-2.5 py-1.5 rounded-lg text-left transition-all\" style= `, }} >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "textarea",
+          "line": 172,
+          "label": "setQuestion(e.target.value)} placeholder=\"Will the government…? Who will…? By what date will…?\" className=\"w-full font-mono text-xs text-foreground px-3 py-2.5 rounded-lg border resize-none outline-none transition-colors\" style= } /> = 20 ? '#2ec266' : '#3a3a3e' }}> /20 min Resolves by setResolvesBy(e.target.value)} placeholder=\"e.g. Dec 2025, Q1 2026, End of 48th Parliament\" className=\"w-full font-mono text-xs text-foreground px-3 py-2.5 rounded-lg border outline-none transition-colors\" style= } /> Why should this market exist? (optional) setDescription(e.target.value)} placeholder=\"Explain the resolution criteria or why this is important…\" className=\"w-full font-mono text-xs text-foreground px-3 py-2.5 rounded-lg border resize-none outline-none transition-colors\" style= } /> Submit for review )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 5,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/PushPermissionBanner.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 77,
+          "label": "Enable alerts",
+          "href": null,
+          "handler": "onClick: handleEnable"
+        },
+        {
+          "type": "button",
+          "line": 90,
+          "label": "Not now",
+          "href": null,
+          "handler": "onClick: dismiss"
+        },
+        {
+          "type": "button",
+          "line": 99,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: dismiss"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ShapeParliamentPanel.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 161,
+          "label": "onPress(1)} className= `} > Support",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 172,
+          "label": "onPress(-1)} className= `} > Oppose",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "select",
+          "line": 264,
+          "label": "setSelectedMPId(e.target.value)} className=\"w-full bg-card border border-border/60 rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50\" > ( ) : null })}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "select",
+          "line": 279,
+          "label": "setSelectedBillId(e.target.value)} className=\"w-full bg-card border border-border/60 rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50\" > ))}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 295,
+          "label": "setPosition(p)} className= `} >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 318,
+          "label": "setStakeAmount(Number(e.target.value))} className=\"w-full accent-primary h-1.5\" /> 5 max ) } }} disabled= className=\"w-full py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5\" > Place Stake · staked` : won ? `+$ ` : `-$ `} )} className=\"text-muted-foreground/60 hover:text-muted-foreground text-[10px] shrink-0\" > × )} ) })} )} ) } // ─── Main ShapeParliamentPanel ──────────────────────────────────────────────── export function ShapeParliamentPanel() ) const [stakes, setStakes] = useState ([]) const [userPoints] = useState(250) const featuredMPs = useMemo( () => FEATURED_MP_IDS.map(id => MPs.find(m => m.id === id)).filter(Boolean) as MP[], [] ) // Leaderboard: sort by |pressure| descending const leaderboard = useMemo(() => )) .sort((a, b) => b.score - a.score) }, [featuredMPs, userPressures]) function handlePress(mpId: string, dir: 1 | -1) )) } const totalPressureApplied = Object.values(userPressures).filter(v => v !== 0).length return ( Shape Parliament Apply public pressure · Stake reputation · Influence outcomes pts reputation MPs pressured active stakes pts staked Your votes feed into each MP’s Public Pressure Score and Trust Score , shifting the probability of bills passing. Stake reputation points on how MPs will vote — get it right to earn more. className= `} > ))} /> ))} )} , i) => ( ))} )} onRemoveStake= userPoints= /> )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 6,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ShareButton.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 73,
+          "label": "` : 'Share'} pts )}",
+          "href": null,
+          "handler": "onClick: handleNativeShare"
+        },
+        {
+          "type": "button",
+          "line": 94,
+          "label": "Twitter / X",
+          "href": null,
+          "handler": "onClick: shareTwitter"
+        },
+        {
+          "type": "button",
+          "line": 101,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: copyLink"
+        },
+        {
+          "type": "button",
+          "line": 121,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: handleNativeShare"
+        },
+        {
+          "type": "button",
+          "line": 138,
+          "label": "Twitter / X",
+          "href": null,
+          "handler": "onClick: shareTwitter"
+        },
+        {
+          "type": "button",
+          "line": 145,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: copyLink"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 8,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/simulator/AlternativesEditor.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 49,
+          "label": "= 4} className=\"flex items-center gap-1 font-mono text-[10px] tracking-widest uppercase px-2.5 py-1 border border-border text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors disabled:opacity-40 disabled:cursor-not-allowed\" > Add",
+          "href": null,
+          "handler": "onClick: add"
+        },
+        {
+          "type": "button",
+          "line": 82,
+          "label": "remove(a.id)} className=\"p-0.5 text-muted-foreground/60 hover:text-foreground transition-colors\" aria-label=\"Remove alternative\" >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 92,
+          "label": "update(a.id, )} className=\"w-full bg-transparent border-b border-border/40 pb-1 text-sm font-medium text-foreground focus:outline-none focus:border-foreground/40\" aria-label=\"Alternative label\" /> update(a.id, )} rows= className=\"w-full bg-transparent text-xs text-muted-foreground resize-none focus:outline-none\" aria-label=\"Alternative description\" /> )} className=\"flex-1 font-mono text-[9px] tracking-widest uppercase py-1 rounded transition-colors\" style= 18` : 'transparent', }} > ))} update(a.id, )} className=\"w-full bg-transparent font-mono text-[10px] text-muted-foreground border-b border-border/30 pb-0.5 focus:outline-none focus:border-foreground/30\" aria-label=\"Cost label\" /> ))} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 3,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/simulator/RecentRehearsalsStrip.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 33,
+          "label": "New simulation",
+          "href": "/simulator",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 48,
+          "label": "/100 Best:",
+          "href": "run.url",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/simulator/RecommendationCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 41,
+          "label": "Re-run",
+          "href": null,
+          "handler": "onClick: onRerun"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/simulator/ScenarioSelector.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 43,
+          "label": "onDomainChange(d)} className=\"font-mono text-[10px] tracking-widest uppercase px-3 py-1 border-b-2 transition-colors\" style= } >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 64,
+          "label": "onSelect(s.id)} className=\"text-left rounded-xl border p-4 space-y-2 transition-all hover:border-white/20\" style= 40` : undefined, }} aria-pressed= > )}",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/simulator/SimulateThisButton.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 27,
+          "label": "Decision Simulator Compare alternative responses across markets, civic pillars, leader approval and geopolitical risk.",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 58,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        },
+        {
+          "type": "Link",
+          "line": 71,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/StakeModal.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 93,
+          "label": "Close",
+          "href": null,
+          "handler": "onClick: onClose"
+        },
+        {
+          "type": "input",
+          "line": 147,
+          "label": "handleInputChange(e.target.value)} className=\"flex-1 bg-transparent font-mono text-sm text-foreground outline-none min-w-0\" placeholder=\"0\" /> handlePreset(balance)} className=\"font-mono text-[9px] tracking-widest uppercase px-2 py-0.5 rounded transition-colors\" style= } > Max disabled= className=\"flex-1 font-mono text-[10px] py-1 rounded transition-colors disabled:opacity-30\" style= `, }} > ))} Shares If correct + pts Potential profit 0 ? '#2ec266' : '#f04747' }}> pts ( %) pts on $ `} — this market cannot be staked )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 6,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/StreakMilestone.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 35,
+          "label": "(dynamic or icon-only)",
+          "href": null,
+          "handler": "onClick: onDismiss"
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/SupportModal.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 219,
+          "label": "toggleType(type)} className= >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 259,
+          "label": "toggleSkill(skill)} className= >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 285,
+          "label": "setAvailability(prev => prev === level ? null : level)} className= >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "select",
+          "line": 308,
+          "label": "setLocationState(e.target.value as AustralianState)} className= > State / Territory )}",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "input",
+          "line": 316,
+          "label": "} maxLength= className= /> Only your state is shown publicly. Postcode is never disclosed. setIsPublic(e.target.checked)} className=\"mt-0.5 h-4 w-4 rounded border-border/60 accent-primary\" /> Show me in the public supporter count )} Your support summary Support type )} )} )} Visibility setDisclaimerAccepted(e.target.checked)} className=\"mt-0.5 h-4 w-4 rounded border-border/60 accent-primary\" /> I understand this is civic mobilisation, not an official vote or political party affiliation. I am supporting this leader in good faith. )} setStep(prev => (prev - 1) as SupportStep)} className=\"rounded-lg px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors\" > className=\"rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all\" > Next → ) : ( )} ) }",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 6,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/SwingVotePanel.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 155,
+          "label": "setExpanded(v => !v)} className=\"flex items-center justify-center gap-1 border border-border px-2 py-1.5 font-mono text-[10px] text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors\" aria-label= >",
+          "href": null,
+          "handler": null
+        },
+        {
+          "type": "button",
+          "line": 162,
+          "label": "onEmail(mp)} className=\"flex-1 flex items-center justify-center gap-1.5 border px-2 py-1.5 font-mono text-[10px] uppercase tracking-widest transition-colors hover:opacity-70\" style= } > Contact",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 2,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ui/article-card.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 41,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ui/record-row.tsx",
+      "controls": [
+        {
+          "type": "Link",
+          "line": 44,
+          "label": "(dynamic or icon-only)",
+          "href": "href",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 0,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ui/toast.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 80,
+          "label": "Dismiss notification",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/ui/underline-tabs.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 27,
+          "label": "onChange(item.id)} className= >",
+          "href": null,
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 1,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    },
+    {
+      "file": "src/components/WeeklyReportCard.tsx",
+      "controls": [
+        {
+          "type": "button",
+          "line": 170,
+          "label": "Weekly Civic Report /7 active days · pts earned",
+          "href": null,
+          "handler": "onClick: handleExpand"
+        },
+        {
+          "type": "Link",
+          "line": 297,
+          "label": "Explore →",
+          "href": "/issues",
+          "handler": null
+        }
+      ],
+      "semanticCounts": {
+        "tab": 0,
+        "dialog": 0,
+        "menu": 0,
+        "click-handler": 1,
+        "submit-handler": 0
+      }
+    }
+  ]
+}

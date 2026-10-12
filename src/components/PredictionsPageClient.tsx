@@ -21,6 +21,8 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { EmptyState } from '@/components/ui/empty-state'
 import { UnderlineTabs } from '@/components/ui/underline-tabs'
 import { LinkButton } from '@/components/LinkButton'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
+import { createClient } from '@/lib/supabase'
 
 type CategoryFilter = 'all' | MarketCategory
 type StatusFilter = 'active' | 'resolved' | 'all'
@@ -31,9 +33,7 @@ interface StakeTarget {
 }
 
 const STATIC_NON_BILL_MARKETS = allMarkets.filter(market => market.category !== 'bill')
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+const configured = isSupabaseConfigured
 
 const CATEGORY_FILTERS: Array<{ id: CategoryFilter; label: string }> = [
   { id: 'all', label: 'All Forecasts' },
@@ -71,43 +71,33 @@ export function PredictionsPageClient({
   useEffect(() => {
     if (!configured) return
 
-    let channelCleanup: (() => void) | undefined
+    const supabase = createClient()
+    // Strict Mode and rapid navigation can mount a replacement before async
+    // channel removal finishes. Each effect must own a fresh topic.
+    const channel = supabase
+      .channel(`prediction-bill-markets:${crypto.randomUUID()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'issue_markets',
+        },
+        payload => {
+          const row = payload.new as IssueMarketRecord | undefined
+          if (!row?.issue_id) return
 
-    async function subscribe() {
-      const { createClient } = await import('@/lib/supabase')
-      const supabase = createClient()
-
-      const channel = supabase
-        .channel('prediction-bill-markets')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'issue_markets',
-          },
-          payload => {
-            const row = payload.new as IssueMarketRecord | undefined
-            if (!row?.issue_id) return
-
-            setBillMarkets(prev => {
-              const next = prev.filter(market => market.id !== row.issue_id)
-              next.unshift(mapIssueMarketRecordToPredictionMarket(row))
-              return next
-            })
-          }
-        )
-        .subscribe()
-
-      channelCleanup = () => {
-        supabase.removeChannel(channel)
-      }
-    }
-
-    void subscribe()
+          setBillMarkets(prev => {
+            const next = prev.filter(market => market.id !== row.issue_id)
+            next.unshift(mapIssueMarketRecordToPredictionMarket(row))
+            return next
+          })
+        }
+      )
+      .subscribe()
 
     return () => {
-      channelCleanup?.()
+      void supabase.removeChannel(channel)
     }
   }, [])
 

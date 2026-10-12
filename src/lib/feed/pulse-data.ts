@@ -8,6 +8,7 @@ import {
   stripLeadingGlyph,
   type PulseEvent,
 } from '@/lib/feed/pulse-format'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 /**
  * Political Pulse V1 — chronological data source.
@@ -41,6 +42,8 @@ export interface PulsePageData {
 
 export async function getChronologicalPulse(opts: { limit?: number } = {}): Promise<PulsePageData> {
   const limit = Math.min(opts.limit ?? 150, 300)
+
+  if (!isSupabaseConfigured) return { events: [], source: 'empty' }
 
   try {
     const supabase = await createServerSupabaseClient()

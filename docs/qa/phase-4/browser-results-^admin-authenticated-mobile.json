@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-08T09:22:22.837Z",
+  "environment": "loopback Supabase + Mailpit; Chromium; external browser requests blocked",
+  "results": [
+    {
+      "name": "admin authenticated mobile navigation",
+      "status": "PASS"
+    },
+    {
+      "name": "fixture cleanup",
+      "status": "PASS"
+    }
+  ]
+}

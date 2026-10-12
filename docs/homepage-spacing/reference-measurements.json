@@ -1,0 +1,282 @@
+{
+  "390": {
+    "sections": [
+      {
+        "alignItems": "normal",
+        "class": "section-top is-full-height",
+        "display": "flex",
+        "height": 844,
+        "justifyContent": "normal",
+        "minHeight": "844px",
+        "padding": "0px",
+        "title": "VictoriaEverything youneed to get electionday readyyou're next!",
+        "width": 390,
+        "y": 0
+      },
+      {
+        "alignItems": "center",
+        "class": "section-padded home",
+        "display": "flex",
+        "height": 772.0234375,
+        "justifyContent": "center",
+        "minHeight": "auto",
+        "padding": "24px",
+        "title": "VictoriaEverything youneed to get electionday readyyou're next!",
+        "width": 390,
+        "y": 71.9765625
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 1697.3828125,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "24px",
+        "title": "Build a Ballot makes doing your research easy",
+        "width": 390,
+        "y": 844
+      },
+      {
+        "alignItems": "center",
+        "class": "padding-section-medium",
+        "display": "block",
+        "height": 1649.3828125,
+        "justifyContent": "flex-start",
+        "minHeight": "0px",
+        "padding": "0px",
+        "title": "Build a Ballot makes doing your research easy",
+        "width": 342,
+        "y": 868
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded background-color-grey no-overflow",
+        "display": "block",
+        "height": 547.6484375,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "24px",
+        "title": "Trusted by 600,000+ Australians",
+        "width": 390,
+        "y": 2541.3828125
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded background-color-green",
+        "display": "block",
+        "height": 479.5,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "24px",
+        "title": "GetGovernments shape our future and we get to shape our governmentready",
+        "width": 390,
+        "y": 3089.03125
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 771.0859375,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "24px",
+        "title": "Get to know our electoral system",
+        "width": 390,
+        "y": 3568.53125
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 762.84375,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "24px",
+        "title": "Frequently Asked Questions",
+        "width": 390,
+        "y": 4339.6171875
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-donors",
+        "display": "block",
+        "height": 479.5,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px 0px",
+        "title": "For you, funded by you",
+        "width": 390,
+        "y": 5102.4609375
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 1195.6875,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "24px",
+        "title": "It's your vote, make sure it reflects your values",
+        "width": 390,
+        "y": 5581.9609375
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded background-color-charcoal",
+        "display": "block",
+        "height": 893.859375,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "24px",
+        "width": 390,
+        "y": 6777.6484375
+      }
+    ],
+    "snap": "none",
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  "1440": {
+    "sections": [
+      {
+        "alignItems": "normal",
+        "class": "section-top is-full-height",
+        "display": "flex",
+        "height": 900,
+        "justifyContent": "normal",
+        "minHeight": "900px",
+        "padding": "0px",
+        "title": "VictoriaEverything youneed to get electionday readyyou're next!",
+        "width": 1440,
+        "y": 0
+      },
+      {
+        "alignItems": "center",
+        "class": "section-padded home",
+        "display": "flex",
+        "height": 786.8125,
+        "justifyContent": "center",
+        "minHeight": "auto",
+        "padding": "48px",
+        "title": "VictoriaEverything youneed to get electionday readyyou're next!",
+        "width": 1440,
+        "y": 113.1875
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 1063.9609375,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px",
+        "title": "Build a Ballot makes doing your research easy",
+        "width": 1440,
+        "y": 900
+      },
+      {
+        "alignItems": "center",
+        "class": "padding-section-medium",
+        "display": "block",
+        "height": 967.9609375,
+        "justifyContent": "flex-start",
+        "minHeight": "0px",
+        "padding": "80px 0px",
+        "title": "Build a Ballot makes doing your research easy",
+        "width": 1344,
+        "y": 948
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded background-color-grey no-overflow",
+        "display": "block",
+        "height": 931.96875,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px",
+        "title": "Trusted by 600,000+ Australians",
+        "width": 1440,
+        "y": 1963.9609375
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded background-color-green",
+        "display": "block",
+        "height": 534.390625,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px",
+        "title": "GetGovernments shape our future and we get to shape our governmentready",
+        "width": 1440,
+        "y": 2895.9296875
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 589.1875,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px",
+        "title": "Get to know our electoral system",
+        "width": 1440,
+        "y": 3430.3203125
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 1001.921875,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px",
+        "title": "Frequently Asked Questions",
+        "width": 1440,
+        "y": 4019.5078125
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-donors",
+        "display": "block",
+        "height": 443.59375,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px 0px",
+        "title": "For you, funded by you",
+        "width": 1440,
+        "y": 5021.4296875
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded",
+        "display": "block",
+        "height": 966.15625,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px",
+        "title": "It's your vote, make sure it reflects your values",
+        "width": 1440,
+        "y": 5465.0234375
+      },
+      {
+        "alignItems": "normal",
+        "class": "section-padded background-color-charcoal",
+        "display": "block",
+        "height": 549.2578125,
+        "justifyContent": "normal",
+        "minHeight": "0px",
+        "padding": "48px",
+        "width": 1440,
+        "y": 6431.1796875
+      }
+    ],
+    "snap": "none",
+    "viewport": [
+      1440,
+      900
+    ]
+  }
+}

@@ -51,15 +51,10 @@ declare
   v_department_portfolio_id uuid;
   v_issue_portfolio_id uuid;
 begin
-  -- ── Guard 1: the target Issue must be a real, non-fixture row ───────────
-  -- This is the runtime enforcement of "confirm the issue record is real
-  -- and not demo-only" — see RESPONSIBILITY_ENGINE_V1_FIRST_REAL_SLICE_REPORT.md
-  -- §1–§2 for why this could not be confirmed in advance in this session
-  -- (no live database access) and why the FK on issue_portfolios.issue_id
-  -- makes this check load-bearing rather than a formality.
-  if not exists (select 1 from issues where id = v_issue_id and is_test_fixture = false) then
-    raise exception 'BLOCKER: issue "%" does not exist as a real (is_test_fixture = false) row in the issues table. Do not proceed — see RESPONSIBILITY_ENGINE_V1_FIRST_REAL_SLICE_REPORT.md §2. Either seed a real issues row for this id first (with its own real evidence), or choose a different real issue and re-author this migration against that id.', v_issue_id;
-  end if;
+  -- Migration 024 creates the sourced real issue row on a fresh install. The
+  -- evidence/portfolio/department records below do not depend on that row,
+  -- so they are created now and migration 025 completes the deferred FK link.
+  -- Existing databases that already contain the issue keep the original path.
 
   -- ── Guard 2: idempotency — do nothing if this has already been inserted ──
   select id into v_existing_portfolio_id
@@ -166,12 +161,16 @@ begin
   -- not attempt the fuller multi-actor housing model (state governments,
   -- RBA, local councils) that RESPONSIBILITY_ENGINE.md §4 describes as the
   -- eventual, fuller picture.
-  insert into issue_portfolios (issue_id, portfolio_id, responsibility_kind, effective_from, is_test_fixture)
-  values (v_issue_id, v_portfolio_id, 'responsibility', '2025-05-13', false)
-  returning id into v_issue_portfolio_id;
+  if exists (select 1 from issues where id = v_issue_id and is_test_fixture = false) then
+    insert into issue_portfolios (issue_id, portfolio_id, responsibility_kind, effective_from, is_test_fixture)
+    values (v_issue_id, v_portfolio_id, 'responsibility', '2025-05-13', false)
+    returning id into v_issue_portfolio_id;
 
-  insert into evidence_links (evidence_id, subject_type, subject_id) values
-    (v_evidence_aao_id, 'issue_portfolio', v_issue_portfolio_id);
+    insert into evidence_links (evidence_id, subject_type, subject_id) values
+      (v_evidence_aao_id, 'issue_portfolio', v_issue_portfolio_id);
+  else
+    raise notice 'Real issue "%" is created by migration 024; migration 025 will complete its portfolio link.', v_issue_id;
+  end if;
 
   raise notice 'Inserted real Responsibility Engine data for issue "%": portfolio=%, department=%, department_portfolio=%, issue_portfolio=%. Person→Portfolio (Minister) NOT inserted — see migration 022.',
     v_issue_id, v_portfolio_id, v_department_id, v_department_portfolio_id, v_issue_portfolio_id;

@@ -37,6 +37,14 @@ begin
     raise exception 'BLOCKER: Instrument of Appointment evidence row not found — run migration 021 first.';
   end if;
 
+  if not exists (select 1 from members where tvfy_id = 10086)
+     or not exists (select 1 from members where tvfy_id = 10839)
+     or not exists (select 1 from members where tvfy_id = 10060)
+     or not exists (select 1 from members where tvfy_id = 10809) then
+    raise notice 'Skipping minister relationships: the canonical member sync has not populated every required tvfy_id.';
+    return;
+  end if;
+
   -- ═══════════════════════════════════════════════════════════════════════
   -- NDIS: Mark Butler (tvfy_id 10086)
   -- ═══════════════════════════════════════════════════════════════════════

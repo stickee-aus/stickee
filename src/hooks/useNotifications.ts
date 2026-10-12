@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,9 +32,7 @@ interface NotificationRow {
 
 const STORAGE_KEY = 'stickee:notifications_v1'
 const MAX_STORED  = 50
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+const configured = isSupabaseConfigured
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -90,6 +89,8 @@ export function useNotifications() {
     const supabase = supabaseRef.current!
     let loading = false
     let reloadRequested = false
+    const channelInstanceId = crypto.randomUUID()
+    let channelUserId: string | null = null
 
     async function loadRemote() {
       if (loading) {
@@ -147,7 +148,10 @@ export function useNotifications() {
     // Channel name includes userId to avoid stale subscriptions across sign-ins.
     function subscribeForUser(uid: string) {
       return supabase
-        .channel(`notifications:${uid}`)
+        // A hook instance can mount before the previous instance's async
+        // channel removal completes (notably in React Strict Mode). A unique
+        // topic avoids asking Realtime to mutate an already-subscribed channel.
+        .channel(`notifications:${uid}:${channelInstanceId}`)
         .on(
           'postgres_changes',
           {
@@ -163,12 +167,26 @@ export function useNotifications() {
 
     let channel: ReturnType<typeof subscribeForUser> | null = null
 
+    async function replaceChannel(uid: string | null) {
+      if (channel && channelUserId === uid) return
+
+      if (channel) {
+        const previousChannel = channel
+        channel = null
+        channelUserId = null
+        await supabase.removeChannel(previousChannel)
+      }
+
+      if (!cancelled && uid) {
+        channel = subscribeForUser(uid)
+        channelUserId = uid
+      }
+    }
+
     // Initial load — subscribe to realtime only after we know the userId.
     void (async () => {
       await loadRemote()
-      if (!cancelled && userIdRef.current) {
-        channel = subscribeForUser(userIdRef.current)
-      }
+      await replaceChannel(userIdRef.current)
     })()
 
     const authSubscription = supabase.auth.onAuthStateChange((event) => {
@@ -176,15 +194,19 @@ export function useNotifications() {
         userIdRef.current = null
         setAuthenticated(false)
         setNotifications(load())
+        void replaceChannel(null)
         return
       }
-      void loadRemote()
+      void (async () => {
+        await loadRemote()
+        await replaceChannel(userIdRef.current)
+      })()
     })
 
     return () => {
       cancelled = true
       authSubscription.data.subscription.unsubscribe()
-      if (channel) supabase.removeChannel(channel)
+      if (channel) void supabase.removeChannel(channel)
     }
   }, [])
 
@@ -194,21 +216,8 @@ export function useNotifications() {
     body: string,
     href?: string,
   ): void => {
-    if (configured) {
-      const supabase = supabaseRef.current!
-      void supabase.auth.getSession().then(({ data }) => {
-        if (!data.session?.user) return
-        void supabase.from('notifications').insert({
-          user_id: data.session.user.id,
-          type,
-          title,
-          body,
-          href: href ?? null,
-        })
-      })
-      return
-    }
-
+    // Client-generated feedback is local-only. Persisted account notifications
+    // are trusted server/agent output and cannot be forged by a browser.
     const notif: AppNotification = {
       id: makeId(),
       type,

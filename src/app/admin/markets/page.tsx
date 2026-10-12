@@ -3,6 +3,7 @@ import { connection } from 'next/server'
 import { headers } from 'next/headers'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
 import { resolveMarketAction } from './actions'
+import { getAdminUser } from '../_lib/guard'
 
 export const metadata: Metadata = {
   title: 'Markets — Stickee Admin',
@@ -37,6 +38,7 @@ function fmt(iso: string | null) {
 
 export default async function MarketsAdminPage() {
   await connection()
+  if (!(await getAdminUser()).isAdmin) return null
 
   await headers() // avoid build-time caching, matches the agents page's convention
   const admin = createAdminSupabaseClient()

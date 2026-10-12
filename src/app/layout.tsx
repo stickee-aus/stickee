@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { IBM_Plex_Sans, IBM_Plex_Mono, IBM_Plex_Serif } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/ThemeProvider'
 import { Navbar } from '@/components/Navbar'
 import { BottomNav } from '@/components/BottomNav'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -47,20 +46,18 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <ThemeProvider>
-          <ToastProvider>
-            <TooltipProvider>
-              <Navbar />
-              <CommandPalette />
-              <DailyBonusBanner />
-              <PushPermissionBanner />
-              <main className="flex-1 pb-20 md:pb-0">{children}</main>
-              <BottomNav />
-              <CookieBanner />
-              <OnboardingController />
-            </TooltipProvider>
-          </ToastProvider>
-        </ThemeProvider>
+        <ToastProvider>
+          <TooltipProvider>
+            <Navbar />
+            <CommandPalette />
+            <DailyBonusBanner />
+            <PushPermissionBanner />
+            <main className="flex-1 pb-20 md:pb-0">{children}</main>
+            <BottomNav />
+            <CookieBanner />
+            <OnboardingController />
+          </TooltipProvider>
+        </ToastProvider>
       </body>
     </html>
   )

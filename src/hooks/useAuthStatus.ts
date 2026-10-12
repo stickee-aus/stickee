@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 export interface AuthStatus {
   authenticated: boolean
@@ -17,11 +19,10 @@ const INITIAL_STATUS: AuthStatus = {
   hydrated: false,
 }
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+const configured = isSupabaseConfigured
 
 export function useAuthStatus() {
+  const pathname = usePathname()
   const [status, setStatus] = useState<AuthStatus>(INITIAL_STATUS)
 
   const loadStatus = useCallback(async () => {
@@ -72,7 +73,7 @@ export function useAuthStatus() {
       cancelled = true
       subscription.unsubscribe()
     }
-  }, [loadStatus])
+  }, [loadStatus, pathname])
 
   return { ...status, refresh: loadStatus }
 }

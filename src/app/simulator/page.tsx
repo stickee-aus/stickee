@@ -1,18 +1,30 @@
 import type { Metadata } from 'next'
-import { SimulatorClient } from './SimulatorClient'
+import { PageShell } from '@/components/ui/page-shell'
+import { PageHeader } from '@/components/ui/page-header'
+import { EmptyState } from '@/components/ui/empty-state'
 
 export const metadata: Metadata = {
-  title: 'Simulator · Stickee',
-  description:
-    'A MiroFish-inspired multi-agent prediction sandbox. Compare alternative responses to real Australian events across markets, civic pillars, leaders and geopolitics, then pick the best decision for the country.',
-  openGraph: {
-    title: 'Stickee Simulator — Rehearse the future',
-    description:
-      'Multi-agent simulation across markets, issues, leaders and geopolitics. Compare alternatives side-by-side and pick the best decision for Australia.',
-    type: 'website',
-  },
+  title: 'Scenario analysis — Stickee',
+  description: 'Evidence-backed Australian public-policy scenario analysis.',
 }
 
 export default function SimulatorPage() {
-  return <SimulatorClient />
+  return (
+    <PageShell>
+      <PageHeader
+        eyebrow="Australia · Scenario analysis"
+        title="Scenario analysis"
+        summary="Compare possible policy responses without presenting synthetic output as a real forecast."
+        metadata={{ source: 'No verified model available', verification: 'unverified' }}
+      />
+
+      <div className="mt-8">
+        <EmptyState
+          variant="unavailable"
+          title="The scenario model is not ready for public use."
+          description="Stickee will restore this tool once its assumptions, input evidence, uncertainty and methodology can be inspected. Previous synthetic recommendations are not shown."
+        />
+      </div>
+    </PageShell>
+  )
 }

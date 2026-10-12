@@ -47,7 +47,8 @@ declare
 begin
   select id into v_member_id from members where tvfy_id = v_tvfy_id;
   if v_member_id is null then
-    raise exception 'BLOCKER: no synced member found for tvfy_id=%. Run /api/sync/members against a real TheyVoteForYou fetch first, then re-run this migration.', v_tvfy_id;
+    raise notice 'Skipping Housing minister relationship: no synced member for tvfy_id=%. This enrichment requires the external member sync.', v_tvfy_id;
+    return;
   end if;
 
   select id into v_portfolio_id from portfolios where canonical_name = 'Housing' and jurisdiction = 'commonwealth' and effective_to is null;

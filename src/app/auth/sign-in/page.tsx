@@ -41,11 +41,9 @@ function SignInInner() {
   }, [passwordState.email])
 
   const BENEFITS = [
-    'Track your personalised civic score (A–F grade)',
-    'Compete on prediction markets — earn real points',
-    'Build daily streaks by taking action on issues',
-    'Email your MP directly from the app',
-    ref ? '🎉 Earn 250 bonus points (referral bonus)' : 'Earn bonus points for referring friends',
+    'Keep verified account activity together',
+    'Participate in forecasts when a verified question is open',
+    'Receive updates from issues you choose to follow',
   ]
 
   if (magicState.sent) {
@@ -65,11 +63,6 @@ function SignInInner() {
               Click it to sign in — no password needed.
             </p>
           </div>
-          {ref && (
-            <p className="font-mono text-[10px]" style={{ color: '#2ec266' }}>
-              Your 250 referral bonus will be credited on first sign-in.
-            </p>
-          )}
           <Link
             href="/"
             className="inline-block font-mono text-[10px] tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
@@ -107,7 +100,7 @@ function SignInInner() {
             className="border px-4 py-3 font-mono text-xs"
             style={{ borderColor: '#0e3020', background: '#041008', color: '#2ec266' }}
           >
-            🎉 A friend referred you — you&apos;ll both earn <strong>250 bonus points</strong> on sign-up.
+            A friend referred you to Stickee.
           </div>
         )}
 

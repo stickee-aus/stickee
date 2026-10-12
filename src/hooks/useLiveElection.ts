@@ -29,41 +29,39 @@ export function useLiveElection() {
 
   useEffect(() => {
     let cancelled = false
-    let intervalId: number | null = null
+    let timeoutId: number | null = null
 
     async function load() {
+      let active = cachedSnapshot?.active ?? false
+
       try {
         const snapshot = await fetchLiveElectionSnapshot()
+        active = snapshot.active
         if (!cancelled) setData(snapshot)
       } catch {
         if (!cancelled && cachedSnapshot) {
           setData(cachedSnapshot)
+          active = cachedSnapshot.active
         }
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+          timeoutId = window.setTimeout(() => {
+            void load()
+          }, active ? 90_000 : 900_000)
+        }
       }
     }
 
     void load()
 
-    function schedule(active: boolean) {
-      if (intervalId !== null) {
-        window.clearInterval(intervalId)
-      }
-      intervalId = window.setInterval(() => {
-        void load()
-      }, active ? 90_000 : 900_000)
-    }
-
-    schedule((cachedSnapshot ?? data).active)
-
     return () => {
       cancelled = true
-      if (intervalId !== null) {
-        window.clearInterval(intervalId)
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId)
       }
     }
-  }, [data])
+  }, [])
 
   return { data, loading }
 }

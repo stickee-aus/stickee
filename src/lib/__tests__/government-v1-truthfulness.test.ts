@@ -43,8 +43,14 @@ describe('Parliament page header — fabricated stats are absent', () => {
     expect(source).toMatch(/Executive government/)
   })
 
-  it('carries a real, computed metric — not a literal string', () => {
-    expect(source).toMatch(/metric=\{\{\s*value:\s*dbData\?\.members\.length/)
+  it('only carries a real, computed metric when verified records exist', () => {
+    expect(source).toContain("metric={dbData ? { value: dbData.members.length, label: 'Verified MPs tracked' } : undefined}")
+    expect(source).not.toContain('?? 150')
+  })
+
+  it('labels a disconnected source as unverified rather than demo data', () => {
+    expect(source).toContain("'No verified data available'")
+    expect(source).toContain("'unverified'")
   })
 })
 
@@ -211,6 +217,13 @@ describe('ParliamentExperienceClient — duplicate bill catalogue removed', () =
   it('does not render the streak mechanic', () => {
     expect(source).not.toContain('useStreak')
     expect(source).not.toContain('StreakBadge')
+  })
+
+  it('does not render mock activity, representative, or chamber claims without verified data', () => {
+    expect(source).toContain('hasVerifiedData && otherBills.length > 0')
+    expect(source).toContain('No verified parliamentary activity is available.')
+    expect(source).toContain('Representative lookup is temporarily unavailable.')
+    expect(source).toContain('No verified chamber data is available.')
   })
 })
 

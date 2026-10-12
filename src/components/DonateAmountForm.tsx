@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { LockKeyhole } from 'lucide-react'
 
 type Cadence = 'once' | 'monthly'
@@ -18,6 +18,7 @@ export function DonateAmountForm({ donationUrl }: DonateAmountFormProps) {
   const [customMode, setCustomMode] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const checkoutAttempt = useRef<{ fingerprint: string; id: string } | null>(null)
 
   const amount = useMemo(() => {
     if (!customMode) return selectedAmount
@@ -43,10 +44,14 @@ export function DonateAmountForm({ donationUrl }: DonateAmountFormProps) {
     setError('')
 
     try {
+      const fingerprint = `${amount}:${cadence}`
+      if (!checkoutAttempt.current || checkoutAttempt.current.fingerprint !== fingerprint) {
+        checkoutAttempt.current = { fingerprint, id: crypto.randomUUID() }
+      }
       const response = await fetch('/api/donations/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, cadence }),
+        body: JSON.stringify({ amount, cadence, attemptId: checkoutAttempt.current.id }),
       })
       const data = await response.json()
 

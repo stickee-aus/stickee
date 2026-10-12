@@ -1,0 +1,502 @@
+{
+  "beforeDesktop": {
+    "header": 69,
+    "links": [
+      {
+        "href": "/issues",
+        "text": "Explore the issues "
+      },
+      {
+        "href": "/onboarding",
+        "text": "How Stickee works"
+      },
+      {
+        "href": "/issues",
+        "text": "IssuesThe issues Stickee is tracking across Australian politics.Explore Issues "
+      },
+      {
+        "href": "/parliament",
+        "text": "GovernmentBills, policy and decisions moving through Parliament.Explore Government "
+      },
+      {
+        "href": "/predictions",
+        "text": "ForecastsWhat the crowd expects to happen next.Explore Forecasts "
+      },
+      {
+        "href": "/simulator",
+        "text": " Explore scenarios"
+      },
+      {
+        "href": "/campaigns",
+        "text": " Take action"
+      },
+      {
+        "href": "/parliament",
+        "text": "See Parliament "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/onboarding",
+        "text": "See how it works "
+      }
+    ],
+    "sections": [
+      {
+        "height": 483.890625,
+        "minHeight": "0px",
+        "padding": "0px",
+        "title": "Know what’s changing.Know what to do.",
+        "width": 1440,
+        "x": 0,
+        "y": 69
+      },
+      {
+        "height": 309.4453125,
+        "minHeight": "0px",
+        "padding": "0px",
+        "title": "Where to start",
+        "width": 960,
+        "x": 240,
+        "y": 592.890625
+      },
+      {
+        "height": 280.5,
+        "minHeight": "0px",
+        "padding": "0px",
+        "title": "National snapshot",
+        "width": 960,
+        "x": 240,
+        "y": 966.3359375
+      },
+      {
+        "height": 280.5,
+        "minHeight": "0px",
+        "padding": "0px",
+        "title": "Government activity",
+        "width": 960,
+        "x": 240,
+        "y": 1310.8359375
+      },
+      {
+        "height": 320.5,
+        "minHeight": "0px",
+        "padding": "0px",
+        "title": "Forecasts",
+        "width": 960,
+        "x": 240,
+        "y": 1655.3359375
+      },
+      {
+        "height": 177.5,
+        "minHeight": "0px",
+        "padding": "48px",
+        "title": "A short guide to tracking your seat,your issues, and what happens next.",
+        "width": 960,
+        "x": 240,
+        "y": 2039.8359375
+      }
+    ],
+    "text": "AUSTRALIA, IN PLAIN ENGLISH\n\nKnow what’s changing.\nKnow what to do.\n\nStickee turns Australian politics into a clear weekly picture — the issues, the decisions, and the actions that affect your life.\n\nExplore the issues\nHow Stickee works\nWhere to start\n\nThree ways into what Stickee covers.\n\nIssues\n\nThe issues Stickee is tracking across Australian politics.\n\nExplore Issues\nGovernment\n\nBills, policy and decisions moving through Parliament.\n\nExplore Government\nForecasts\n\nWhat the crowd expects to happen next.\n\nExplore Forecasts\nExplore scenarios\nTake action\nNational snapshot\n\nStickee's civic indicator scorecard.\n\nVerified national indicators are being prepared.\n\nStickee is building a sourced, methodology-backed civic scorecard and won't publish a score until it can carry real evidence.\n\nGovernment activity\n\nWhat Parliament has recently decided.\n\nSee Parliament\n\nVerified government decisions are being prepared.\n\nWe won't publish a decision record here until it carries a real source and status.\n\nForecasts\n\nWhat's likely to happen next.\n\nSee all forecasts\n\nNo verified forecasts are currently open.\n\nCheck back once a new forecast opens.\n\nSee all forecasts\n\nNEW HERE?\n\nA short guide to tracking your seat,\nyour issues, and what happens next.\nSee how it works",
+    "viewport": [
+      1440,
+      900
+    ]
+  },
+  "beforeMobile": {
+    "header": 69,
+    "links": [
+      {
+        "href": "/issues",
+        "text": "Explore the issues "
+      },
+      {
+        "href": "/onboarding",
+        "text": "How Stickee works"
+      },
+      {
+        "href": "/issues",
+        "text": "IssuesThe issues Stickee is tracking across Australian politics.Explore Issues "
+      },
+      {
+        "href": "/parliament",
+        "text": "GovernmentBills, policy and decisions moving through Parliament.Explore Government "
+      },
+      {
+        "href": "/predictions",
+        "text": "ForecastsWhat the crowd expects to happen next.Explore Forecasts "
+      },
+      {
+        "href": "/simulator",
+        "text": " Explore scenarios"
+      },
+      {
+        "href": "/campaigns",
+        "text": " Take action"
+      },
+      {
+        "href": "/parliament",
+        "text": "See Parliament "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/onboarding",
+        "text": "See how it works "
+      }
+    ],
+    "scrollWidth": 390,
+    "sections": [
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 431.65625,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "0px",
+        "title": "Know what’s changing.Know what to do.",
+        "width": 390,
+        "x": 0,
+        "y": 69
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 663.3359375,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "0px",
+        "title": "Where to start",
+        "width": 350,
+        "x": 20,
+        "y": 540.65625
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 312.5,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "0px",
+        "title": "National snapshot",
+        "width": 350,
+        "x": 20,
+        "y": 1267.9921875
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 344,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "0px",
+        "title": "Government activity",
+        "width": 350,
+        "x": 20,
+        "y": 1644.4921875
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 320.5,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "0px",
+        "title": "Forecasts",
+        "width": 350,
+        "x": 20,
+        "y": 2052.4921875
+      },
+      {
+        "align": "normal",
+        "display": "flex",
+        "height": 256.5,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "32px",
+        "title": "A short guide to tracking your seat,your issues, and what happens next.",
+        "width": 350,
+        "x": 20,
+        "y": 2436.9921875
+      }
+    ],
+    "snap": "none",
+    "text": "AUSTRALIA, IN PLAIN ENGLISH\n\nKnow what’s changing.\nKnow what to do.\n\nStickee turns Australian politics into a clear weekly picture — the issues, the decisions, and the actions that affect your life.\n\nExplore the issues\nHow Stickee works\nWhere to start\n\nThree ways into what Stickee covers.\n\nIssues\n\nThe issues Stickee is tracking across Australian politics.\n\nExplore Issues\nGovernment\n\nBills, policy and decisions moving through Parliament.\n\nExplore Government\nForecasts\n\nWhat the crowd expects to happen next.\n\nExplore Forecasts\nExplore scenarios\nTake action\nNational snapshot\n\nStickee's civic indicator scorecard.\n\nVerified national indicators are being prepared.\n\nStickee is building a sourced, methodology-backed civic scorecard and won't publish a score until it can carry real evidence.\n\nGovernment activity\n\nWhat Parliament has recently decided.\n\nSee Parliament\n\nVerified government decisions are being prepared.\n\nWe won't publish a decision record here until it carries a real source and status.\n\nForecasts\n\nWhat's likely to happen next.\n\nSee all forecasts\n\nNo verified forecasts are currently open.\n\nCheck back once a new forecast opens.\n\nSee all forecasts\n\nNEW HERE?\n\nA short guide to tracking your seat,\nyour issues, and what happens next.\nSee how it works",
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  "afterDesktop": {
+    "header": 69,
+    "links": [
+      {
+        "href": "/issues",
+        "text": "Explore the issues "
+      },
+      {
+        "href": "/onboarding",
+        "text": "How Stickee works"
+      },
+      {
+        "href": "/issues",
+        "text": "IssuesThe issues Stickee is tracking across Australian politics.Explore Issues "
+      },
+      {
+        "href": "/parliament",
+        "text": "GovernmentBills, policy and decisions moving through Parliament.Explore Government "
+      },
+      {
+        "href": "/predictions",
+        "text": "ForecastsWhat the crowd expects to happen next.Explore Forecasts "
+      },
+      {
+        "href": "/simulator",
+        "text": " Explore scenarios"
+      },
+      {
+        "href": "/campaigns",
+        "text": " Take action"
+      },
+      {
+        "href": "/parliament",
+        "text": "See Parliament "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/onboarding",
+        "text": "See how it works "
+      }
+    ],
+    "scrollWidth": 1440,
+    "sections": [
+      {
+        "align": "center",
+        "display": "grid",
+        "height": 831,
+        "minHeight": "831px",
+        "overflow": "visible",
+        "padding": "0px",
+        "title": "Know what’s changing.Know what to do.",
+        "width": 1440,
+        "x": 0,
+        "y": 69
+      },
+      {
+        "align": "center",
+        "display": "grid",
+        "height": 720,
+        "minHeight": "720px",
+        "overflow": "visible",
+        "padding": "72px 0px",
+        "title": "Where to start",
+        "width": 1088,
+        "x": 176,
+        "y": 900
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 388.5,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "54px 0px",
+        "title": "National snapshot",
+        "width": 1088,
+        "x": 176,
+        "y": 1620
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 388.5,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "54px 0px",
+        "title": "Government activity",
+        "width": 1088,
+        "x": 176,
+        "y": 2008.5
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 428.5,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "54px 0px",
+        "title": "Forecasts",
+        "width": 1088,
+        "x": 176,
+        "y": 2397
+      },
+      {
+        "align": "normal",
+        "display": "flex",
+        "height": 720,
+        "minHeight": "720px",
+        "overflow": "visible",
+        "padding": "72px 0px",
+        "title": "A short guide to tracking your seat,your issues, and what happens next.",
+        "width": 1088,
+        "x": 176,
+        "y": 2825.5
+      }
+    ],
+    "snap": "none",
+    "text": "AUSTRALIA, IN PLAIN ENGLISH\n\nKnow what’s changing.\nKnow what to do.\n\nStickee turns Australian politics into a clear weekly picture — the issues, the decisions, and the actions that affect your life.\n\nExplore the issues\nHow Stickee works\nWhere to start\n\nThree ways into what Stickee covers.\n\nIssues\n\nThe issues Stickee is tracking across Australian politics.\n\nExplore Issues\nGovernment\n\nBills, policy and decisions moving through Parliament.\n\nExplore Government\nForecasts\n\nWhat the crowd expects to happen next.\n\nExplore Forecasts\nExplore scenarios\nTake action\nNational snapshot\n\nStickee's civic indicator scorecard.\n\nVerified national indicators are being prepared.\n\nStickee is building a sourced, methodology-backed civic scorecard and won't publish a score until it can carry real evidence.\n\nGovernment activity\n\nWhat Parliament has recently decided.\n\nSee Parliament\n\nVerified government decisions are being prepared.\n\nWe won't publish a decision record here until it carries a real source and status.\n\nForecasts\n\nWhat's likely to happen next.\n\nSee all forecasts\n\nNo verified forecasts are currently open.\n\nCheck back once a new forecast opens.\n\nSee all forecasts\n\nNEW HERE?\n\nA short guide to tracking your seat,\nyour issues, and what happens next.\nSee how it works",
+    "viewport": [
+      1440,
+      900
+    ]
+  },
+  "afterMobile": {
+    "header": 69,
+    "links": [
+      {
+        "href": "/issues",
+        "text": "Explore the issues "
+      },
+      {
+        "href": "/onboarding",
+        "text": "How Stickee works"
+      },
+      {
+        "href": "/issues",
+        "text": "IssuesThe issues Stickee is tracking across Australian politics.Explore Issues "
+      },
+      {
+        "href": "/parliament",
+        "text": "GovernmentBills, policy and decisions moving through Parliament.Explore Government "
+      },
+      {
+        "href": "/predictions",
+        "text": "ForecastsWhat the crowd expects to happen next.Explore Forecasts "
+      },
+      {
+        "href": "/simulator",
+        "text": " Explore scenarios"
+      },
+      {
+        "href": "/campaigns",
+        "text": " Take action"
+      },
+      {
+        "href": "/parliament",
+        "text": "See Parliament "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/predictions",
+        "text": "See all forecasts "
+      },
+      {
+        "href": "/onboarding",
+        "text": "See how it works "
+      }
+    ],
+    "scrollWidth": 390,
+    "sections": [
+      {
+        "align": "center",
+        "display": "grid",
+        "height": 775,
+        "minHeight": "775px",
+        "overflow": "visible",
+        "padding": "0px",
+        "title": "Know what’s changing.Know what to do.",
+        "width": 390,
+        "x": 0,
+        "y": 69
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 799.3671875,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "67.52px 0px",
+        "title": "Where to start",
+        "width": 350,
+        "x": 20,
+        "y": 844
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 413.765625,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "50.64px 0px",
+        "title": "National snapshot",
+        "width": 350,
+        "x": 20,
+        "y": 1643.3671875
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 433.765625,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "50.64px 0px",
+        "title": "Government activity",
+        "width": 350,
+        "x": 20,
+        "y": 2057.1328125
+      },
+      {
+        "align": "normal",
+        "display": "block",
+        "height": 421.765625,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "50.64px 0px",
+        "title": "Forecasts",
+        "width": 350,
+        "x": 20,
+        "y": 2490.8984375
+      },
+      {
+        "align": "normal",
+        "display": "flex",
+        "height": 334.53125,
+        "minHeight": "0px",
+        "overflow": "visible",
+        "padding": "67.52px 0px",
+        "title": "A short guide to tracking your seat,your issues, and what happens next.",
+        "width": 350,
+        "x": 20,
+        "y": 2912.6640625
+      }
+    ],
+    "snap": "none",
+    "text": "AUSTRALIA, IN PLAIN ENGLISH\n\nKnow what’s changing.\nKnow what to do.\n\nStickee turns Australian politics into a clear weekly picture — the issues, the decisions, and the actions that affect your life.\n\nExplore the issues\nHow Stickee works\nWhere to start\n\nThree ways into what Stickee covers.\n\nIssues\n\nThe issues Stickee is tracking across Australian politics.\n\nExplore Issues\nGovernment\n\nBills, policy and decisions moving through Parliament.\n\nExplore Government\nForecasts\n\nWhat the crowd expects to happen next.\n\nExplore Forecasts\nExplore scenarios\nTake action\nNational snapshot\n\nStickee's civic indicator scorecard.\n\nVerified national indicators are being prepared.\n\nStickee is building a sourced, methodology-backed civic scorecard and won't publish a score until it can carry real evidence.\n\nGovernment activity\n\nWhat Parliament has recently decided.\n\nSee Parliament\n\nVerified government decisions are being prepared.\n\nWe won't publish a decision record here until it carries a real source and status.\n\nForecasts\n\nWhat's likely to happen next.\n\nSee all forecasts\n\nNo verified forecasts are currently open.\n\nCheck back once a new forecast opens.\n\nSee all forecasts\n\nNEW HERE?\n\nA short guide to tracking your seat,\nyour issues, and what happens next.\nSee how it works",
+    "viewport": [
+      390,
+      844
+    ]
+  }
+}

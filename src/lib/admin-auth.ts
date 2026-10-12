@@ -45,7 +45,6 @@ export async function isAppAdmin(user: User | null | undefined) {
   const admin = createAdminSupabaseClient()
 
   if (isConfiguredAdmin) {
-    await admin.from('app_admins').upsert({ user_id: user.id })
     return true
   }
 

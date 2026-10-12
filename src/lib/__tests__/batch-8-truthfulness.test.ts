@@ -102,7 +102,8 @@ describe('Fix 2 — fabricated politician scoring is not publicly rendered', () 
     const source = read('src/app/impact/page.tsx')
     expect(source).not.toContain("import { POLITICIAN_SCORECARDS")
     expect(source).not.toContain('<CivicScorecard')
-    expect(source).toContain('being verified')
+    expect(source).toContain('Verified national indicators are being prepared')
+    expect(source).toContain('Placeholder scores are not shown')
   })
 
   it('MPVoteGrid no longer presents a party-wide mock vote as an individual MP\'s vote', () => {

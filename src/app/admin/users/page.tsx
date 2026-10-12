@@ -11,6 +11,7 @@ import {
   Users,
 } from 'lucide-react'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
+import { getAdminUser } from '../_lib/guard'
 import {
   banUserAction,
   unbanUserAction,
@@ -83,6 +84,7 @@ function isCurrentlyBanned(banned_until: string | null | undefined) {
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: SearchParams }) {
   await connection()
+  if (!(await getAdminUser()).isAdmin) return null
 
   const params = await searchParams
   const q = (params.q ?? '').trim()

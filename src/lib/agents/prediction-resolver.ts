@@ -51,35 +51,22 @@ export const predictionResolver: AgentHandler = async (ctx) => {
     const total = preds.length
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0
 
-    // ── Award civic_score bumps to correct predictors. We do this idempotently
-    //    by gating on the existence of the resolution post (created in the
-    //    same run). If the post was already written previously, we still
-    //    upsert it but only award points the first time we see this issue
-    //    in a resolved state. We approximate "first time" by checking for
-    //    a recent prior post with the same id. ─────────────────────────────
-    const { data: existing } = await ctx.admin
-      .from('feed_posts')
-      .select('id')
-      .eq('id', postId)
-      .maybeSingle()
-
-    const firstResolution = !existing
-
-    if (firstResolution) {
-      for (const p of preds) {
-        if (!p.user_id || p.prediction !== correctAnswer) continue
-        // Bump civic_score by 2 (small enough to not be runaway).
-        // SQL: civic_score = coalesce(civic_score, 0) + 2
-        const { data: prof } = await ctx.admin
-          .from('user_profiles')
-          .select('civic_score')
-          .eq('user_id', p.user_id)
-          .maybeSingle()
-        const next = (prof?.civic_score ?? 0) + 2
-        await ctx.admin
-          .from('user_profiles')
-          .update({ civic_score: next, updated_at: now.toISOString() })
-          .eq('user_id', p.user_id)
+    // Awarding and deduplication happen in one database transaction. The
+    // ledger is keyed by issue + user, so retries, concurrent runs, and an
+    // issue status correction cannot award a second time.
+    for (const p of preds) {
+      if (!p.user_id || p.prediction !== correctAnswer) continue
+      const { data: awarded, error: awardError } = await ctx.admin.rpc(
+        'award_prediction_civic_score',
+        {
+          p_issue_id: issue.id,
+          p_user_id: p.user_id,
+          p_resolved_status: issue.status,
+          p_points: 2,
+        },
+      )
+      if (awardError) throw awardError
+      if (awarded) {
         pointsAwarded += 2
         participantsGraded++
       }

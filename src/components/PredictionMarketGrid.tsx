@@ -6,6 +6,7 @@ import { issueMarkets, type IssueMarket, type MarketOutcome } from '@/lib/mock-m
 import { mapIssueMarketRecord, type IssueMarketRecord } from '@/lib/issues-data'
 import { TrendingUp, TrendingDown, Zap, ArrowRight } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 // ─── Sparkline ────────────────────────────────────────────────────────────────
 
@@ -93,9 +94,7 @@ interface LiveOutcome extends MarketOutcome {
   history: number[]
 }
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-const configured = !!(SUPABASE_URL && SUPABASE_KEY && SUPABASE_URL.startsWith('http'))
+const configured = isSupabaseConfigured
 
 export function PredictionMarketGrid({
   issueId,

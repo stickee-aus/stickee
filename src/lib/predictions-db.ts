@@ -7,8 +7,11 @@ import {
   mapIssueMarketRecordToPredictionMarket,
   type IssueMarketRecord,
 } from '@/lib/issues-data'
+import { isSupabaseConfigured } from '@/lib/supabase-config'
 
 export async function getLiveBillMarkets(): Promise<PredictionMarket[]> {
+  if (!isSupabaseConfigured) return []
+
   try {
     const supabase = await createServerSupabaseClient()
     const { data, error } = await supabase
