@@ -25,21 +25,21 @@ export function YourSeatCard() {
               <div>
                 <p className="font-medium text-foreground">How your MP votes</p>
                 <p className="text-muted-foreground">
-                  Plain-language voting record, attendance, and key issues — in the style of They Vote For You.
+                  See plain-language voting records, attendance, and key issues — the way They Vote For You does it.
                 </p>
               </div>
             </div>
 
             <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
-              Full voting record is being prepared from official parliamentary data. We only show verified votes — never fabricated scores.
+              Full voting record is being prepared from official parliamentary data (TheyVoteForYou). We only show verified votes — never fabricated scores.
             </div>
 
             <div className="flex flex-wrap gap-3 pt-1">
               <Link
-                href={`/mp?electorate=${encodeURIComponent(electorate.electorate)}`}
+                href="/leaders"
                 className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
               >
-                View your MP <ArrowRight className="h-3.5 w-3.5" />
+                Find your representative <ArrowRight className="h-3.5 w-3.5" />
               </Link>
               <button
                 type="button"
