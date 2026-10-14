@@ -2,7 +2,9 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+// Public read is allowed by RLS, so the anon key is sufficient and more reliable
+// for local/dev environments that may not have the service role key set.
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 function normalizePostcode(raw: unknown): string | null {
   if (typeof raw !== 'string' && typeof raw !== 'number') return null
@@ -12,7 +14,11 @@ function normalizePostcode(raw: unknown): string | null {
 }
 
 async function lookup(postcode: string) {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    return Response.json({ error: 'Supabase not configured' }, { status: 500 })
+  }
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
   const { data, error } = await supabase
     .from('postcode_electorates')
@@ -20,6 +26,7 @@ async function lookup(postcode: string) {
     .eq('postcode', postcode)
 
   if (error) {
+    console.error('postcode lookup error', error)
     return Response.json({ error: 'Lookup failed' }, { status: 500 })
   }
 
