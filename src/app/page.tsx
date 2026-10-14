@@ -11,6 +11,7 @@ import { ArticleCard } from '@/components/ui/article-card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PostcodeLookup } from '@/components/PostcodeLookup'
 import { YourSeatCard } from '@/components/YourSeatCard'
+import { CivicExplainer } from '@/components/CivicExplainer'
 
 export const metadata: Metadata = {
   title: 'Stickee — Australian politics, made clear',
@@ -76,6 +77,16 @@ export default async function HomePage() {
 
       <PageShell>
         <div className="space-y-16">
+
+          <section>
+            <CivicExplainer title="What is a division?">
+              <p>
+                A <strong>division</strong> is a formal vote in the House of Representatives or the Senate.
+                When MPs are divided on a motion, they walk through separate doors and their names are recorded.
+                That record is what sites like They Vote For You (and Stickee) use to show how your representative actually voted — not just what they said.
+              </p>
+            </CivicExplainer>
+          </section>
 
           <section>
             <SectionHeader title="Where to start" description="Three ways into what Stickee covers." />
