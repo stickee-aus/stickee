@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AuthButton } from '@/components/AuthButton'
+import { SeatChip } from '@/components/SeatChip'
 import { useNotifications } from '@/hooks/useNotifications'
 import { PRIMARY_NAV, SECONDARY_NAV, isPrimaryNavItemActive } from '@/lib/navigation'
 
@@ -47,6 +48,7 @@ export function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-4 text-muted-foreground">
+          <SeatChip />
           {SECONDARY_NAV.map(item => (
             <Link
               key={item.href}
