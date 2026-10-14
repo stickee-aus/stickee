@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MapPin } from 'lucide-react'
+import { syncElectorateToLegacy } from '@/hooks/useElectorateStorage'
 
 type LookupResult = {
   postcode: string
@@ -34,6 +34,13 @@ export function PostcodeLookup() {
     }
   }, [])
 
+  function saveAndSync(data: LookupResult) {
+    setResult(data)
+    localStorage.setItem('stickee_electorate', JSON.stringify(data))
+    syncElectorateToLegacy(data.electorate)
+    window.dispatchEvent(new Event('storage'))
+  }
+
   async function lookup(e: React.FormEvent) {
     e.preventDefault()
     const digits = postcode.replace(/\D/g, '')
@@ -62,11 +69,8 @@ export function PostcodeLookup() {
         return
       }
 
-      setResult(data)
-      localStorage.setItem('stickee_electorate', JSON.stringify(data))
+      saveAndSync(data)
       setPostcode('')
-      // Trigger storage event so YourSeatCard picks it up immediately
-      window.dispatchEvent(new Event('storage'))
     } catch {
       setError('Network error')
     } finally {
@@ -81,21 +85,19 @@ export function PostcodeLookup() {
       electorate,
       state: multi.state,
     }
-    setResult(chosen)
-    localStorage.setItem('stickee_electorate', JSON.stringify(chosen))
+    saveAndSync(chosen)
     setMulti(null)
     setPostcode('')
-    window.dispatchEvent(new Event('storage'))
   }
 
   function clear() {
     setResult(null)
     setMulti(null)
     localStorage.removeItem('stickee_electorate')
+    localStorage.removeItem('stickee:electorate')
     window.dispatchEvent(new Event('storage'))
   }
 
-  // When we already have a result, show a minimal confirmation (card does the heavy lifting)
   if (result) {
     return (
       <div className="mt-6 text-sm text-muted-foreground">
