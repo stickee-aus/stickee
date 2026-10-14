@@ -18,10 +18,12 @@ import {
   persistedRunFromResult,
   simulatorUrlFor,
 } from '@/lib/simulator-bridge'
+import { useElectorateStorage } from '@/hooks/useElectorateStorage'
 import type { Alternative, Scenario, ScenarioDomain, SimulationResult } from '@/types/simulator'
 
 export function SimulatorClient() {
   const searchParams = useSearchParams()
+  const { electorate, loaded } = useElectorateStorage()
 
   // ── Hydrate state from ?entity=... or fall back to first preset ──────────
   const initial = useMemo(() => {
@@ -53,7 +55,7 @@ export function SimulatorClient() {
     }
   }, [searchParams])
 
-  // ── Choose a preset scenario ─────────────────────────────────────────────
+  // ── Choose a preset scenario ───────────────────────────────────────────
   function handleSelectScenario(id: string) {
     const next = SCENARIO_INDEX[id]!
     setScenario(next)
@@ -88,7 +90,7 @@ export function SimulatorClient() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
-      {/* ── Page header ──────────────────────────────────────────────────── */}
+      {/* ── Page header ────────────────────────────────────────────── */}
       <div>
         <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground mb-2">
           Australia · Decision Simulator{initial.isEntity && initial.ref && (
@@ -106,6 +108,11 @@ export function SimulatorClient() {
             ? 'You loaded this from elsewhere on Stickee. Tweak the alternatives below or hit Run to compare predicted outcomes across markets, civic pillars, leader approval and geopolitical risk.'
             : 'Inspired by MiroFish’s swarm-intelligence engine. Pick a real-world Australian event, define 2–4 alternative responses, and run a stylised multi-agent simulation across markets, civic pillars, leader approval and geopolitical risk — then pick the option best for the country.'}
         </p>
+        {loaded && electorate && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Seat context: <span className="font-medium text-foreground">{electorate.electorate}</span>. Future versions can weight outcomes by your electorate’s demographics and your MP’s record.
+          </p>
+        )}
       </div>
 
       <RecentRehearsalsStrip />
@@ -128,7 +135,7 @@ export function SimulatorClient() {
         scenarioContext={scenario.context}
       />
 
-      {/* ── Step 3: Run ──────────────────────────────────────────────────── */}
+      {/* ── Step 3: Run ──────────────────────────────────────────────── */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <span className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
@@ -146,7 +153,7 @@ export function SimulatorClient() {
         <AgentSwarmAnimation status={status} />
       </div>
 
-      {/* ── Recommendation ──────────────────────────────────────────────── */}
+      {/* ── Recommendation ────────────────────────────────────────── */}
       {result && (
         <>
           <RecommendationCard
