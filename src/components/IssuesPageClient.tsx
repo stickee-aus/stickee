@@ -9,6 +9,9 @@ import { RecordRow } from '@/components/ui/record-row'
 import { StatusLabel, type Status } from '@/components/ui/status-label'
 import { UnderlineTabs, type UnderlineTabItem } from '@/components/ui/underline-tabs'
 import { EmptyState } from '@/components/ui/empty-state'
+import { useElectorateStorage } from '@/hooks/useElectorateStorage'
+import { CivicExplainer } from '@/components/CivicExplainer'
+import Link from 'next/link'
 
 type StatusFilter = 'all' | 'active' | 'passed' | 'rejected'
 
@@ -19,9 +22,6 @@ const STATUS_TABS: UnderlineTabItem[] = [
   { id: 'rejected', label: 'Rejected' },
 ]
 
-// StatusLabel has no dedicated "rejected" status — 'voided' shares the same
-// negative-status colour token and takes a custom label, which is more
-// honest than inventing a new colour just for this word.
 const STATUS_CONFIG: Record<IssueWithStats['status'], { status: Status; label: string }> = {
   active: { status: 'active', label: 'Active' },
   passed: { status: 'passed', label: 'Passed' },
@@ -78,6 +78,7 @@ export function IssuesPageClient({
   source: IssuesDataSource
 }) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const { electorate, loaded } = useElectorateStorage()
 
   const filtered = issues.filter(issue => statusFilter === 'all' || issue.status === statusFilter)
 
@@ -90,6 +91,27 @@ export function IssuesPageClient({
         metadata={{ verification: source === 'database' ? 'verified' : 'demo' }}
         metric={{ value: issues.length, label: 'Issues tracked' }}
       />
+
+      {loaded && electorate && (
+        <div className="mt-6 rounded-md border border-border bg-muted/30 px-4 py-3 text-sm">
+          <span className="text-muted-foreground">Showing issues relevant to </span>
+          <span className="font-medium text-foreground">{electorate.electorate}</span>
+          <span className="text-muted-foreground">. </span>
+          <Link href="/leaders" className="underline-offset-2 hover:underline">
+            See how your MP votes
+          </Link>
+          <span className="text-muted-foreground"> on related bills once records are ready.</span>
+        </div>
+      )}
+
+      <div className="mt-6">
+        <CivicExplainer title="How do issues become votes?">
+          <p>
+            Most issues start as bills or motions in Parliament. When the House or Senate is divided, a formal vote (a division) is recorded.
+            Your MP’s vote on those divisions is the clearest record of what they actually did — which is why Stickee focuses on verified voting records rather than statements alone.
+          </p>
+        </CivicExplainer>
+      </div>
 
       <div className="mt-8">
         <UnderlineTabs items={STATUS_TABS} value={statusFilter} onChange={value => setStatusFilter(value as StatusFilter)} />
