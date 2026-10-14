@@ -7,12 +7,19 @@ type LookupResult = {
   postcode: string
   electorate: string
   state: string
+  locality?: string
+}
+
+type LocalityOption = {
+  locality: string
+  electorate: string
 }
 
 type MultiResult = {
   postcode: string
   state: string
   electorates: string[]
+  localities: LocalityOption[]
   multiple: true
 }
 
@@ -79,7 +86,20 @@ export function PostcodeLookup() {
     }
   }
 
-  function pick(electorate: string) {
+  function pickLocality(loc: LocalityOption) {
+    if (!multi) return
+    const chosen: LookupResult = {
+      postcode: multi.postcode,
+      electorate: loc.electorate,
+      state: multi.state,
+      locality: loc.locality,
+    }
+    saveAndSync(chosen)
+    setMulti(null)
+    setPostcode('')
+  }
+
+  function pickElectorate(electorate: string) {
     if (!multi) return
     const chosen: LookupResult = {
       postcode: multi.postcode,
@@ -103,7 +123,7 @@ export function PostcodeLookup() {
   if (result) {
     return (
       <div className="mt-6 text-sm text-muted-foreground">
-        Seat set — see details below.
+        Seat set{result.locality ? ` (${result.locality})` : ''} — see details below.
         {' '}
         <button
           type="button"
@@ -117,23 +137,44 @@ export function PostcodeLookup() {
   }
 
   if (multi) {
+    const hasLocalities = multi.localities && multi.localities.length > 0
+
     return (
       <div className="mx-auto mt-8 max-w-xs rounded-lg border border-border bg-card p-4 text-left">
         <p className="mb-3 text-sm font-medium text-foreground">
-          {multi.postcode} spans multiple seats in {multi.state}. Which one?
+          {multi.postcode} spans multiple seats in {multi.state}.
+          {hasLocalities ? ' Which suburb?' : ' Which seat?'}
         </p>
-        <div className="flex flex-col gap-2">
-          {multi.electorates.map(e => (
-            <button
-              key={e}
-              type="button"
-              onClick={() => pick(e)}
-              className="h-10 rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-accent"
-            >
-              {e}
-            </button>
-          ))}
-        </div>
+
+        {hasLocalities ? (
+          <div className="flex flex-col gap-2">
+            {multi.localities.map(loc => (
+              <button
+                key={`${loc.locality}-${loc.electorate}`}
+                type="button"
+                onClick={() => pickLocality(loc)}
+                className="flex items-center justify-between rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+              >
+                <span>{loc.locality}</span>
+                <span className="text-xs text-muted-foreground">{loc.electorate}</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {multi.electorates.map(e => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => pickElectorate(e)}
+                className="h-10 rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-accent"
+              >
+                {e}
+              </button>
+            ))}
+          </div>
+        )}
+
         <button
           type="button"
           onClick={clear}
