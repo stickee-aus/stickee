@@ -55,10 +55,10 @@ export function PostcodeLookup() {
 
     try {
       const res = await fetch(`/api/electorate-lookup?postcode=${digits}`)
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
 
       if (!res.ok) {
-        setError(data.error ?? 'Lookup failed')
+        setError(data.error ?? `Lookup failed (${res.status})`)
         setResult(null)
         return
       }
@@ -71,8 +71,9 @@ export function PostcodeLookup() {
 
       saveAndSync(data)
       setPostcode('')
-    } catch {
-      setError('Network error')
+    } catch (err) {
+      console.error(err)
+      setError('Network error — check the console or your connection')
     } finally {
       setLoading(false)
     }
@@ -93,6 +94,7 @@ export function PostcodeLookup() {
   function clear() {
     setResult(null)
     setMulti(null)
+    setError(null)
     localStorage.removeItem('stickee_electorate')
     localStorage.removeItem('stickee:electorate')
     window.dispatchEvent(new Event('storage'))
@@ -116,9 +118,9 @@ export function PostcodeLookup() {
 
   if (multi) {
     return (
-      <div className="mx-auto mt-8 max-w-xs">
-        <p className="mb-3 text-sm text-muted-foreground">
-          {multi.postcode} spans multiple seats. Which one?
+      <div className="mx-auto mt-8 max-w-xs rounded-lg border border-border bg-card p-4 text-left">
+        <p className="mb-3 text-sm font-medium text-foreground">
+          {multi.postcode} spans multiple seats in {multi.state}. Which one?
         </p>
         <div className="flex flex-col gap-2">
           {multi.electorates.map(e => (
