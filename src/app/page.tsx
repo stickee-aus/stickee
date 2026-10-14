@@ -9,15 +9,13 @@ import { PageShell } from '@/components/ui/page-shell'
 import { SectionHeader } from '@/components/ui/section-header'
 import { ArticleCard } from '@/components/ui/article-card'
 import { EmptyState } from '@/components/ui/empty-state'
+import { PostcodeLookup } from '@/components/PostcodeLookup'
 
 export const metadata: Metadata = {
   title: 'Stickee — Australian politics, made clear',
   description: 'See what is changing, why it matters, and what you can do about it — without the political noise.',
 }
 
-// Canonical primary destinations — same three sections and hrefs as
-// src/lib/navigation.ts's PRIMARY_NAV (Issues/Government/Forecasts), so this
-// page never invents a fourth label for something already named elsewhere.
 const PRIMARY_DESTINATIONS = [
   {
     href: '/issues',
@@ -45,10 +43,6 @@ const SECONDARY_ACTIONS = [
 ]
 
 export default async function HomePage() {
-  // /predictions' own canonical, database-backed source — never the static
-  // mock-market-data fallback. On a Supabase error or empty table this
-  // resolves to demo-status rows, which getMarketEligibility().canStake
-  // filters out below, so the homepage never shows fabricated forecasts.
   const liveMarkets = await getLiveBillMarkets()
   const activeForecasts = liveMarkets
     .filter(market => getMarketEligibility(market).canStake)
@@ -56,7 +50,6 @@ export default async function HomePage() {
 
   return (
     <div className="bg-background">
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="border-b border-border">
         <div className="mx-auto max-w-3xl px-5 py-16 text-center md:px-8 md:py-24">
           <p className="text-micro-label mb-4">Australia, in plain English</p>
@@ -67,6 +60,7 @@ export default async function HomePage() {
             Stickee turns Australian politics into a clear weekly picture — the issues, the decisions,
             and the actions that affect your life.
           </p>
+          <PostcodeLookup />
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <LinkButton href="/issues">
               Explore the issues <ArrowRight className="ml-1 h-4 w-4" />
@@ -81,7 +75,6 @@ export default async function HomePage() {
       <PageShell>
         <div className="space-y-16">
 
-          {/* ── Primary product destinations ──────────────────────────────── */}
           <section>
             <SectionHeader title="Where to start" description="Three ways into what Stickee covers." />
             <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -112,7 +105,6 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* ── National snapshot ─────────────────────────────────────────── */}
           <section>
             <SectionHeader title="National snapshot" description="Stickee's civic indicator scorecard." />
             <div className="mt-6">
@@ -124,7 +116,6 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* ── Government activity ───────────────────────────────────────── */}
           <section>
             <SectionHeader
               title="Government activity"
@@ -144,7 +135,6 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* ── Forecasts ──────────────────────────────────────────────────── */}
           <section>
             <SectionHeader
               title="Forecasts"
@@ -186,12 +176,6 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* ── Getting-started guide CTA ────────────────────────────────────
-              /onboarding is a short guide to Stickee's three core workflows —
-              it does not itself collect an electorate or issue preferences,
-              so this CTA must not promise a personalised "brief" it can't
-              yet deliver. See STICKEE_V1_CROSS_PAGE_CONSISTENCY_REPORT.md
-              §"Today CTA truthfulness". */}
           <section className="flex flex-col items-start justify-between gap-6 rounded-[var(--radius-lg)] border border-border bg-card p-8 md:flex-row md:items-center md:p-12">
             <div>
               <p className="text-micro-label mb-2">New here?</p>
