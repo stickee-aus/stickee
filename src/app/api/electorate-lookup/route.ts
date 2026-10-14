@@ -2,8 +2,6 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-// Public read is allowed by RLS, so the anon key is sufficient and more reliable
-// for local/dev environments that may not have the service role key set.
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 function normalizePostcode(raw: unknown): string | null {
@@ -20,28 +18,36 @@ async function lookup(postcode: string) {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  const { data, error } = await supabase
+  const { data: seats, error: seatsError } = await supabase
     .from('postcode_electorates')
     .select('postcode, electorate, state')
     .eq('postcode', postcode)
 
-  if (error) {
-    console.error('postcode lookup error', error)
+  if (seatsError) {
+    console.error('postcode lookup error', seatsError)
     return Response.json({ error: 'Lookup failed' }, { status: 500 })
   }
 
-  if (!data || data.length === 0) {
+  if (!seats || seats.length === 0) {
     return Response.json({ error: 'Postcode not found' }, { status: 404 })
   }
 
-  if (data.length === 1) {
-    return Response.json(data[0])
+  if (seats.length === 1) {
+    return Response.json(seats[0])
   }
+
+  // Multi-seat: also fetch localities so the UI can ask for suburb
+  const { data: localities } = await supabase
+    .from('postcode_localities')
+    .select('locality, electorate')
+    .eq('postcode', postcode)
+    .order('locality')
 
   return Response.json({
     postcode,
-    state: data[0].state,
-    electorates: data.map(r => r.electorate),
+    state: seats[0].state,
+    electorates: seats.map(r => r.electorate),
+    localities: localities ?? [],
     multiple: true,
   })
 }
