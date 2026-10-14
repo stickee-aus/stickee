@@ -10,6 +10,7 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { ArticleCard } from '@/components/ui/article-card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PostcodeLookup } from '@/components/PostcodeLookup'
+import { YourSeatCard } from '@/components/YourSeatCard'
 
 export const metadata: Metadata = {
   title: 'Stickee — Australian politics, made clear',
@@ -61,6 +62,7 @@ export default async function HomePage() {
             and the actions that affect your life.
           </p>
           <PostcodeLookup />
+          <YourSeatCard />
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <LinkButton href="/issues">
               Explore the issues <ArrowRight className="ml-1 h-4 w-4" />
