@@ -9,9 +9,17 @@ type LookupResult = {
   state: string
 }
 
+type MultiResult = {
+  postcode: string
+  state: string
+  electorates: string[]
+  multiple: true
+}
+
 export function PostcodeLookup() {
   const [postcode, setPostcode] = useState('')
   const [result, setResult] = useState<LookupResult | null>(null)
+  const [multi, setMulti] = useState<MultiResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -36,6 +44,7 @@ export function PostcodeLookup() {
 
     setLoading(true)
     setError(null)
+    setMulti(null)
 
     try {
       const res = await fetch(`/api/electorate-lookup?postcode=${digits}`)
@@ -43,6 +52,12 @@ export function PostcodeLookup() {
 
       if (!res.ok) {
         setError(data.error ?? 'Lookup failed')
+        setResult(null)
+        return
+      }
+
+      if (data.multiple) {
+        setMulti(data as MultiResult)
         setResult(null)
         return
       }
@@ -57,8 +72,22 @@ export function PostcodeLookup() {
     }
   }
 
+  function pick(electorate: string) {
+    if (!multi) return
+    const chosen: LookupResult = {
+      postcode: multi.postcode,
+      electorate,
+      state: multi.state,
+    }
+    setResult(chosen)
+    localStorage.setItem('stickee_electorate', JSON.stringify(chosen))
+    setMulti(null)
+    setPostcode('')
+  }
+
   function clear() {
     setResult(null)
+    setMulti(null)
     localStorage.removeItem('stickee_electorate')
   }
 
@@ -75,6 +104,35 @@ export function PostcodeLookup() {
           className="text-muted-foreground underline-offset-2 hover:underline"
         >
           Change
+        </button>
+      </div>
+    )
+  }
+
+  if (multi) {
+    return (
+      <div className="mx-auto mt-8 max-w-xs">
+        <p className="mb-3 text-sm text-muted-foreground">
+          {multi.postcode} spans multiple seats. Which one?
+        </p>
+        <div className="flex flex-col gap-2">
+          {multi.electorates.map(e => (
+            <button
+              key={e}
+              type="button"
+              onClick={() => pick(e)}
+              className="h-10 rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-accent"
+            >
+              {e}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={clear}
+          className="mt-3 text-xs text-muted-foreground underline-offset-2 hover:underline"
+        >
+          Cancel
         </button>
       </div>
     )
