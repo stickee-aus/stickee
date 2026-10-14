@@ -9,6 +9,7 @@ export type StoredElectorate = {
 }
 
 const STORAGE_KEY = 'stickee_electorate'
+const LEGACY_KEY = 'stickee:electorate' // used by existing useElectorate hook
 
 function readStored(): StoredElectorate | null {
   try {
@@ -32,16 +33,25 @@ export function useElectorateStorage() {
       setElectorate(readStored())
     }
 
-    // Listen for both cross-tab and same-tab updates (we dispatch 'storage' after writes)
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)
   }, [])
 
   function clear() {
     localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(LEGACY_KEY)
     setElectorate(null)
     window.dispatchEvent(new Event('storage'))
   }
 
   return { electorate, loaded, clear }
+}
+
+/** Call this whenever the postcode lookup saves a new electorate. */
+export function syncElectorateToLegacy(electorateName: string) {
+  try {
+    localStorage.setItem(LEGACY_KEY, electorateName)
+  } catch {
+    /* ignore */
+  }
 }
