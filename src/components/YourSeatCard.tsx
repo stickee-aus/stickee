@@ -9,6 +9,8 @@ export function YourSeatCard() {
 
   if (!loaded || !electorate) return null
 
+  const locality = (electorate as { locality?: string }).locality
+
   return (
     <div className="mx-auto mt-8 max-w-md rounded-lg border border-border bg-card p-5 text-left">
       <div className="flex items-start gap-3">
@@ -18,6 +20,9 @@ export function YourSeatCard() {
           <h3 className="font-heading text-lg font-semibold text-foreground">
             {electorate.electorate} <span className="text-muted-foreground">({electorate.state})</span>
           </h3>
+          {locality && (
+            <p className="text-sm text-muted-foreground">{locality}</p>
+          )}
 
           <div className="mt-4 space-y-3 text-sm">
             <div className="flex items-start gap-2">
