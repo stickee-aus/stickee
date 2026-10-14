@@ -11,6 +11,34 @@ function normalizePostcode(raw: unknown): string | null {
   return digits
 }
 
+async function lookup(postcode: string) {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
+  const { data, error } = await supabase
+    .from('postcode_electorates')
+    .select('postcode, electorate, state')
+    .eq('postcode', postcode)
+
+  if (error) {
+    return Response.json({ error: 'Lookup failed' }, { status: 500 })
+  }
+
+  if (!data || data.length === 0) {
+    return Response.json({ error: 'Postcode not found' }, { status: 404 })
+  }
+
+  if (data.length === 1) {
+    return Response.json(data[0])
+  }
+
+  return Response.json({
+    postcode,
+    state: data[0].state,
+    electorates: data.map(r => r.electorate),
+    multiple: true,
+  })
+}
+
 export async function POST(request: NextRequest) {
   let body: unknown
   try {
@@ -27,26 +55,9 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
-
-  const { data, error } = await supabase
-    .from('postcode_electorates')
-    .select('postcode, electorate, state')
-    .eq('postcode', postcode)
-    .maybeSingle()
-
-  if (error) {
-    return Response.json({ error: 'Lookup failed' }, { status: 500 })
-  }
-
-  if (!data) {
-    return Response.json({ error: 'Postcode not found' }, { status: 404 })
-  }
-
-  return Response.json(data)
+  return lookup(postcode)
 }
 
-// GET variant for simple URL-based lookups: /api/electorate-lookup?postcode=4114
 export async function GET(request: NextRequest) {
   const postcode = normalizePostcode(
     request.nextUrl.searchParams.get('postcode')
@@ -58,21 +69,5 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
-
-  const { data, error } = await supabase
-    .from('postcode_electorates')
-    .select('postcode, electorate, state')
-    .eq('postcode', postcode)
-    .maybeSingle()
-
-  if (error) {
-    return Response.json({ error: 'Lookup failed' }, { status: 500 })
-  }
-
-  if (!data) {
-    return Response.json({ error: 'Postcode not found' }, { status: 404 })
-  }
-
-  return Response.json(data)
+  return lookup(postcode)
 }
