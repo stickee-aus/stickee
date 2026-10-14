@@ -65,6 +65,8 @@ export function PostcodeLookup() {
       setResult(data)
       localStorage.setItem('stickee_electorate', JSON.stringify(data))
       setPostcode('')
+      // Trigger storage event so YourSeatCard picks it up immediately
+      window.dispatchEvent(new Event('storage'))
     } catch {
       setError('Network error')
     } finally {
@@ -83,25 +85,26 @@ export function PostcodeLookup() {
     localStorage.setItem('stickee_electorate', JSON.stringify(chosen))
     setMulti(null)
     setPostcode('')
+    window.dispatchEvent(new Event('storage'))
   }
 
   function clear() {
     setResult(null)
     setMulti(null)
     localStorage.removeItem('stickee_electorate')
+    window.dispatchEvent(new Event('storage'))
   }
 
+  // When we already have a result, show a minimal confirmation (card does the heavy lifting)
   if (result) {
     return (
-      <div className="mt-8 flex items-center justify-center gap-3 text-sm">
-        <MapPin className="h-4 w-4 text-muted-foreground" />
-        <span className="text-foreground">
-          Your seat: <strong>{result.electorate}</strong> ({result.state})
-        </span>
+      <div className="mt-6 text-sm text-muted-foreground">
+        Seat set — see details below.
+        {' '}
         <button
           type="button"
           onClick={clear}
-          className="text-muted-foreground underline-offset-2 hover:underline"
+          className="underline-offset-2 hover:underline"
         >
           Change
         </button>
