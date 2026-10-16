@@ -72,7 +72,7 @@ const billJourney = [
   {
     date: '12 Oct 2026',
     chamber: 'Senate',
-    event: 'Second reading agreed. Then Committee of the Whole — 43 amendments pass: 32 Greens, 6 government, 5 Coalition. The Greens stripped the minister\'s power to cap individual courses and forced the commission to publish its reasoning. Third reading that day.',
+    event: "Second reading agreed. Then Committee of the Whole — 43 amendments pass: 32 Greens, 6 government, 5 Coalition. The Greens stripped the minister's power to cap individual courses and forced the commission to publish its reasoning. Third reading that day.",
   },
   {
     date: '12 Oct 2026',
@@ -200,9 +200,6 @@ export default function OnboardingPage() {
           </div>
 
           <div className="flex flex-wrap gap-6 border-t border-border pt-6">
-            {[
-              { label: 'Read the score before the argument', icon: Sparkles_unused },
-            ].map(() => null)}
             <Link
               href="/parliament"
               className="inline-flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase text-foreground hover:text-muted-foreground transition-colors"
