@@ -9,6 +9,7 @@ import { PageShell } from '@/components/ui/page-shell'
 import { SectionHeader } from '@/components/ui/section-header'
 import { ArticleCard } from '@/components/ui/article-card'
 import { EmptyState } from '@/components/ui/empty-state'
+import { OpenInquiries } from '@/components/OpenInquiries'
 
 export const metadata: Metadata = {
   title: 'Stickee — Australian politics, made clear',
@@ -143,6 +144,9 @@ export default async function HomePage() {
               />
             </div>
           </section>
+
+          {/* ── Open inquiries ─────────────────────────────────────────────── */}
+          <OpenInquiries />
 
           {/* ── Forecasts ──────────────────────────────────────────────────── */}
           <section>
