@@ -23,6 +23,43 @@ type MultiResult = {
   multiple: true
 }
 
+// Merge localities that share a name across electorates (e.g. North Maclean
+// appearing under both Forde and Wright) into one button listing both seats.
+function dedupeLocalities(localities: LocalityOption[]): LocalityOption[] {
+  const map = new Map<string, Set<string>>()
+  for (const loc of localities) {
+    const set = map.get(loc.locality) ?? new Set<string>()
+    set.add(loc.electorate)
+    map.set(loc.locality, set)
+  }
+  return Array.from(map.entries()).map(([locality, electorates]) => ({
+    locality,
+    electorate: Array.from(electorates).join(' / '),
+  }))
+}
+
+// Electorates that show up for only one locality in this postcode are almost
+// certainly the default for everyone else — group them instead of listing
+// every suburb individually.
+function groupElectorates(
+  localities: LocalityOption[],
+  electorates: string[],
+): { grouped: string; individual: LocalityOption[] } | null {
+  const counts = new Map<string, number>()
+  for (const loc of localities) {
+    for (const e of loc.electorate.split(' / ')) {
+      counts.set(e, (counts.get(e) ?? 0) + 1)
+    }
+  }
+  const singles = electorates.filter(e => (counts.get(e) ?? 0) <= 1)
+  if (singles.length === 0) return null
+  const grouped = singles.join(' / ')
+  const individual = localities.filter(
+    loc => !loc.electorate.split(' / ').some(e => singles.includes(e)),
+  )
+  return { grouped, individual }
+}
+
 export function PostcodeLookup() {
   const [postcode, setPostcode] = useState('')
   const [result, setResult] = useState<LookupResult | null>(null)
@@ -33,7 +70,7 @@ export function PostcodeLookup() {
   useEffect(() => {
     const stored = localStorage.getItem('stickee_electorate')
     if (stored) {
-      try {
+    try {
         setResult(JSON.parse(stored))
       } catch {
         localStorage.removeItem('stickee_electorate')
@@ -83,11 +120,30 @@ export function PostcodeLookup() {
       setError('Network error — check the console or your connection')
     } finally {
       setLoading(false)
-    }
+      }
   }
 
   function pickLocality(loc: LocalityOption) {
     if (!multi) return
+    // If the merged label lists multiple seats, the user still needs to choose.
+    const seats = loc.electorate.split(' / ')
+    if (seats.length > 1) {
+      const chosen = window.confirm(
+        `${loc.locality} sits in both ${seats.join(' and ')}. Which is yours?`,
+      )
+        ? seats[0]
+        : seats[1]
+      const result: LookupResult = {
+        postcode: multi.postcode,
+        electorate: chosen,
+        state: multi.state,
+        locality: loc.locality,
+      }
+      saveAndSync(result)
+      setMulti(null)
+      setPostcode('')
+      return
+    }
     const chosen: LookupResult = {
       postcode: multi.postcode,
       electorate: loc.electorate,
@@ -137,7 +193,10 @@ export function PostcodeLookup() {
   }
 
   if (multi) {
-    const hasLocalities = multi.localities && multi.localities.length > 0
+    const deduped = dedupeLocalities(multi.localities)
+    const grouped = groupElectorates(deduped, multi.electorates)
+    const display = grouped ? grouped.individual : deduped
+    const hasLocalities = display.length > 0
 
     return (
       <div className="mx-auto mt-8 max-w-xs rounded-lg border border-border bg-card p-4 text-left">
@@ -148,9 +207,9 @@ export function PostcodeLookup() {
 
         {hasLocalities ? (
           <div className="flex flex-col gap-2">
-            {multi.localities.map(loc => (
+            {display.map(loc => (
               <button
-                key={`${loc.locality}-${loc.electorate}`}
+                key={loc.locality}
                 type="button"
                 onClick={() => pickLocality(loc)}
                 className="flex items-center justify-between rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
@@ -159,13 +218,25 @@ export function PostcodeLookup() {
                 <span className="text-xs text-muted-foreground">{loc.electorate}</span>
               </button>
             ))}
+            {grouped && (
+              <button
+                type="button"
+                onClick={() => pickElectorate(grouped.grouped)}
+                className="flex items-center justify-between rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+              >
+                <span>Mostly {grouped.grouped}</span>
+                <span className="text-xs text-muted-foreground">
+                  {multi.postcode} default
+                </span>
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
             {multi.electorates.map(e => (
               <button
                 key={e}
-                type="button"
+        type="button"
                 onClick={() => pickElectorate(e)}
                 className="h-10 rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-accent"
               >
@@ -177,7 +248,7 @@ export function PostcodeLookup() {
 
         <button
           type="button"
-          onClick={clear}
+        onClick={clear}
           className="mt-3 text-xs text-muted-foreground underline-offset-2 hover:underline"
         >
           Cancel
@@ -187,7 +258,7 @@ export function PostcodeLookup() {
   }
 
   return (
-    <form onSubmit={lookup} className="mx-auto mt-8 flex max-w-xs flex-col gap-2">
+    <form onSubmit={lookup} classClassName="mx-auto mt-8 flex max-w-xs flex-col gap-2">
       <div className="flex gap-2">
         <input
           type="text"
