@@ -60,7 +60,7 @@ export default async function HomePage() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-3xl px-5 py-16 text-center md:px-8 md:py-24">
           <p className="text-micro-label mb-4">Australia, in plain English</p>
-          <h1 className="font-heading text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.02] font-semibold tracking-tight text-foreground">
+          <h1 className="font-heading text-[clamp(2.25rem,5vw,5vw,3.75rem)] leading-[1.02] font-semibold tracking-tight text-foreground">
             Know what&rsquo;s changing.<br />Know what to do.
           </h1>
           <p className="text-body-copy mx-auto mt-6 max-w-xl text-muted-foreground">
@@ -90,7 +90,7 @@ export default async function HomePage() {
                   key={destination.href}
                   href={destination.href}
                   title={destination.title}
-                  summary={destination.summary}
+                  summary={destination.title}
                   action={
                     <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
                       {destination.cta} <ArrowRight className="h-3.5 w-3.5" />
@@ -114,12 +114,25 @@ export default async function HomePage() {
 
           {/* ── National snapshot ─────────────────────────────────────────── */}
           <section>
-            <SectionHeader title="National snapshot" description="Stickee's civic indicator scorecard." />
+            <SectionHeader
+              title="National snapshot"
+              description="Stickee's civic indicator scorecard."
+              action={
+                <Link href="/issues" className="inline-flex items-center gap-1 font-medium text-foreground">
+                  See issues <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              }
+            />
             <div className="mt-6">
               <EmptyState
                 variant="no-data"
-                title="Verified national indicators are being prepared."
-                description="Stickee is building a sourced, methodology-backed civic scorecard and won't publish a score until it can carry real evidence."
+                title="No sourced indicators yet"
+                description="A civic scorecard needs a defined methodology before it earns a number. Issues and bills are the evidence it's built from."
+                action={
+                  <Link href="/issues" className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
+                    Browse tracked issues <ArrowRight className="h-3 w-3" />
+                  </Link>
+                }
               />
             </div>
           </section>
@@ -138,8 +151,13 @@ export default async function HomePage() {
             <div className="mt-6">
               <EmptyState
                 variant="no-data"
-                title="Verified government decisions are being prepared."
-                description="We won't publish a decision record here until it carries a real source and status."
+                title="No sourced decisions yet"
+                description="Decision records publish only when they carry a real source and status — same standard as every other page."
+                action={
+                  <Link href="/parliament" className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
+                    Open the Parliament record <ArrowRight className="h-3 w-3" />
+                  </Link>
+                }
               />
             </div>
           </section>
