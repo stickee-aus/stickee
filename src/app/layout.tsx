@@ -50,11 +50,14 @@ export default function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <TooltipProvider>
+              <a href="#main-content" className="skip-link">
+                Skip to main content
+              </a>
               <Navbar />
               <CommandPalette />
               <DailyBonusBanner />
               <PushPermissionBanner />
-              <main className="flex-1 pb-20 md:pb-0">{children}</main>
+              <main id="main-content" tabIndex={-1} className="flex-1 pb-20 md:pb-0 focus:outline-none">{children}</main>
               <BottomNav />
               <CookieBanner />
               <OnboardingController />

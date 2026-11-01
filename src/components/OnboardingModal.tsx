@@ -102,8 +102,11 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}>
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Set up Stickee"
         className="w-full max-w-sm border border-border"
-        style={{ background: '#0a0a0b' }}
+        style={{ background: 'var(--paper-raised)' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
@@ -153,12 +156,12 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   onClick={() => setElectorate(el)}
                   className="text-left font-mono text-[10px] px-2.5 py-2 border transition-colors"
                   style={{
-                    borderColor: electorate === el ? '#e8e8e6' : '#1e1e20',
-                    background:  electorate === el ? '#1e1e20' : 'transparent',
-                    color:       electorate === el ? '#e8e8e6' : '#5a5a5e',
+                    borderColor: electorate === el ? 'var(--ink)' : 'var(--line)',
+                    background:  electorate === el ? 'var(--paper)' : 'transparent',
+                    color:       electorate === el ? 'var(--ink)' : 'var(--ink-muted)',
                   }}
                 >
-                  {electorate === el && <CheckCircle2 className="h-2.5 w-2.5 inline mr-1" style={{ color: '#2ec266' }} />}
+                  {electorate === el && <CheckCircle2 className="h-2.5 w-2.5 inline mr-1" style={{ color: 'var(--status-positive)' }} />}
                   {el}
                 </button>
               ))}
@@ -215,7 +218,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                     }}
                   >
                     <span className="text-base">{p.emoji}</span>
-                    <span className="font-mono text-xs" style={{ color: selected ? p.color : '#5a5a5e' }}>
+                    <span className="font-mono text-xs" style={{ color: selected ? p.color : 'var(--ink-muted)' }}>
                       {p.label}
                     </span>
                     {selected && (
@@ -250,7 +253,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
           <div className="px-6 py-6 space-y-5">
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 flex items-center justify-center shrink-0" style={{ background: '#1e1e20' }}>
-                <ShieldCheck className="h-4 w-4" style={{ color: '#2ec266' }} />
+                <ShieldCheck className="h-4 w-4" style={{ color: 'var(--status-positive)' }} />
               </div>
               <div>
                 <h2 className="font-mono text-sm font-medium text-foreground">Choose your first loop</h2>
@@ -267,7 +270,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
               <p className="font-mono text-[9px] tracking-widest uppercase text-muted-foreground">Your setup</p>
               {electorate && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-3 w-3 shrink-0" style={{ color: '#5a5a5e' }} />
+                  <MapPin className="h-3 w-3 shrink-0" style={{ color: 'var(--ink-muted)' }} />
                   <span className="font-mono text-xs text-foreground">{electorate}</span>
                 </div>
               )}
@@ -311,7 +314,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
               <button
                 onClick={() => handleComplete('explore')}
                 className="w-full py-2.5 font-mono text-[10px] tracking-widest uppercase transition-colors"
-                style={{ color: '#3a3a3e' }}
+                style={{ color: 'var(--ink-muted)' }}
               >
                 Explore first →
               </button>

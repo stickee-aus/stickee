@@ -16,7 +16,7 @@ export function BottomNav() {
       <div className="flex items-center justify-around px-2 py-3">
         {PRIMARY_NAV.map(item => {
           const active = isPrimaryNavItemActive(item, pathname)
-          const color = active ? '#17231c' : '#7a817c'
+          const color = active ? '#17231c' : 'var(--ink-muted)'
           return (
             <Link
               key={item.id}
