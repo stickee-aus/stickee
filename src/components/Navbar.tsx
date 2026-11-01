@@ -12,7 +12,7 @@ export function Navbar() {
 
   return (
     <header className="simple-nav sticky top-0 z-50">
-      <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between px-5 md:px-8">
+      <div className="mx-auto flex h-(--layout-header-height) max-w-6xl items-center justify-between px-(--layout-gutter)">
 
         {/* Logo */}
         <Link
@@ -33,7 +33,7 @@ export function Navbar() {
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'simple-nav-link',
+                  'simple-nav-link inline-flex min-h-(--control-height) items-center',
                   active
                     ? 'is-active' : '',
                 ].join(' ')}
@@ -46,7 +46,7 @@ export function Navbar() {
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center gap-4 text-muted-foreground">
+        <div className="flex items-center gap-2 text-muted-foreground">
           {SECONDARY_NAV.map(item => (
             <Link
               key={item.href}
@@ -58,7 +58,7 @@ export function Navbar() {
           ))}
           <Link
             href="/notifications"
-            className="relative transition-colors hover:text-[#17231c]"
+            className="relative inline-flex size-(--control-height) items-center justify-center transition-colors hover:text-[#17231c]"
             aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
           >
             <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">
@@ -67,7 +67,7 @@ export function Navbar() {
             </svg>
             {unreadCount > 0 && (
               <span
-                className="absolute -top-1 -right-1 h-3.5 w-3.5 flex items-center justify-center font-mono text-[8px] rounded-full"
+                className="absolute top-2 right-2 h-3.5 w-3.5 flex items-center justify-center font-mono text-[8px] rounded-full"
                 style={{ background: '#f04747', color: '#fff' }}
               >
                 {unreadCount > 9 ? '9+' : unreadCount}

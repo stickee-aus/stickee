@@ -58,20 +58,20 @@ export default async function HomePage() {
     <div className="bg-background">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-3xl px-5 py-16 text-center md:px-8 md:py-24">
+        <div className="mx-auto max-w-4xl px-(--layout-gutter) pt-(--hero-pad-top) pb-(--hero-pad-bottom) text-center">
           <p className="text-micro-label mb-4">Australia, in plain English</p>
-          <h1 className="font-heading text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.02] font-semibold tracking-tight text-foreground">
+          <h1 className="font-heading text-[clamp(2.25rem,1.5rem+3.25vw,4rem)] leading-[1.05] font-semibold tracking-tight text-foreground">
             Know what&rsquo;s changing.<br />Know what to do.
           </h1>
-          <p className="text-body-copy mx-auto mt-6 max-w-xl text-muted-foreground">
+          <p className="text-lead mx-auto mt-6 max-w-(--layout-measure) text-muted-foreground">
             Stickee turns Australian politics into a clear weekly picture — the issues, the decisions,
             and the actions that affect your life.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <LinkButton href="/issues">
+          <div className="mx-auto mt-10 flex max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
+            <LinkButton href="/issues" className="h-(--control-height) px-5">
               Explore the issues <ArrowRight className="ml-1 h-4 w-4" />
             </LinkButton>
-            <LinkButton href="/onboarding" variant="outline">
+            <LinkButton href="/onboarding" variant="outline" className="h-(--control-height) px-5">
               How Stickee works
             </LinkButton>
           </div>
@@ -79,12 +79,12 @@ export default async function HomePage() {
       </section>
 
       <PageShell>
-        <div className="space-y-16">
+        <div className="space-y-(--section-gap)">
 
           {/* ── Primary product destinations ──────────────────────────────── */}
           <section>
             <SectionHeader title="Where to start" description="Three ways into what Stickee covers." />
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-6 grid gap-(--card-gap) md:grid-cols-3">
               {PRIMARY_DESTINATIONS.map(destination => (
                 <ArticleCard
                   key={destination.href}
@@ -99,12 +99,12 @@ export default async function HomePage() {
                 />
               ))}
             </div>
-            <div className="mt-6 flex flex-wrap gap-6">
+            <div className="mt-4 flex flex-wrap gap-x-6">
               {SECONDARY_ACTIONS.map(({ href, icon: Icon, label }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="transition-calm inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                  className="transition-calm inline-flex min-h-(--control-height) items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                 >
                   <Icon className="h-4 w-4" /> {label}
                 </Link>
@@ -130,7 +130,7 @@ export default async function HomePage() {
               title="Government activity"
               description="What Parliament has recently decided."
               action={
-                <Link href="/parliament" className="inline-flex items-center gap-1 font-medium text-foreground">
+                <Link href="/parliament" className="inline-flex min-h-11 items-center gap-1 font-medium text-foreground">
                   See Parliament <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               }
@@ -150,14 +150,14 @@ export default async function HomePage() {
               title="Forecasts"
               description="What's likely to happen next."
               action={
-                <Link href="/predictions" className="inline-flex items-center gap-1 font-medium text-foreground">
+                <Link href="/predictions" className="inline-flex min-h-11 items-center gap-1 font-medium text-foreground">
                   See all forecasts <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               }
             />
             <div className="mt-6">
               {activeForecasts.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-(--card-gap) md:grid-cols-2">
                   {activeForecasts.map(forecast => (
                     <ArticleCard
                       key={forecast.id}
@@ -177,7 +177,7 @@ export default async function HomePage() {
                   variant="no-forecasts"
                   title="No verified forecasts are currently open."
                   action={
-                    <Link href="/predictions" className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
+                    <Link href="/predictions" className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-foreground">
                       See all forecasts <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   }
@@ -197,7 +197,7 @@ export default async function HomePage() {
               <p className="text-micro-label mb-2">New here?</p>
               <h2 className="text-section-title">A short guide to tracking your seat,<br />your issues, and what happens next.</h2>
             </div>
-            <LinkButton href="/onboarding">
+            <LinkButton href="/onboarding" className="h-(--control-height) px-5">
               See how it works <ArrowRight className="ml-1 h-4 w-4" />
             </LinkButton>
           </section>

@@ -19,7 +19,7 @@ export interface PageShellProps extends ComponentProps<'div'> {
 export function PageShell({ className, width = 'default', children, ...props }: PageShellProps) {
   return (
     <div className="min-h-full bg-background">
-      <div className={cn('mx-auto w-full px-5 py-10 md:px-8', WIDTHS[width], className)} {...props}>
+      <div className={cn('mx-auto w-full px-(--layout-gutter) py-10', WIDTHS[width], className)} {...props}>
         {children}
       </div>
     </div>

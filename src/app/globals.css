@@ -109,6 +109,56 @@
   --sidebar-ring: var(--civic-accent);
 }
 
+/* ── Spacing & layout tokens (spacing-preview) ─────────────────────────────
+   4px base unit, 8px rhythm. Every spacing value used by the homepage and
+   header chrome should resolve to one of --space-1…12. Layout tokens step up
+   at md (48rem / 768px) and lg (64rem / 1024px); Tailwind reads them through
+   the v4 variable shorthand, e.g. px-(--layout-gutter). Colour, type families
+   and radius are untouched. */
+:root {
+  --space-1: 0.25rem;   /*   4px */
+  --space-2: 0.5rem;    /*   8px */
+  --space-3: 0.75rem;   /*  12px */
+  --space-4: 1rem;      /*  16px */
+  --space-5: 1.5rem;    /*  24px */
+  --space-6: 2rem;      /*  32px */
+  --space-7: 2.5rem;    /*  40px */
+  --space-8: 3rem;      /*  48px */
+  --space-9: 4rem;      /*  64px */
+  --space-10: 5rem;     /*  80px */
+  --space-11: 6rem;     /*  96px */
+  --space-12: 8rem;     /* 128px */
+
+  --layout-gutter: var(--space-5);          /* 24px below md */
+  --layout-header-height: 4.5rem;           /* 72px */
+  --layout-measure: 32rem;                  /* ≈60–70 characters of lead copy */
+  --control-height: 2.75rem;                /* 44px minimum touch target */
+  --section-gap: var(--space-9);            /* 64px between homepage sections */
+  --hero-pad-top: var(--space-9);
+  --hero-pad-bottom: var(--space-9);
+  --card-pad: var(--space-5);               /* 24px */
+  --card-gap: var(--space-4);               /* 16px */
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --layout-gutter: var(--space-6);        /* 32px */
+    --section-gap: var(--space-10);         /* 80px */
+    --hero-pad-top: var(--space-11);        /* 96px */
+    --hero-pad-bottom: var(--space-11);
+    --card-gap: var(--space-5);             /* 24px */
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --layout-gutter: var(--space-8);        /* 48px */
+    --section-gap: var(--space-11);         /* 96px */
+    --hero-pad-top: var(--space-12);        /* 128px */
+    --hero-pad-bottom: var(--space-11);     /* 96px */
+  }
+}
+
 /* Not yet a real dark theme — see note above. Kept identical to :root so
    any stray `.dark` class (or a future toggle) never falls back to the
    old trading-terminal palette. */
@@ -170,6 +220,13 @@
   }
   html {
     @apply font-sans;
+    /* Keep keyboard-focused/anchored content clear of the sticky header and,
+       below md, the fixed BottomNav (≈70px + safe area; main reserves 80px). */
+    scroll-padding-top: var(--layout-header-height);
+    scroll-padding-bottom: var(--space-10);
+  }
+  @media (min-width: 48rem) {
+    html { scroll-padding-bottom: 0; }
   }
 
   /* Keyboard focus must always be visible — safety net for elements that
@@ -198,6 +255,8 @@
   .text-page-title    { font-family: var(--font-heading); font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); }
   .text-section-title { font-family: var(--font-heading); font-size: 1.375rem; font-weight: 600; line-height: 1.25; color: var(--ink); }
   .text-card-title     { font-family: var(--font-heading); font-size: 1.0625rem; font-weight: 600; line-height: 1.35; color: var(--ink); }
+  .text-lead           { font-family: var(--font-sans); font-size: 1rem; font-weight: 400; line-height: 1.5rem; color: var(--ink); }
+  @media (min-width: 48rem) { .text-lead { font-size: 1.125rem; line-height: 1.75rem; } }
   .text-body-copy       { font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 400; line-height: 1.6; color: var(--ink); }
   .text-metadata       { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); }
   .text-micro-label    { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }
@@ -225,8 +284,8 @@
 .simple-brand-mark { display: grid; place-items: center; width: 29px; height: 29px; border-radius: var(--radius); background: var(--civic-accent); color: var(--civic-accent-foreground); font-size: 15px; font-weight: 700; }
 .simple-nav-link { position: relative; color: var(--ink-muted); font-size: 13px; font-weight: 550; transition: color var(--motion-duration) var(--motion-easing); }
 .simple-nav-link:hover, .simple-nav-link.is-active { color: var(--ink); }
-.simple-nav-link.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -23px; height: 2px; background: var(--civic-accent); }
-.simple-support-link { align-items: center; border: 1px solid var(--ink); border-radius: var(--radius); padding: 7px 14px; color: var(--ink); font-size: 12px; font-weight: 650; transition: background var(--motion-duration) var(--motion-easing), color var(--motion-duration) var(--motion-easing); }
+.simple-nav-link.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: calc((var(--layout-header-height) - var(--control-height)) / -2); height: 2px; background: var(--civic-accent); }
+.simple-support-link { align-items: center; min-height: var(--space-7); border: 1px solid var(--ink); border-radius: var(--radius); padding: 0 var(--space-4); color: var(--ink); font-size: 12px; font-weight: 650; transition: background var(--motion-duration) var(--motion-easing), color var(--motion-duration) var(--motion-easing); }
 .simple-support-link:hover { background: var(--ink); color: var(--paper); }
 .simple-bottom-nav { border-top: 1px solid var(--line); background: var(--paper-raised); }
 
@@ -242,3 +301,21 @@
  * .simple-issue-*, .simple-decision-*, .simple-cta, .simple-forecast-*, and
  * their responsive media queries) has been deleted outright — confirmed via
  * repo-wide grep to have zero remaining consumers. */
+
+/* Skip link: hidden until focused (WCAG 2.4.1 Bypass Blocks). */
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  border-radius: 8px;
+}
+.skip-link:focus,
+.skip-link:focus-visible { top: 12px; outline: 2px solid var(--civic-accent); outline-offset: 2px; }

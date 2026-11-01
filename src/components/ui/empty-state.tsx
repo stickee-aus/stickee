@@ -72,7 +72,7 @@ export function EmptyState({ variant, icon, title, description, action, classNam
       )}
       <div className="space-y-1">
         <p className="text-sm font-medium text-foreground">{resolvedTitle}</p>
-        {resolvedDescription && <p className="text-xs text-muted-foreground">{resolvedDescription}</p>}
+        {resolvedDescription && <p className="mx-auto max-w-sm text-xs text-muted-foreground">{resolvedDescription}</p>}
       </div>
       {action && <div className="mt-1">{action}</div>}
     </div>
