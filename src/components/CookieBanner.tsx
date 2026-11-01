@@ -77,7 +77,7 @@ export function CookieBanner() {
                 <span className="font-mono text-xs text-foreground">Essential</span>
                 <span
                   className="font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 border"
-                  style={{ borderColor: '#2ec266', color: '#2ec266' }}
+                  style={{ borderColor: 'var(--status-positive)', color: 'var(--status-positive)' }}
                 >
                   Always on
                 </span>
@@ -98,7 +98,7 @@ export function CookieBanner() {
                 <span className="font-mono text-xs text-foreground">Analytics</span>
                 <span
                   className="font-mono text-[9px] uppercase tracking-widest"
-                  style={{ color: prefs.analytics ? '#e8e8e6' : '#5a5a5e' }}
+                  style={{ color: prefs.analytics ? 'var(--ink)' : 'var(--ink-muted)' }}
                 >
                   {prefs.analytics ? 'On' : 'Off'}
                 </span>
@@ -119,7 +119,7 @@ export function CookieBanner() {
                 <span className="font-mono text-xs text-foreground">Personalisation</span>
                 <span
                   className="font-mono text-[9px] uppercase tracking-widest"
-                  style={{ color: prefs.personalisation ? '#e8e8e6' : '#5a5a5e' }}
+                  style={{ color: prefs.personalisation ? 'var(--ink)' : 'var(--ink-muted)' }}
                 >
                   {prefs.personalisation ? 'On' : 'Off'}
                 </span>

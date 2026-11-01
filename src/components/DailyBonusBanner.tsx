@@ -62,7 +62,7 @@ export function DailyBonusBanner() {
   if (!visible || !hydrated || !authHydrated || hiddenHere) return null
 
   return (
-    <div className="border-b border-border bg-card px-6 py-3">
+    <div role="region" aria-label="Daily bonus" className="border-b border-border bg-card px-6 py-3">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Gift className="h-4 w-4 shrink-0 text-[var(--civic-accent)]" />
@@ -103,7 +103,8 @@ export function DailyBonusBanner() {
           )}
           <button
             onClick={handleDismiss}
-            className="transition-calm text-muted-foreground hover:text-foreground"
+            aria-label="Dismiss daily bonus banner"
+            className="transition-calm inline-flex min-h-6 min-w-6 items-center justify-center text-muted-foreground hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
           </button>
