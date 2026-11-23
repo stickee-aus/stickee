@@ -68,4 +68,41 @@ describe('accessibility regressions', () => {
     expect(s).toMatch(/role="region" aria-label="Daily bonus"/)
     expect(s).toMatch(/aria-label="Dismiss daily bonus banner"/)
   })
+
+  it('donate, stake, propose and comment surfaces drop leftover dark-palette hexes', () => {
+    const banned = /#(0a0a0b|111113|1e1e20|2a2a2e|3a3a3e|5a5a5e|e8e8e6|2ec266|f04747|3a1414)\b/i
+    const files = [
+      'src/components/DonateAmountForm.tsx',
+      'src/components/StakeModal.tsx',
+      'src/components/ProposeMarketModal.tsx',
+      'src/components/CommentDrawer.tsx',
+    ]
+    for (const f of files) {
+      const s = src(f)
+      expect(s).not.toMatch(banned)
+      expect(s).toMatch(/var\(--ink/)
+    }
+    expect(src('src/components/StakeModal.tsx')).toMatch(/background: 'var\(--paper-raised\)'/)
+    expect(src('src/components/ProposeMarketModal.tsx')).toMatch(/background: 'var\(--paper-raised\)'/)
+    expect(src('src/components/CommentDrawer.tsx')).toMatch(/background: 'var\(--paper-raised\)'/)
+    expect(src('src/components/DonateAmountForm.tsx')).toMatch(/background: 'var\(--ink\)'/)
+  })
+
+  it('Environment pillar selected state uses status-positive and meets WCAG AA', () => {
+    const s = src('src/components/OnboardingModal.tsx')
+    expect(s).not.toMatch(/label:\s*'Environment',\s+color:\s*'#2ec266'/)
+    expect(s).toMatch(/label:\s*'Environment',\s+color:\s*'var\(--status-positive\)'/)
+    expect(contrast(token('status-positive'), token('paper-raised'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('status-positive'), token('paper'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('status-positive'), token('paper-raised'))).toBeGreaterThanOrEqual(3)
+  })
+
+  it('status and ink tokens used as text or button labels meet 4.5:1', () => {
+    expect(contrast(token('status-negative'), token('paper'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('status-negative'), token('paper-raised'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('paper'), token('status-positive'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('paper'), token('status-negative'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('paper'), token('ink'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token('ink-muted'), token('muted'))).toBeGreaterThanOrEqual(4.5)
+  })
 })

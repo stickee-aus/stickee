@@ -39,7 +39,7 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
   const profit   = payout - amount
   const profitPct = amount > 0 ? Math.round((profit / amount) * 100) : 0
   const isYes    = direction === 'yes'
-  const accent   = isYes ? '#2ec266' : '#f04747'
+  const accent   = isYes ? 'var(--status-positive)' : 'var(--status-negative)'
   const hasSufficientAmount = amount > 0 && amount <= balance
   // Defense in depth only — the boards that open this modal already filter
   // to eligible markets (see market-eligibility.ts), and is_market_open()
@@ -86,25 +86,25 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
       {/* Panel */}
       <div
         className="relative w-full max-w-sm rounded-2xl border overflow-hidden shadow-2xl"
-        style={{ background: '#111113', borderColor: '#1e1e20' }}
+        style={{ background: 'var(--paper-raised)', borderColor: 'var(--line)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Close */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1 rounded-lg transition-colors"
-          style={{ color: '#5a5a5e' }}
+          style={{ color: 'var(--ink-muted)' }}
           aria-label="Close"
         >
           <X size={14} />
         </button>
 
         {/* Header */}
-        <div className="px-5 pt-5 pb-4 border-b" style={{ borderColor: '#1e1e20' }}>
+        <div className="px-5 pt-5 pb-4 border-b" style={{ borderColor: 'var(--line)' }}>
           <div className="flex items-center gap-2 mb-2">
             <span
               className="font-mono text-[9px] tracking-widest uppercase px-1.5 py-0.5"
-              style={{ color: '#5a5a5e', border: '1px solid #1e1e20' }}
+              style={{ color: 'var(--ink-muted)', border: '1px solid var(--line)' }}
             >
               {CATEGORY_LABELS[market.category] ?? market.category}
             </span>
@@ -113,7 +113,7 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
             </span>
           </div>
           <p className="text-sm text-foreground leading-snug pr-6">{market.question}</p>
-          <p className="font-mono text-[10px] mt-1.5" style={{ color: '#3a3a3e' }}>
+          <p className="font-mono text-[10px] mt-1.5" style={{ color: 'var(--ink-muted)' }}>
             Resolves {market.resolvesBy}
           </p>
         </div>
@@ -121,7 +121,7 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
         <div className="px-5 py-4 space-y-4">
           {/* Current price */}
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>
+            <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--ink-muted)' }}>
               {isYes ? 'Yes' : 'No'} price
             </span>
             <span className="font-mono text-lg font-normal" style={{ color: accent }}>
@@ -132,18 +132,18 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
           {/* Amount input */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#3a3a3e' }}>
+              <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--ink-muted)' }}>
                 Stake (pts)
               </span>
-              <span className="font-mono text-[10px]" style={{ color: '#5a5a5e' }}>
+              <span className="font-mono text-[10px]" style={{ color: 'var(--ink-muted)' }}>
                 Balance: {balance.toLocaleString()} pts
               </span>
             </div>
             <div
               className="flex items-center gap-2 rounded-lg px-3 py-2.5 border"
-              style={{ background: '#0a0a0b', borderColor: '#1e1e20' }}
+              style={{ background: 'var(--paper)', borderColor: 'var(--line)' }}
             >
-              <Coins size={13} style={{ color: '#5a5a5e', flexShrink: 0 }} />
+              <Coins size={13} style={{ color: 'var(--ink-muted)', flexShrink: 0 }} />
               <input
                 type="text"
                 inputMode="numeric"
@@ -155,7 +155,7 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
               <button
                 onClick={() => handlePreset(balance)}
                 className="font-mono text-[9px] tracking-widest uppercase px-2 py-0.5 rounded transition-colors"
-                style={{ color: '#5a5a5e', background: '#1e1e20' }}
+                style={{ color: 'var(--ink-muted)', background: 'var(--muted)' }}
               >
                 Max
               </button>
@@ -170,9 +170,9 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
                   disabled={p > balance}
                   className="flex-1 font-mono text-[10px] py-1 rounded transition-colors disabled:opacity-30"
                   style={{
-                    background: amount === p ? '#1e1e20' : 'transparent',
-                    color: amount === p ? '#e8e8e6' : '#5a5a5e',
-                    border: `1px solid ${amount === p ? '#2a2a2e' : '#1e1e20'}`,
+                    background: amount === p ? 'var(--ink)' : 'transparent',
+                    color: amount === p ? 'var(--paper)' : 'var(--ink-muted)',
+                    border: `1px solid ${amount === p ? 'var(--ink)' : 'var(--line)'}`,
                   }}
                 >
                   {p}
@@ -182,23 +182,23 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
           </div>
 
           {/* Payout breakdown */}
-          <div className="rounded-lg p-3 space-y-2" style={{ background: '#0a0a0b', border: '1px solid #1e1e20' }}>
+          <div className="rounded-lg p-3 space-y-2" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
             <div className="flex justify-between">
-              <span className="font-mono text-[10px]" style={{ color: '#5a5a5e' }}>Shares</span>
+              <span className="font-mono text-[10px]" style={{ color: 'var(--ink-muted)' }}>Shares</span>
               <span className="font-mono text-[10px] text-foreground">{shares.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[10px]" style={{ color: '#5a5a5e' }}>If correct</span>
+              <span className="font-mono text-[10px]" style={{ color: 'var(--ink-muted)' }}>If correct</span>
               <span className="font-mono text-[10px]" style={{ color: accent }}>+{payout.toLocaleString()} pts</span>
             </div>
-            <div className="flex justify-between border-t pt-2" style={{ borderColor: '#1e1e20' }}>
-              <span className="font-mono text-[10px]" style={{ color: '#5a5a5e' }}>Potential profit</span>
+            <div className="flex justify-between border-t pt-2" style={{ borderColor: 'var(--line)' }}>
+              <span className="font-mono text-[10px]" style={{ color: 'var(--ink-muted)' }}>Potential profit</span>
               <div className="flex items-center gap-1">
                 {profit > 0
-                  ? <TrendingUp size={11} style={{ color: '#2ec266' }} />
-                  : <TrendingDown size={11} style={{ color: '#f04747' }} />
+                  ? <TrendingUp size={11} style={{ color: 'var(--status-positive)' }} />
+                  : <TrendingDown size={11} style={{ color: 'var(--status-negative)' }} />
                 }
-                <span className="font-mono text-[10px]" style={{ color: profit > 0 ? '#2ec266' : '#f04747' }}>
+                <span className="font-mono text-[10px]" style={{ color: profit > 0 ? 'var(--status-positive)' : 'var(--status-negative)' }}>
                   {profit > 0 ? '+' : ''}{profit.toLocaleString()} pts ({profitPct > 0 ? '+' : ''}{profitPct}%)
                 </span>
               </div>
@@ -211,20 +211,20 @@ export function StakeModal({ market, direction, balance, onConfirm, onClose }: S
             disabled={!canStake || confirming}
             className="w-full py-3 rounded-xl font-mono text-xs tracking-widest uppercase font-medium transition-all disabled:opacity-40"
             style={{
-              background: canStake ? accent : '#1e1e20',
-              color: isYes ? '#0a0a0b' : '#e8e8e6',
+              background: canStake ? accent : 'var(--muted)',
+              color: canStake ? 'var(--paper)' : 'var(--ink-muted)',
             }}
           >
             {confirming ? 'Placing...' : `Stake ${amount.toLocaleString()} pts on ${isYes ? 'YES' : 'NO'}`}
           </button>
 
           {!marketEligibility.canStake && (
-            <p className="font-mono text-[10px] text-center" style={{ color: '#f04747' }}>
+            <p className="font-mono text-[10px] text-center" style={{ color: 'var(--status-negative)' }}>
               {nonTradeableLabel(market.status)} — this market cannot be staked
             </p>
           )}
           {marketEligibility.canStake && !hasSufficientAmount && amount > balance && (
-            <p className="font-mono text-[10px] text-center" style={{ color: '#f04747' }}>
+            <p className="font-mono text-[10px] text-center" style={{ color: 'var(--status-negative)' }}>
               Insufficient balance
             </p>
           )}

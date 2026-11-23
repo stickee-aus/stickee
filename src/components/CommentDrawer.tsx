@@ -19,11 +19,11 @@ function relativeTime(iso: string): string {
 }
 
 function gradeStyle(score?: number) {
-  if (!score) return { color: '#3a3a3e' }
+  if (!score) return { color: 'var(--ink-muted)' }
   const g = scoreToGrade(score)
-  if (g === 'A' || g === 'B') return { color: '#2ec266' }
+  if (g === 'A' || g === 'B') return { color: 'var(--status-positive)' }
   if (g === 'C') return { color: '#f5a623' }
-  return { color: '#f04747' }
+  return { color: 'var(--status-negative)' }
 }
 
 function initials(name: string) {
@@ -48,7 +48,7 @@ function CommentItem({
       {/* Avatar */}
       <div
         className="h-7 w-7 shrink-0 flex items-center justify-center font-mono text-[9px] font-medium"
-        style={{ background: '#1e1e20', color: gs.color }}
+        style={{ background: 'var(--muted)', color: gs.color }}
       >
         {initials(comment.authorName)}
       </div>
@@ -75,7 +75,7 @@ function CommentItem({
           <button
             onClick={() => onReply(comment.id, comment.authorHandle)}
             className="mt-1.5 flex items-center gap-1 font-mono text-[9px] tracking-widest uppercase transition-colors hover:text-foreground"
-            style={{ color: '#3a3a3e' }}
+            style={{ color: 'var(--ink-muted)' }}
           >
             <CornerDownRight className="h-2.5 w-2.5" /> Reply
           </button>
@@ -132,7 +132,7 @@ function ComposeBox({
 
   if (!authenticated) {
     return (
-      <div className="border-t border-border p-4" style={{ background: '#0a0a0b' }}>
+      <div className="border-t border-border p-4" style={{ background: 'var(--paper)' }}>
         <Link
           href="/auth/sign-in"
           className="flex items-center justify-center border border-border px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-foreground transition-colors hover:bg-card/50"
@@ -144,7 +144,7 @@ function ComposeBox({
   }
 
   return (
-    <div className="border-t border-border p-4 space-y-2" style={{ background: '#0a0a0b' }}>
+    <div className="border-t border-border p-4 space-y-2" style={{ background: 'var(--paper)' }}>
       {replyTo && (
         <div className="flex items-center justify-between">
           <span className="font-mono text-[9px] tracking-widest uppercase" style={{ color: '#f5a623' }}>
@@ -166,13 +166,13 @@ function ComposeBox({
           }}
           rows={2}
           placeholder="Add to the civic conversation…"
-          className="flex-1 resize-none border border-border bg-background px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-white/20 transition-colors"
+          className="flex-1 resize-none border border-border bg-background px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[var(--civic-accent)] transition-colors"
         />
         <button
           onClick={handleSubmit}
           disabled={!body.trim() || overLimit || submitting}
           className="h-9 w-9 flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-          style={{ background: body.trim() && !overLimit ? '#e8e8e6' : '#1e1e20', color: body.trim() && !overLimit ? '#0a0a0b' : '#3a3a3e' }}
+          style={{ background: body.trim() && !overLimit ? 'var(--ink)' : 'var(--muted)', color: body.trim() && !overLimit ? 'var(--paper)' : 'var(--ink-muted)' }}
         >
           {submitting
             ? <span className="h-3 w-3 border border-current border-t-transparent rounded-full animate-spin" />
@@ -183,7 +183,7 @@ function ComposeBox({
 
       <div className="flex items-center justify-between">
         <span className="font-mono text-[9px] text-muted-foreground">⌘↵ to post</span>
-        <span className="font-mono text-[9px]" style={{ color: overLimit ? '#f04747' : '#3a3a3e' }}>
+        <span className="font-mono text-[9px]" style={{ color: overLimit ? 'var(--status-negative)' : 'var(--ink-muted)' }}>
           {charCount}/500
         </span>
       </div>
@@ -218,12 +218,12 @@ export function CommentDrawer({ postId, postTitle, open, onClose }: CommentDrawe
       {/* Drawer */}
       <div
         className="fixed bottom-0 inset-x-0 z-50 flex flex-col border-t border-border md:right-0 md:left-auto md:top-0 md:bottom-0 md:w-96 md:border-t-0 md:border-l"
-        style={{ background: '#0a0a0b', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}
+        style={{ background: 'var(--paper-raised)', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" style={{ color: '#5a5a5e' }} />
+            <MessageCircle className="h-4 w-4" style={{ color: 'var(--ink-muted)' }} />
             <span className="font-mono text-xs text-foreground">
               {totalCount} comment{totalCount !== 1 ? 's' : ''}
             </span>
@@ -243,9 +243,9 @@ export function CommentDrawer({ postId, postTitle, open, onClose }: CommentDrawe
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
           {comments.length === 0 ? (
             <div className="py-8 text-center">
-              <MessageCircle className="h-8 w-8 mx-auto mb-3" style={{ color: '#2a2a2e' }} />
+              <MessageCircle className="h-8 w-8 mx-auto mb-3" style={{ color: 'var(--ink-faint)' }} />
               <p className="font-mono text-xs text-muted-foreground">No comments yet.</p>
-              <p className="font-mono text-[10px] mt-1" style={{ color: '#3a3a3e' }}>Be the first to add to the conversation.</p>
+              <p className="font-mono text-[10px] mt-1" style={{ color: 'var(--ink-muted)' }}>Be the first to add to the conversation.</p>
             </div>
           ) : (
             comments.map(comment => (

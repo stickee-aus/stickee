@@ -84,9 +84,9 @@ export function DonateAmountForm({ donationUrl }: DonateAmountFormProps) {
               onClick={() => setCadence(option)}
               className="h-12 font-mono text-xs font-medium uppercase tracking-widest transition-colors"
               style={{
-                background: active ? '#1e1e20' : 'transparent',
-                color: active ? '#e8e8e6' : '#5a5a5e',
-                boxShadow: active ? 'inset 0 0 0 1px #e8e8e6' : 'none',
+                background: active ? 'var(--ink)' : 'transparent',
+                color: active ? 'var(--paper)' : 'var(--ink-muted)',
+                boxShadow: active ? 'inset 0 0 0 1px var(--ink)' : 'none',
               }}
             >
               {option === 'once' ? 'One-time' : 'Monthly'}
@@ -109,9 +109,9 @@ export function DonateAmountForm({ donationUrl }: DonateAmountFormProps) {
               onClick={() => chooseAmount(value)}
               className="h-16 border-r border-b border-border font-mono text-base transition-colors last:border-r-0 hover:bg-secondary/60"
               style={{
-                background: active ? '#1e1e20' : 'transparent',
-                color: active ? '#e8e8e6' : '#5a5a5e',
-                boxShadow: active ? 'inset 0 0 0 1px #e8e8e6' : 'none',
+                background: active ? 'var(--ink)' : 'transparent',
+                color: active ? 'var(--paper)' : 'var(--ink-muted)',
+                boxShadow: active ? 'inset 0 0 0 1px var(--ink)' : 'none',
               }}
             >
               ${value}
@@ -123,9 +123,9 @@ export function DonateAmountForm({ donationUrl }: DonateAmountFormProps) {
           onClick={() => setCustomMode(true)}
           className="h-16 border-b border-border font-mono text-base transition-colors hover:bg-secondary/60"
           style={{
-            background: customMode ? '#1e1e20' : 'transparent',
-            color: customMode ? '#e8e8e6' : '#5a5a5e',
-            boxShadow: customMode ? 'inset 0 0 0 1px #e8e8e6' : 'none',
+            background: customMode ? 'var(--ink)' : 'transparent',
+            color: customMode ? 'var(--paper)' : 'var(--ink-muted)',
+            boxShadow: customMode ? 'inset 0 0 0 1px var(--ink)' : 'none',
           }}
         >
           Custom
@@ -169,7 +169,7 @@ export function DonateAmountForm({ donationUrl }: DonateAmountFormProps) {
       )}
 
       {error && (
-        <p className="mt-3 border px-3 py-2 font-mono text-[10px] leading-relaxed" style={{ borderColor: '#3a1414', color: '#f04747' }}>
+        <p className="mt-3 border px-3 py-2 font-mono text-[10px] leading-relaxed" style={{ borderColor: 'var(--status-negative)', color: 'var(--status-negative)' }}>
           {error}
         </p>
       )}
@@ -180,7 +180,7 @@ export function DonateAmountForm({ donationUrl }: DonateAmountFormProps) {
         disabled={!canDonate || loading}
         aria-disabled={!canDonate}
         className="mt-4 flex h-14 w-full items-center justify-center px-4 text-center font-mono text-sm font-medium uppercase tracking-widest transition-opacity disabled:pointer-events-none disabled:opacity-40"
-        style={{ background: '#e8e8e6', color: '#0a0a0b' }}
+        style={{ background: 'var(--ink)', color: 'var(--paper)' }}
       >
         {loading ? 'Starting checkout...' : `Donate $${amount || 0}`}
       </button>

@@ -96,7 +96,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     { id: 'cost-of-living', label: 'Cost of Living',  color: '#f04747', emoji: '💸' },
     { id: 'jobs-economy',   label: 'Jobs & Economy',  color: '#f5a623', emoji: '📊' },
     { id: 'crime-safety',   label: 'Crime & Safety',  color: '#f5a623', emoji: '🛡️' },
-    { id: 'future',         label: 'Environment',     color: '#2ec266', emoji: '🌱' },
+    { id: 'future',         label: 'Environment',     color: 'var(--status-positive)', emoji: '🌱' },
   ]
 
   return (
@@ -211,8 +211,8 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                     onClick={() => !disabled && toggleIssue(p.id)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 border transition-colors"
                     style={{
-                      borderColor: selected ? p.color : '#1e1e20',
-                      background:  selected ? `${p.color}08` : 'transparent',
+                      borderColor: selected ? p.color : 'var(--line)',
+                      background:  selected ? `color-mix(in srgb, ${p.color} 8%, transparent)` : 'transparent',
                       opacity:     disabled ? 0.4 : 1,
                       cursor:      disabled ? 'not-allowed' : 'pointer',
                     }}
