@@ -1,0 +1,54 @@
+# Proposed label set for stickee-aus/stickee.
+# NOT applied automatically. A maintainer creates these (e.g. via the GitHub UI
+# or `gh label create`) after approval. See docs/LABELS.md.
+- name: good first issue
+  color: "7057ff"
+  description: Under 30 min, about one file, steps and helper included
+- name: data-verify
+  color: "0e8a16"
+  description: "No code: check a number against its primary source"
+- name: help wanted
+  color: "008672"
+  description: Half a day or more, some context needed
+- name: difficulty:easy
+  color: "c2e0c6"
+  description: Under 1 hour
+- name: difficulty:medium
+  color: "fbca04"
+  description: About half a day
+- name: difficulty:hard
+  color: "d93f0b"
+  description: More than a day, or touches security, payments or the database
+- name: role:coder
+  color: "1d76db"
+  description: Suits people who write code or tests
+- name: role:data
+  color: "0e8a16"
+  description: Suits data verifiers (no code)
+- name: role:design
+  color: "d4c5f9"
+  description: Suits designers and accessibility work
+- name: role:research
+  color: "bfdadc"
+  description: Suits researchers and method notes (no code)
+- name: data-gap
+  color: "e99695"
+  description: A figure is missing, wrong, stale, or has no source
+- name: needs-methodology
+  color: "5319e7"
+  description: Blocked until the method is written and reviewed
+- name: accessibility
+  color: "0052cc"
+  description: A barrier for disabled users
+- name: security
+  color: "b60205"
+  description: Hardening work (report vulnerabilities privately, see SECURITY.md)
+- name: bug
+  color: "d73a4a"
+  description: Something isn't working
+- name: enhancement
+  color: "a2eeef"
+  description: New feature or request
+- name: documentation
+  color: "0075ca"
+  description: Improvements or additions to documentation

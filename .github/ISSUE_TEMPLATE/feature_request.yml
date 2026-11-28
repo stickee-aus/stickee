@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest something new for Stickee.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Stickee is evidence-based and non-partisan. Ideas that need data must say where the data comes from.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What do you suggest?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and data sources
+      description: Primary sources the feature would rely on (ATO, Budget papers, AEC, APH, legislation, ABS...). Write "none needed" if it's not data-related.
+    validations:
+      required: true
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Checks
+      options:
+        - label: This would apply the same method to every party (non-partisan rule).
+          required: true
+        - label: I searched existing issues first.
+          required: true

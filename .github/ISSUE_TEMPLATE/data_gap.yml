@@ -1,0 +1,45 @@
+name: Data gap
+description: A figure is missing, out of date, wrong, or has no source.
+title: "[Data gap]: "
+labels: ["data-gap", "role:data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Flagging a gap is a real contribution. You don't need to fix it yourself.
+  - type: input
+    id: where
+    attributes:
+      label: Where on Stickee?
+      placeholder: "/issues/cost-of-living, 'Fuel' card"
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of gap?
+      options:
+        - No source cited
+        - Source is not primary (news, blog, social post)
+        - Figure is out of date
+        - Figure looks wrong
+        - Data we should have but don't
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: What's wrong or missing?
+    validations:
+      required: true
+  - type: input
+    id: suggested
+    attributes:
+      label: Suggested primary source (if you know one)
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Checks
+      options:
+        - label: This is about accuracy or sourcing, not about which party is right.
+          required: true

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability (private)
+    url: https://github.com/stickee-aus/stickee/security/advisories/new
+    about: Never report security problems in a public issue. Use a private advisory.
+  - name: Ask a question or say hi
+    url: https://github.com/stickee-aus/stickee/discussions
+    about: Use Discussions for questions and introductions. Don't use it for security reports.
+  - name: How to contribute
+    url: https://github.com/stickee-aus/stickee/blob/main/CONTRIBUTING.md
+    about: Roles, first tasks, labels and evidence rules.

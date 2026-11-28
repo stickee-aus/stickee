@@ -1,0 +1,58 @@
+name: Data source verification
+description: Check a figure on Stickee against its primary source (no code needed).
+title: "[Verify]: "
+labels: ["data-verify", "role:data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to record a check of one figure. Takes about 15–30 minutes.
+        Primary sources only: ATO, Treasury Budget papers, AEC, APH/Hansard, legislation.gov.au, NDIA, ABS.
+  - type: input
+    id: figure
+    attributes:
+      label: Figure being checked
+      description: The exact number and where it appears on Stickee.
+      placeholder: "The petrol excise rate shown on the fuel tracer page"
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Primary source URL
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Where in the source
+      description: Table, page, section or row.
+      placeholder: "Table number, row and column"
+    validations:
+      required: true
+  - type: input
+    id: accessed
+    attributes:
+      label: Date accessed (YYYY-MM-DD)
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options:
+        - Matches the source
+        - Does not match (explain below)
+        - Source unclear or missing (explain below)
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and working
+      description: Any calculation, rounding, or why it doesn't match.
+  - type: input
+    id: licence
+    attributes:
+      label: Source licence (if shown)
+      placeholder: "CC BY 4.0"

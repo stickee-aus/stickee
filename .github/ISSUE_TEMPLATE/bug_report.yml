@@ -1,0 +1,52 @@
+name: Bug report
+description: Something on Stickee is broken or wrong.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Security problem? Don't use this form.** See SECURITY.md.
+        Wrong number or missing source? Use the "Data gap" form instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to /issues
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Page URL or route
+      placeholder: /parliament
+  - type: dropdown
+    id: env
+    attributes:
+      label: Where did you see it?
+      options:
+        - Local dev (npm run dev)
+        - Live site
+        - Preview deployment
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Chrome 131, iPhone 15
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or logs
+      description: Remove any keys, tokens, emails or personal data first.
