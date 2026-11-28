@@ -5,6 +5,7 @@ import 'server-only'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { getTrustedSiteOrigin } from '@/lib/site-url'
 import { createAdminSupabaseClient } from '@/lib/supabase-admin'
 import { getPostAuthRedirectPath, normalizeReturnPath } from '@/lib/admin-auth'
 import type { SignUpState } from './types'
@@ -29,15 +30,10 @@ function normalizeHandle(value: string) {
 }
 
 async function getRequestOrigin() {
+  // Never trust the Origin / X-Forwarded-Host / Host headers here: they are
+  // client-controlled. Use the configured site URL (see src/lib/site-url.ts).
   const headerStore = await headers()
-  const origin = headerStore.get('origin')
-  if (origin) return origin
-  const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host')
-  if (!host) return null
-  const protocol =
-    headerStore.get('x-forwarded-proto') ??
-    (process.env.NODE_ENV === 'development' ? 'http' : 'https')
-  return `${protocol}://${host}`
+  return getTrustedSiteOrigin(headerStore.get('host'))
 }
 
 /**

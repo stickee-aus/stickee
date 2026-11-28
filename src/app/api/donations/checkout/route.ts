@@ -1,5 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { getTrustedSiteOrigin } from '@/lib/site-url'
+import { getStripeSecretKey, STRIPE_API_VERSION } from '@/lib/stripe/config'
+import { buildCheckoutIdempotency } from '@/lib/stripe/checkout'
 
 type Cadence = 'once' | 'monthly'
 
@@ -8,7 +11,6 @@ interface CheckoutBody {
   cadence?: unknown
 }
 
-const STRIPE_API_VERSION = '2026-02-25.clover'
 const MIN_AMOUNT_CENTS = 100
 const MAX_AMOUNT_CENTS = 500000
 
@@ -25,11 +27,10 @@ function createServiceClient() {
   })
 }
 
-function getOrigin(request: Request) {
-  const forwardedHost = request.headers.get('x-forwarded-host')
-  const forwardedProto = request.headers.get('x-forwarded-proto')
-  if (forwardedHost) return `${forwardedProto || 'https'}://${forwardedHost}`
-  return new URL(request.url).origin
+function anonymousKey(request: Request) {
+  // Only used to dedupe anonymous double-submits; spoofing it gains nothing.
+  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+  return forwarded || request.headers.get('x-real-ip') || 'unknown'
 }
 
 function cleanCadence(value: unknown): Cadence {
@@ -75,8 +76,16 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Enter a donation amount between $1 and $5,000 AUD.' }, { status: 400 })
   }
 
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY
-  if (!stripeSecretKey) {
+  const stripeKey = getStripeSecretKey()
+  if (!stripeKey.ok) {
+    console.error('stripe.checkout.config', { reason: stripeKey.reason })
+    return Response.json({ error: 'Stripe is not configured.' }, { status: 503 })
+  }
+  const stripeSecretKey = stripeKey.key
+
+  const origin = getTrustedSiteOrigin(request.headers.get('host'))
+  if (!origin) {
+    console.error('stripe.checkout.config', { reason: 'site_url_missing' })
     return Response.json({ error: 'Stripe is not configured.' }, { status: 503 })
   }
 
@@ -85,24 +94,32 @@ export async function POST(request: Request) {
   const admin = createServiceClient()
   let donationRecordId: string | null = null
 
+  const { idempotencyKey, donationRecordId: derivedRecordId } = buildCheckoutIdempotency({
+    userId: user?.id ?? null,
+    anonymousKey: anonymousKey(request),
+    amountCents,
+    cadence,
+  })
+
   if (admin) {
-    const { data } = await admin
+    // Deterministic id + ignoreDuplicates: a retry of the same request reuses
+    // the same row instead of inserting another, and sends identical params
+    // to Stripe (required for Idempotency-Key replays).
+    const { error } = await admin
       .from('donation_records')
-      .insert({
+      .upsert({
+        id: derivedRecordId,
         user_id: user?.id ?? null,
         amount_cents: amountCents,
         currency: 'aud',
         cadence: cadence === 'monthly' ? 'monthly' : 'one_time',
         status: 'started',
         source: 'donate_page',
-      })
-      .select('id')
-      .single()
+      }, { onConflict: 'id', ignoreDuplicates: true })
 
-    donationRecordId = data?.id ?? null
+    donationRecordId = error ? null : derivedRecordId
   }
 
-  const origin = getOrigin(request)
   const params = new URLSearchParams()
   params.append('mode', cadence === 'monthly' ? 'subscription' : 'payment')
   params.append('success_url', `${origin}/donate/success?session_id={CHECKOUT_SESSION_ID}`)
@@ -121,6 +138,7 @@ export async function POST(request: Request) {
       Authorization: `Bearer ${stripeSecretKey}`,
       'Content-Type': 'application/x-www-form-urlencoded',
       'Stripe-Version': STRIPE_API_VERSION,
+      'Idempotency-Key': idempotencyKey,
     },
     body: params,
   })

@@ -14,13 +14,38 @@ export type StripeCheckoutSession = {
   }
 }
 
+export type StripeCharge = {
+  id?: string
+  payment_intent?: string | null
+  refunded?: boolean
+}
+
 export type StripeEvent = {
   id?: string
   type: string
   data?: {
-    object?: StripeCheckoutSession
+    object?: StripeCheckoutSession & StripeCharge
   }
 }
+
+/**
+ * Event types we deliberately do not act on. They are logged by id and type
+ * only (never the payload). Recurring-invoice and subscription lifecycle
+ * handling is out of scope until a processed-events table exists; see
+ * docs/proposals/NOT-APPLIED-processed-stripe-events.md.
+ */
+export const IGNORED_EVENT_TYPES = new Set([
+  'customer.subscription.created',
+  'customer.subscription.updated',
+  'customer.subscription.deleted',
+  'invoice.paid',
+  'invoice.payment_succeeded',
+  'invoice.payment_failed',
+  'charge.refund.updated',
+  'charge.dispute.created',
+  'refund.created',
+  'refund.updated',
+])
 
 export type ProcessWebhookResult =
   | { ok: true }
@@ -93,6 +118,28 @@ export async function updateDonation(
 }
 
 /**
+ * charge.refunded: mark a paid donation as refunded, but only on a full
+ * refund (charge.refunded === true), only from `paid`, and only matched via
+ * the stored payment intent id. Anything else is a no-op.
+ */
+export async function markDonationRefunded(
+  charge: StripeCharge,
+  admin: SupabaseClient,
+): Promise<ProcessWebhookResult> {
+  if (charge.refunded !== true) return { ok: true }
+  if (!charge.payment_intent || typeof charge.payment_intent !== 'string') return { ok: true }
+
+  const { error } = await admin
+    .from('donation_records')
+    .update({ status: 'refunded', updated_at: new Date().toISOString() })
+    .eq('stripe_payment_intent_id', charge.payment_intent)
+    .eq('status', 'paid')
+
+  if (error) return { ok: false, reason: 'db_error' }
+  return { ok: true }
+}
+
+/**
  * Handle a verified Stripe event. Callers must already have checked the
  * signature. Logs only event.id and event.type — never the payload.
  */
@@ -106,6 +153,17 @@ export async function processStripeDonationWebhook(
   const session = event.data?.object
   if (!session || typeof session !== 'object') {
     return { ok: false, reason: 'malformed' }
+  }
+
+  if (IGNORED_EVENT_TYPES.has(eventType)) {
+    console.info('stripe.webhook.ignored', { eventId, eventType })
+    return { ok: true }
+  }
+
+  if (eventType === 'charge.refunded') {
+    const admin = createServiceClient()
+    if (!admin) return { ok: false, reason: 'no_admin' }
+    return markDonationRefunded(session, admin)
   }
 
   const isPaidEvent =
