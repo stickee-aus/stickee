@@ -1,6 +1,7 @@
 import { createHmac } from 'crypto'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createClient } from '@supabase/supabase-js'
+import { createStripeMemoryAdmin } from './helpers/stripe-memory-admin'
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(),
@@ -54,52 +55,10 @@ function checkoutEvent(overrides: Record<string, unknown> = {}) {
 
 function createMemoryAdmin(
   rows: DonationRow[],
-  options: { failUpdate?: boolean; failMessage?: string } = {},
+  options: { failUpdate?: boolean; failMessage?: string; failEventClaim?: boolean } = {},
 ) {
-  const updateCalls: Record<string, unknown>[] = []
-
-  const admin = {
-    from(table: string) {
-      if (table !== 'donation_records') {
-        throw new Error(`unexpected table ${table}`)
-      }
-      return {
-        update(patch: Record<string, unknown>) {
-          updateCalls.push(patch)
-          const filters: Array<(row: DonationRow) => boolean> = []
-          const query = {
-            eq(column: string, value: unknown) {
-              filters.push(row => (row as unknown as Record<string, unknown>)[column] === value)
-              return query
-            },
-            in(column: string, values: unknown[]) {
-              filters.push(row =>
-                values.includes((row as unknown as Record<string, unknown>)[column]),
-              )
-              return query
-            },
-            then(
-              resolve: (value: { data: DonationRow[] | null; error: { message: string } | null }) => unknown,
-              reject?: (reason: unknown) => unknown,
-            ) {
-              return Promise.resolve(execute()).then(resolve, reject)
-            },
-          }
-          function execute() {
-            if (options.failUpdate) {
-              return { data: null, error: { message: options.failMessage ?? 'simulated-db-failure' } }
-            }
-            const matches = rows.filter(row => filters.every(filter => filter(row)))
-            for (const row of matches) Object.assign(row, patch)
-            return { data: matches, error: null }
-          }
-          return query
-        },
-      }
-    },
-  }
-
-  return { admin, updateCalls, rows }
+  const memory = createStripeMemoryAdmin(rows as unknown as Record<string, unknown>[], options)
+  return { admin: memory.admin, updateCalls: memory.updateCalls, rows, events: memory.events }
 }
 
 async function postWebhook(payload: string, signature: string | null) {
@@ -276,10 +235,11 @@ describe('Stripe donation webhook security', () => {
     expect(second.status).toBe(200)
     expect(memory.rows[0].status).toBe('paid')
     expect(memory.rows[0].amount_cents).toBe(2500)
-    // Second delivery still issues a guarded update, but it matches no rows
-    // because status is no longer 'started', so the paid amount is not reapplied
-    // as a second donation.
-    expect(memory.updateCalls).toHaveLength(2)
+    // The second delivery is recognised by event id and skipped entirely:
+    // no second donation update is even attempted.
+    expect(memory.updateCalls).toHaveLength(1)
+    expect(memory.events).toHaveLength(1)
+    expect(memory.events[0].processed_at).toBeTruthy()
   })
 
   it('does not mark paid when checkout.session.completed has payment_status unpaid', async () => {

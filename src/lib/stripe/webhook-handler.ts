@@ -20,25 +20,36 @@ export type StripeCharge = {
   refunded?: boolean
 }
 
+export type StripeInvoice = {
+  id?: string
+  amount_paid?: number | null
+  currency?: string
+  customer?: string | null
+  status?: string | null
+  billing_reason?: string | null
+  subscription?: string | null
+  parent?: {
+    subscription_details?: { subscription?: string | null } | null
+  } | null
+}
+
 export type StripeEvent = {
   id?: string
   type: string
   data?: {
-    object?: StripeCheckoutSession & StripeCharge
+    object?: StripeCheckoutSession & StripeCharge & StripeInvoice
   }
 }
 
 /**
  * Event types we deliberately do not act on. They are logged by id and type
- * only (never the payload). Recurring-invoice and subscription lifecycle
- * handling is out of scope until a processed-events table exists; see
- * docs/proposals/NOT-APPLIED-processed-stripe-events.md.
+ * only (never the payload). `invoice.paid` is handled (renewals only);
+ * `invoice.payment_succeeded` is its duplicate and stays ignored.
  */
 export const IGNORED_EVENT_TYPES = new Set([
   'customer.subscription.created',
   'customer.subscription.updated',
   'customer.subscription.deleted',
-  'invoice.paid',
   'invoice.payment_succeeded',
   'invoice.payment_failed',
   'charge.refund.updated',
@@ -139,6 +150,93 @@ export async function markDonationRefunded(
   return { ok: true }
 }
 
+const UNIQUE_VIOLATION = '23505'
+
+/**
+ * invoice.paid: record a recurring (monthly) renewal as its own paid donation
+ * row, once per Stripe invoice. Only `subscription_cycle` invoices count: the
+ * first invoice of a subscription is already recorded by
+ * checkout.session.completed. The owner is copied from the existing donation
+ * row for that subscription; unknown subscriptions are ignored. Duplicate
+ * invoices hit the unique stripe_invoice_id index and are a no-op.
+ */
+export async function recordRenewalInvoice(
+  invoice: StripeInvoice,
+  admin: SupabaseClient,
+): Promise<ProcessWebhookResult> {
+  if (invoice.billing_reason !== 'subscription_cycle') return { ok: true }
+  if (invoice.status !== 'paid') return { ok: true }
+  if (typeof invoice.id !== 'string' || !invoice.id) return { ok: false, reason: 'malformed' }
+
+  const subscriptionId =
+    (typeof invoice.subscription === 'string' ? invoice.subscription : null) ??
+    invoice.parent?.subscription_details?.subscription ??
+    null
+  if (!subscriptionId || typeof subscriptionId !== 'string') return { ok: true }
+  if (typeof invoice.amount_paid !== 'number' || invoice.amount_paid <= 0) return { ok: true }
+
+  const { data: existing, error: lookupError } = await admin
+    .from('donation_records')
+    .select('user_id')
+    .eq('stripe_subscription_id', subscriptionId)
+    .order('created_at', { ascending: true })
+    .limit(1)
+  if (lookupError) return { ok: false, reason: 'db_error' }
+  if (!existing || existing.length === 0) return { ok: true }
+
+  const { error } = await admin.from('donation_records').insert({
+    user_id: existing[0].user_id ?? null,
+    amount_cents: invoice.amount_paid,
+    currency: invoice.currency ?? 'aud',
+    cadence: 'monthly',
+    status: 'paid',
+    source: 'stripe_renewal',
+    stripe_subscription_id: subscriptionId,
+    stripe_customer_id: typeof invoice.customer === 'string' ? invoice.customer : null,
+    stripe_invoice_id: invoice.id,
+  })
+
+  if (error && error.code !== UNIQUE_VIOLATION) return { ok: false, reason: 'db_error' }
+  return { ok: true }
+}
+
+/**
+ * Claim an event id in processed_stripe_events. Returns 'duplicate' only when
+ * the event was already fully processed (processed_at set). A row left behind
+ * by a crashed or failed earlier attempt (processed_at null) is retried, so
+ * Stripe's retry can finish the work. The handlers themselves are guarded
+ * (status transitions, unique invoice id), so a concurrent double delivery
+ * cannot double-apply.
+ */
+async function claimEvent(
+  admin: SupabaseClient,
+  eventId: string,
+  eventType: string,
+): Promise<'claimed' | 'duplicate' | 'error'> {
+  const { error } = await admin
+    .from('processed_stripe_events')
+    .insert({ event_id: eventId, type: eventType })
+
+  if (!error) return 'claimed'
+  if (error.code !== UNIQUE_VIOLATION) return 'error'
+
+  const { data, error: readError } = await admin
+    .from('processed_stripe_events')
+    .select('processed_at')
+    .eq('event_id', eventId)
+    .limit(1)
+  if (readError) return 'error'
+  return data && data[0]?.processed_at ? 'duplicate' : 'claimed'
+}
+
+async function markEventProcessed(admin: SupabaseClient, eventId: string) {
+  const { error } = await admin
+    .from('processed_stripe_events')
+    .update({ processed_at: new Date().toISOString() })
+    .eq('event_id', eventId)
+  return !error
+}
+
 /**
  * Handle a verified Stripe event. Callers must already have checked the
  * signature. Logs only event.id and event.type — never the payload.
@@ -160,32 +258,48 @@ export async function processStripeDonationWebhook(
     return { ok: true }
   }
 
-  if (eventType === 'charge.refunded') {
-    const admin = createServiceClient()
-    if (!admin) return { ok: false, reason: 'no_admin' }
-    return markDonationRefunded(session, admin)
-  }
-
   const isPaidEvent =
     eventType === 'checkout.session.completed' ||
     eventType === 'checkout.session.async_payment_succeeded'
   const isFailedEvent =
     eventType === 'checkout.session.expired' ||
     eventType === 'checkout.session.async_payment_failed'
+  const isRefund = eventType === 'charge.refunded'
+  const isInvoicePaid = eventType === 'invoice.paid'
 
-  if (!isPaidEvent && !isFailedEvent) {
+  if (!isPaidEvent && !isFailedEvent && !isRefund && !isInvoicePaid) {
     return { ok: true }
   }
 
-  // checkout.session.completed can arrive for async methods (e.g. BECS)
-  // while payment_status is still 'unpaid'. Only record paid when Stripe
-  // confirms it. Unknown event types already returned above.
-  if (isPaidEvent && session.payment_status !== 'paid') {
-    return { ok: true }
-  }
+  // Stripe always sends an event id. Without one we cannot dedupe, so refuse.
+  if (!eventId) return { ok: false, reason: 'malformed' }
 
   const admin = createServiceClient()
   if (!admin) return { ok: false, reason: 'no_admin' }
 
-  return updateDonation(session, isPaidEvent ? 'paid' : 'failed', admin)
+  const claim = await claimEvent(admin, eventId, eventType)
+  if (claim === 'error') return { ok: false, reason: 'db_error' }
+  if (claim === 'duplicate') {
+    console.info('stripe.webhook.duplicate', { eventId, eventType })
+    return { ok: true }
+  }
+
+  let result: ProcessWebhookResult
+  if (isRefund) {
+    result = await markDonationRefunded(session, admin)
+  } else if (isInvoicePaid) {
+    result = await recordRenewalInvoice(session, admin)
+  } else if (isPaidEvent && session.payment_status !== 'paid') {
+    // checkout.session.completed can arrive for async methods (e.g. BECS)
+    // while payment_status is still 'unpaid'. Only record paid when Stripe
+    // confirms it; the later async_payment_succeeded event does it.
+    result = { ok: true }
+  } else {
+    result = await updateDonation(session, isPaidEvent ? 'paid' : 'failed', admin)
+  }
+
+  // On failure leave processed_at null so Stripe's retry runs again.
+  if (!result.ok) return result
+  if (!(await markEventProcessed(admin, eventId))) return { ok: false, reason: 'db_error' }
+  return { ok: true }
 }

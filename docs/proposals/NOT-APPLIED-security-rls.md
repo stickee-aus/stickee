@@ -1,8 +1,23 @@
 # Proposed RLS fixes: donations, notifications, civic_score
 
-> ## NOT APPLIED. NEEDS JACKO'S EXPLICIT APPROVAL.
+> ## APPLIED on 29 Nov 2026 (AEST) after Jacko's approval ("Restore and apply all")
 >
-> This file is a **draft only**. No file has been created under `supabase/migrations/`, and nothing has been run against any database (local, staging or production). Do not turn this into a migration or apply it until Jacko says yes.
+> Applied to the Stickee Supabase project (ap-southeast-2) and committed as real migrations:
+> `027_donation_records_lockdown.sql`, `028_notifications_lockdown.sql`, `029_civic_score_protection.sql`.
+> The SQL below is the original draft and is kept for history. **Where it differs from the applied files, the applied files win.** Differences, after checking the live schema:
+>
+> - **A (donations):** the optional "Admins can update donation records" policy was also dropped (nothing in the app uses it; the service role does all writes). Privileges were also revoked from `anon`, including `select`.
+> - **B (notifications):** also revoked `select`/`update` from `anon` and `truncate`/`references`/`trigger` from `authenticated`.
+> - **C (civic_score):** the trigger checks `current_user in ('anon','authenticated')` instead of `auth.role()`, so `SECURITY DEFINER` functions and the service role are never restricted. `execute` on the trigger function is revoked from API roles.
+> - The live database matched repo migrations 006 and 009 for these tables (same policies, same constraints, `handle_new_user()` trigger present). It also has one extra column, `donation_records.failure_reason`, which the repo does not define.
+> - Verified in a rolled-back test transaction (see the PR description for results).
+>
+> The file name is kept so existing links work. Its content is no longer a proposal.
+
+
+> ### Original draft status (superseded, see the banner above)
+>
+> This file was a **draft only** when written.
 >
 > Related draft: [`NOT-APPLIED-processed-stripe-events.md`](./NOT-APPLIED-processed-stripe-events.md) (webhook `event.id` dedupe table). It is separate and also needs approval.
 

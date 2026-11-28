@@ -1,37 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createClient } from '@supabase/supabase-js'
+import { createStripeMemoryAdmin } from './helpers/stripe-memory-admin'
 
 vi.mock('@supabase/supabase-js', () => ({ createClient: vi.fn() }))
 
 type Row = { id: string; status: string; stripe_payment_intent_id?: string }
 
 function memoryAdmin(rows: Row[]) {
-  const patches: Record<string, unknown>[] = []
-  return {
-    patches,
-    admin: {
-      from(table: string) {
-        if (table !== 'donation_records') throw new Error(`unexpected table ${table}`)
-        return {
-          update(patch: Record<string, unknown>) {
-            patches.push(patch)
-            const filters: Array<(r: Row) => boolean> = []
-            const q = {
-              eq(col: string, val: unknown) {
-                filters.push(r => (r as unknown as Record<string, unknown>)[col] === val)
-                return q
-              },
-              then(resolve: (v: { error: null }) => unknown) {
-                for (const r of rows.filter(r => filters.every(f => f(r)))) Object.assign(r, patch)
-                return Promise.resolve({ error: null }).then(resolve)
-              },
-            }
-            return q
-          },
-        }
-      },
-    },
-  }
+  const mem = createStripeMemoryAdmin(rows as unknown as Record<string, unknown>[])
+  return { admin: mem.admin, patches: mem.updateCalls, events: mem.events }
 }
 
 describe('Stripe webhook: refund and subscription events', () => {
@@ -86,7 +63,7 @@ describe('Stripe webhook: refund and subscription events', () => {
   it.each([
     'customer.subscription.updated',
     'customer.subscription.deleted',
-    'invoice.paid',
+    'invoice.payment_succeeded',
     'invoice.payment_failed',
     'refund.created',
   ])('%s is explicitly ignored: 2xx, no DB access, logs id and type only', async type => {
