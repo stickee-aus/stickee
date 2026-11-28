@@ -1,5 +1,14 @@
 # Proposed migration: `processed_stripe_events`
 
+> ## APPLIED on 29 Nov 2026 (AEST) after Jacko's approval ("Restore and apply all")
+>
+> Created in the Stickee Supabase project as `processed_stripe_events` with RLS enabled, no policies, and all privileges revoked from `anon` and `authenticated` (service role only). Committed as `supabase/migrations/030_processed_stripe_events.sql`. A second additive migration, `031_donation_records_stripe_invoice.sql`, adds a nullable `donation_records.stripe_invoice_id` with a partial unique index so monthly renewals can be recorded once per invoice.
+>
+> The webhook handler (`src/lib/stripe/webhook-handler.ts`) now uses the table: it claims `event_id` before acting, skips events that already have `processed_at`, retries events whose earlier attempt left `processed_at` null, and rejects acted-on events with no id. `invoice.paid` renewals (`billing_reason = subscription_cycle`) are recorded as new paid monthly rows.
+>
+> The text below is the original proposal, kept for history. The Supabase advisor reports an INFO "RLS enabled, no policy" for this table. That is intentional: only the service role should touch it.
+
+
 **NOT APPLIED. This file is a proposal only. It needs Jacko's explicit approval before anyone creates a file under `supabase/migrations/` or applies this SQL to any database (local, staging or production).**
 
 ## Why it is not in this PR
